@@ -1,0 +1,68 @@
+/* Step2.css */
+
+/* 전체 컨테이너 */
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    text-align: center;
+  }
+  
+  /* 그리드 컨테이너 */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 그리드 */
+    gap: 10px; /* 박스 간격 */
+    margin: 20px 0;
+  }
+  
+  /* 그리드 아이템 (박스) */
+  .grid-item {
+    padding: 20px;
+    font-size: 18px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+  
+  /* 선택된 박스 스타일 */
+  .grid-item.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+    font-weight: bold;
+  }
+  
+  /* 박스 호버 효과 */
+  .grid-item:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* 버튼 그룹 */
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  

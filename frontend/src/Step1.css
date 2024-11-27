@@ -1,0 +1,66 @@
+/* Step1.css */
+
+/* 회원가입 폼 컨테이너 */
+.form-container {
+    max-width: 600px;
+    margin: 50px auto; /* 화면 중앙 정렬 */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff; /* 흰 배경 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+  }
+  
+  /* 폼 제목 */
+  .form-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* 레이블 */
+  label {
+    display: block;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  /* 입력 필드 */
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
+    border-color: #b07bff;
+    box-shadow: 0 0 5px rgba(176, 123, 255, 0.5);
+  }
+  
+  /* 버튼 스타일 */
+  button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #b07bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #944dff;
+  }
+  
