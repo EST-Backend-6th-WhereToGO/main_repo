@@ -1,4 +1,4 @@
-package com.howmuch.backend.entity;
+package com.howmuch.backend.entity.community;
 
 public enum PostHeader {
 

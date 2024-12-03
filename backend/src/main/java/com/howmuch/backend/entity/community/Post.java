@@ -1,11 +1,13 @@
-package com.howmuch.backend.entity;
+package com.howmuch.backend.entity.community;
 
+import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -31,10 +33,10 @@ public class Post {
     @Column(name="content")
     private String content;
 
-    @Column(name="like_count")
+    @Column(name="like_count", nullable = false)
     private Long like_count;
 
-    @Column(name="view_count")
+    @Column(name="view_count", nullable = false)
     private Long view_count;
 
     @CreatedDate
@@ -44,4 +46,10 @@ public class Post {
     @LastModifiedDate
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
+    private List<PostLike> postLikes;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
+    private List<PostComment> postComments;
 }

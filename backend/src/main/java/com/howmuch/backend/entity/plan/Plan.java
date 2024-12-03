@@ -1,11 +1,14 @@
-package com.howmuch.backend.entity;
+package com.howmuch.backend.entity.plan;
 
+import com.howmuch.backend.entity.city_info.City;
+import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -29,10 +32,10 @@ public class Plan {
     private boolean isPublic;
 
     @Column(name="start_at", nullable = false)
-    private LocalDateTime startAt;  // 일정 시작
+    private LocalDateTime startAt;  // 전체 일정 시작
 
     @Column(name="end_at", nullable = false)
-    private LocalDateTime endAt;    // 일정 종료
+    private LocalDateTime endAt;    // 전체 일정 종료
 
     @CreatedDate
     @Column(name="created_at", updatable = false)
@@ -41,4 +44,7 @@ public class Plan {
     @LastModifiedDate
     @Column(name="updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "plan")
+    private List<DetailPlan> detailPlans;
 }

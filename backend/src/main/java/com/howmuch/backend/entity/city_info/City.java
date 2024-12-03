@@ -1,8 +1,9 @@
-package com.howmuch.backend.entity;
+package com.howmuch.backend.entity.city_info;
 
+import com.howmuch.backend.entity.plan.Plan;
 import jakarta.persistence.*;
 
-import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "city")
@@ -16,17 +17,18 @@ public class City {
     @JoinColumn(name="category_id")
     private Category category;
 
-    @Column(name="domestic")
+    @Column(name="domestic", nullable = false)
     private boolean isDomestic;
 
-    @Column(name="city_name")
+    @Column(name="city_name", nullable = false)
     private String city_name;
 
-    private String explain; // 설명
+    @Column(name="description")
+    private String description; // 설명
 
-    private String photo;
+    private String photo;  // 이미지 파일 저장 경로
 
-    private Time flight_time; // 비행시간
+    private int flight_time; // 비행시간(분단위로 저장)
 
     private String visa_info; // 비자정보
 
@@ -43,4 +45,7 @@ public class City {
     private String period; // 추천 여행 기간
 
     private String expense; // 예상경비
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "city")
+    private List<Plan> planList;
 }
