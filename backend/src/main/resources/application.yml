@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql:// project-3rd.cd6ykcyi6r36.ap-northeast-2.rds.amazonaws.com:3306/project03?serverTimezone=Asia/Seoul
+    hikari:
+      username: root
+      password: adminadmin
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        use_second_level_cache: false
+        use_query_cache: false
