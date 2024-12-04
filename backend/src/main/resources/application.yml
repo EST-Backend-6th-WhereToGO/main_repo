@@ -22,3 +22,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         use_second_level_cache: false
         use_query_cache: false
+
+  youtube:
+    api:
+      key: AIzaSyCDLfZu6g6FsicOkrItO7rrB8MJrMOeaZs
