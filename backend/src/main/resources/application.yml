@@ -1,10 +1,11 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql:// project-3rd.cd6ykcyi6r36.ap-northeast-2.rds.amazonaws.com:3306/project03?serverTimezone=Asia/Seoul
+    url: jdbc:mysql:// project03.c98u8m28y5zy.ap-northeast-2.rds.amazonaws.com:3306/project03?serverTimezone=Asia/Seoul
     hikari:
       username: root
       password: adminadmin
+
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -22,3 +23,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         use_second_level_cache: false
         use_query_cache: false
+
+youtube:
+  api:
+    key: AIzaSyCDLfZu6g6FsicOkrItO7rrB8MJrMOeaZs
