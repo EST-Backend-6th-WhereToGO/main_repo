@@ -1,5 +1,8 @@
 package com.howmuch.backend.blogapi;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -17,9 +20,9 @@ public class BlogApi {
 
         String text = null;
         try {
-            text = URLEncoder.encode("서울 여행", "UTF-8");
+            text = URLEncoder.encode("서울", "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("검색어 인코딩 실패",e);
+            throw new RuntimeException("검색어 인코딩 실패", e);
         }
 
 
@@ -30,18 +33,18 @@ public class BlogApi {
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
-        String responseBody = get(apiURL,requestHeaders);
+        String responseBody = get(apiURL, requestHeaders);
 
-
-        System.out.println(responseBody);
+        // title, link 추출
+        parseAndPrintResult(responseBody);
     }
 
 
-    private static String get(String apiUrl, Map<String, String> requestHeaders){
+    private static String get(String apiUrl, Map<String, String> requestHeaders) {
         HttpURLConnection con = connect(apiUrl);
         try {
             con.setRequestMethod("GET");
-            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
+            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
                 con.setRequestProperty(header.getKey(), header.getValue());
             }
 
@@ -60,10 +63,10 @@ public class BlogApi {
     }
 
 
-    private static HttpURLConnection connect(String apiUrl){
+    private static HttpURLConnection connect(String apiUrl) {
         try {
             URL url = new URL(apiUrl);
-            return (HttpURLConnection)url.openConnection();
+            return (HttpURLConnection) url.openConnection();
         } catch (MalformedURLException e) {
             throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
         } catch (IOException e) {
@@ -72,7 +75,7 @@ public class BlogApi {
     }
 
 
-    private static String readBody(InputStream body){
+    private static String readBody(InputStream body) {
         InputStreamReader streamReader = new InputStreamReader(body);
 
 
@@ -89,6 +92,32 @@ public class BlogApi {
             return responseBody.toString();
         } catch (IOException e) {
             throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
+        }
+    }
+
+    private static void parseAndPrintResult(String responseBody) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(responseBody);
+
+            // title과 link 추출
+
+            JsonNode items = rootNode.get("items");
+            if (items != null && items.isArray()) {
+                for (JsonNode item : items) {
+                    String title = item.get("title").asText();
+                    String link = item.get("link").asText();
+
+                    // 태그 제거
+                    title = title.replaceAll("<[^>]*>", "");
+
+                    System.out.println("Title: " + title);
+                    System.out.println("Link: " + link);
+                    System.out.println();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("JSON 파싱 실패", e);
         }
     }
 }
