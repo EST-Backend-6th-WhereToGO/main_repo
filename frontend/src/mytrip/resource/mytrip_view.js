@@ -21,7 +21,15 @@ function timeAndPlace(time, place) {
 let timeAndPlaces=[]
 let daycount = 0;
 
-fetch('http://localhost:8080/api/searchTrip')
+let sendRemoveList=["empty"]
+
+fetch('http://localhost:8080/api/searchTrip',{
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    //body: JSON.stringify({removeList: sendRemoveList})
+})
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
@@ -74,6 +82,7 @@ fetch('http://localhost:8080/api/searchTrip')
                 removeOrderList.push(btn.innerText);
                 btn.style.background = 'red';
                 console.log("removeOrderList : ", removeOrderList);
+                sendRemoveList = removeOrderList.slice();
             });
         });
         //=======
@@ -144,8 +153,12 @@ function createMarker(place) {
 }
 
 
-let reSearchBtn = document.getElementById('re-Search');
+let reSearchBtn = document.getElementById('re-search');
+let reSearchForm = document.getElementById('re-search-form');
+let removeOrderListInput = document.getElementById('removeOrderList');
 
-reSearchBtn.addEventListener('click', () => {
-    location.reload();
+reSearchBtn.addEventListener('click', (event) => {
+    event.preventDefault(); // Prevent the default form submission
+    removeOrderListInput.value = JSON.stringify(sendRemoveList); // Set the value of the hidden input field
+    reSearchForm.submit(); // Submit the form
 });
