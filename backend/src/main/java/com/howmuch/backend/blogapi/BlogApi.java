@@ -2,7 +2,6 @@ package com.howmuch.backend.blogapi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -17,10 +16,12 @@ public class BlogApi {
         String clientId = "f_RBGWugYA2H_7GR4RxT"; //애플리케이션 클라이언트 아이디
         String clientSecret = "i3IrW_o9N0"; //애플리케이션 클라이언트 시크릿
 
+        // 여행 고정 키워드 설정
 
         String text = null;
         try {
-            text = URLEncoder.encode("서울", "UTF-8");
+            String fixedKeyword = "여행";
+            text = URLEncoder.encode("부산" + fixedKeyword, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("검색어 인코딩 실패", e);
         }
@@ -33,14 +34,14 @@ public class BlogApi {
         Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("X-Naver-Client-Id", clientId);
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
+
         String responseBody = get(apiURL, requestHeaders);
 
-        // title, link 추출
         parseAndPrintResult(responseBody);
     }
 
 
-    private static String get(String apiUrl, Map<String, String> requestHeaders) {
+    public static String get(String apiUrl, Map<String, String> requestHeaders) {
         HttpURLConnection con = connect(apiUrl);
         try {
             con.setRequestMethod("GET");
@@ -108,13 +109,19 @@ public class BlogApi {
                     String title = item.get("title").asText();
                     String link = item.get("link").asText();
 
-                    // 태그 제거
+                    // HTML 태그 제거
                     title = title.replaceAll("<[^>]*>", "");
+
 
                     System.out.println("Title: " + title);
                     System.out.println("Link: " + link);
                     System.out.println();
+
+
                 }
+
+            } else {
+                System.out.println("검색 결과가 없습니다.");
             }
         } catch (Exception e) {
             throw new RuntimeException("JSON 파싱 실패", e);
