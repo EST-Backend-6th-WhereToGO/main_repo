@@ -32,12 +32,6 @@ public class SearchTripController {
 
             try {
                 object = new RestTemplate().getForObject(requestUrl, String.class);
-
-                // ModelAndView로 화면을 넘겨보겠다.
-                ModelAndView mav = new ModelAndView("mytrip/mytrip_view");
-                mav.addObject("object", object);
-
-
                 return ResponseEntity.ok(object);
             } catch (Exception e) {
                 System.out.println("error");
