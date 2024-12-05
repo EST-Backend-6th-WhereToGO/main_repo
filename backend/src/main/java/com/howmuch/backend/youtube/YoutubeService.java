@@ -21,6 +21,9 @@ public class YoutubeService {
     private String apiKey;
 
     public String searchVideo(String query) throws IOException {
+
+        query = query + " 여행 브이로그";
+
         // JSON 데이터를 처리하기 위한 JsonFactory 객체 생성
         JsonFactory jsonFactory = new JacksonFactory();
 
@@ -54,9 +57,10 @@ public class YoutubeService {
 
             // 동영상의 ID와 제목 가져오기
             String videoId = searchResult.getId().getVideoId();
-            String videoTitle = searchResult.getSnippet().getTitle();
+            //String videoTitle = searchResult.getSnippet().getTitle();
 
-            return "Title: " + videoTitle + "\nURL: https://www.youtube.com/watch?v=" + videoId;
+            //return "Title: " + videoTitle + "\nURL: " + videoId;'
+            return videoId;
         }
         return "검색 결과가 없습니다";
     }
