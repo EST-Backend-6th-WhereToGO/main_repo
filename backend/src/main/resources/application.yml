@@ -24,6 +24,12 @@ spring:
         use_second_level_cache: false
         use_query_cache: false
 
+naver:
+  api:
+    client-id: f_RBGWugYA2H_7GR4RxT
+    client-secret: i3IrW_o9N0
+
 youtube:
   api:
     key: AIzaSyCDLfZu6g6FsicOkrItO7rrB8MJrMOeaZs
+
