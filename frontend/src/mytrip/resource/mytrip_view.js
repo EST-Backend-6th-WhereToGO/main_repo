@@ -143,28 +143,9 @@ function createMarker(place) {
     });
 }
 
-//
-// let reSearchBtn = document.getElementById('re-Search');
-//
-// reSearchBtn.addEventListener('click', () => {
-//     fetch('http://localhost:8080/api/reSearch', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ removeOrderList: this.removeOrderList })
-//     })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok ' + response.statusText);
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             console.log("Re-search data: ", data);
-//             // Handle the response data as needed
-//         })
-//         .catch(error => {
-//             console.error('There was a problem with the fetch operation:', error);
-//         });
-// });
+
+let reSearchBtn = document.getElementById('re-Search');
+
+reSearchBtn.addEventListener('click', () => {
+    location.reload();
+});
