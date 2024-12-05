@@ -2,4 +2,4 @@ GET https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&
 
 ###
 
-GET http://localhost:8080/youtube?keyword=부산여행
+GET http://localhost:8080/youtube?keyword=부산+여행+브이로그

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube 검색</title>
+</head>
+<body>
+<h1>YouTube 검색</h1>
+
+<!-- 검색창과 버튼 -->
+<form action="/youtube" method="get">
+    <label for="keyword">검색어:</label>
+    <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요" required>
+    <button type="submit">검색</button>
+</form>
+
+<hr>
+
+<!-- 검색 결과 -->
+<div th:if="${videoTitle}">
+    <h2>검색 결과</h2>
+    <h3>제목: <span th:text="${videoTitle}">동영상 제목</span></h3>
+    <p>
+        링크: <a th:href="${videoUrl}" target="_blank" th:text="${videoUrl}">동영상 링크</a>
+    </p>
+</div>
+
+<!-- 검색 결과가 없을 때 -->
+<div th:if="${videoTitle == null}">
+    <p>검색 결과가 없습니다. 검색어를 다시 입력해보세요.</p>
+</div>
+</body>
+</html>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class YoutubeService {
@@ -46,8 +47,10 @@ public class YoutubeService {
         List<SearchResult> searchResultList = searchResponse.getItems();
 
         if (searchResultList != null && searchResultList.size() > 0) {
-            //검색 결과 중 첫 번째 동영상 정보 가져오기
-            SearchResult searchResult = searchResultList.get(0);
+            // 랜덤하게 동영상 선택
+            Random random = new Random();
+            int randomIndex = random.nextInt(searchResultList.size()); // 0부터 리스트 크기 - 1 사이의 무작위 인덱스 생성
+            SearchResult searchResult = searchResultList.get(randomIndex);
 
             // 동영상의 ID와 제목 가져오기
             String videoId = searchResult.getId().getVideoId();
