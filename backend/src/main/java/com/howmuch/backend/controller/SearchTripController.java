@@ -1,13 +1,13 @@
 package com.howmuch.backend.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -16,15 +16,33 @@ public class SearchTripController {
     private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
 
     @PostMapping("/searchTrip")
-    public ResponseEntity<String> searchTrip(HttpServletResponse response
-            , @RequestParam(value="removeOrderList", required = false) String removeOrderListJson) {
+    public ResponseEntity<String> searchTrip(@RequestBody(required = false) String removeOrderListJson) throws JSONException {
+
+        boolean isFirstSearch;
+
+        if (removeOrderListJson == null) {
+            isFirstSearch = true;
+        } else {
+            isFirstSearch = false;
+        }
 
         System.out.println(removeOrderListJson);
 
         String object ="";
 
-        if(removeOrderListJson != null && removeOrderListJson.isEmpty()) {
+        if(!isFirstSearch) {
             // removeOrderList가 비어있지 않은 경우 제거하고 다시 호출!!!
+            System.out.println("여기 호출");
+
+            JSONArray jsonArray = new JSONArray(removeOrderListJson);
+            List<String> removeList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                removeList.add(jsonArray.get(i).toString());
+            }
+
+            for (String s : removeList) {
+                System.out.println("s = " + s);
+            }
 
             String requestUrl = "https://kdt-api-function.azurewebsites.net/api/v1/question?content=" +
                     "제주도 1박2일 여행일정 만들어줘&" +

@@ -3,10 +3,7 @@
     key: "AIzaSyDVGM_DH43bYB9M4bTvfR51lBjHJQ1_IMs",
     v: "weekly",
     libraries: ["places"]
-    // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
-    // Add other bootstrap parameters as needed, using camel case.
 });
-//   // Initialize and add the map
 let map;
 
 const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -18,10 +15,15 @@ function timeAndPlace(time, place) {
         place: place
     };
 }
+
+// function removeSchedule(){
+// }
+
+
 let timeAndPlaces=[]
 let daycount = 0;
 
-let sendRemoveList=["empty"]
+let sendRemoveList=[];
 
 fetch('http://localhost:8080/api/searchTrip',{
     method: 'POST',
@@ -75,14 +77,17 @@ fetch('http://localhost:8080/api/searchTrip',{
             btn.addEventListener('click', () => {
                 if (removeOrderList.includes(btn.innerText)) {
                     removeOrderList = removeOrderList.filter(item => item !== btn.innerText);
+                    sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
                     btn.style.background = 'white';
                     console.log("removeOrderList : ", removeOrderList);
+                    console.log("sendRemoveList : ", sendRemoveList);
                     return;
                 }
                 removeOrderList.push(btn.innerText);
+                sendRemoveList.push(btn.innerText);
                 btn.style.background = 'red';
                 console.log("removeOrderList : ", removeOrderList);
-                sendRemoveList = removeOrderList.slice();
+                console.log("sendRemoveList : ", sendRemoveList);
             });
         });
         //=======
@@ -154,11 +159,83 @@ function createMarker(place) {
 
 
 let reSearchBtn = document.getElementById('re-search');
-let reSearchForm = document.getElementById('re-search-form');
-let removeOrderListInput = document.getElementById('removeOrderList');
 
 reSearchBtn.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent the default form submission
-    removeOrderListInput.value = JSON.stringify(sendRemoveList); // Set the value of the hidden input field
-    reSearchForm.submit(); // Submit the form
+
+    //let bodyData = { removeOrder :sendRemoveList };
+
+    fetch('http://localhost:8080/api/searchTrip',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sendRemoveList)
+
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            console.log("data : ",data);
+            let obj = JSON.parse(data.content);
+            console.log(obj);
+
+
+            Object.keys(obj).forEach(day => {
+
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'dayOrder';
+                const daySpan = document.createElement('span');
+                daySpan.textContent = `Day ${daycount+1}`;
+                dayDiv.appendChild(daySpan);
+                document.getElementById('trip-order').appendChild(dayDiv);
+                daycount++;
+
+                obj[day].forEach(item => {
+                    console.log("item : ", item);
+
+                    const planP = document.createElement('p');
+                    planP.className='planOrder';
+                    planP.textContent = `${item['시간']}`+ `\n`+` ${item['장소']}`;
+                    dayDiv.appendChild(planP);
+
+                    if(!item['장소'].includes("호텔")) {
+                        timeAndPlaces.push(timeAndPlace(item['시간'], item['장소']));
+                    }
+                });
+            });
+
+            // 일정 빼는 버튼 이벤트 리스너
+            let removeOrderList=[];
+            let removeOrderBtn = document.getElementsByClassName('planOrder');
+
+            Array.from(removeOrderBtn).forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (removeOrderList.includes(btn.innerText)) {
+                        removeOrderList = removeOrderList.filter(item => item !== btn.innerText);
+                        sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
+                        btn.style.background = 'white';
+                        console.log("removeOrderList : ", removeOrderList);
+                        console.log("sendRemoveList : ", sendRemoveList);
+                        return;
+                    }
+                    removeOrderList.push(btn.innerText);
+                    sendRemoveList.push(btn.innerText);
+                    btn.style.background = 'red';
+                    console.log("removeOrderList : ", removeOrderList);
+                    console.log("sendRemoveList : ", sendRemoveList);
+                });
+            });
+            //=======
+
+            console.log("가져온데이터:", timeAndPlaces);
+            initMap();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
 });
