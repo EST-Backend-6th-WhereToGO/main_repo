@@ -127,7 +127,7 @@ async function initMap() {
             query: timeAndPlaces[i].place,
             fields: ["name", "geometry"],
         };
-        console.log("request : ", request);
+        //console.log("request : ", request);
         service.findPlaceFromQuery(request, (results, status) => {
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 for (let i = 0; i < results.length; i++) {
@@ -162,7 +162,14 @@ let reSearchBtn = document.getElementById('re-search');
 
 reSearchBtn.addEventListener('click', (event) => {
 
-    //let bodyData = { removeOrder :sendRemoveList };
+    const deleteDiv = Array.from(document.getElementsByClassName('dayOrder'));
+    deleteDiv.forEach(element => element.remove());
+
+    const deleteSpan = Array.from(document.getElementsByClassName('daySpan'));
+    deleteSpan.forEach(element => element.remove());
+
+    const deletePlan = Array.from(document.getElementsByClassName('planOrder'));
+    deletePlan.forEach(element => element.remove());
 
     fetch('http://localhost:8080/api/searchTrip',{
         method: 'POST',
@@ -184,6 +191,10 @@ reSearchBtn.addEventListener('click', (event) => {
             let obj = JSON.parse(data.content);
             console.log(obj);
 
+            timeAndPlaces = [];
+            daycount = 0;
+
+
 
             Object.keys(obj).forEach(day => {
 
@@ -191,6 +202,7 @@ reSearchBtn.addEventListener('click', (event) => {
                 dayDiv.className = 'dayOrder';
                 const daySpan = document.createElement('span');
                 daySpan.textContent = `Day ${daycount+1}`;
+                daySpan.className='daySpan';
                 dayDiv.appendChild(daySpan);
                 document.getElementById('trip-order').appendChild(dayDiv);
                 daycount++;
@@ -217,14 +229,16 @@ reSearchBtn.addEventListener('click', (event) => {
                 btn.addEventListener('click', () => {
                     if (removeOrderList.includes(btn.innerText)) {
                         removeOrderList = removeOrderList.filter(item => item !== btn.innerText);
-                        sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
+                        //sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
+                        sendRemoveList = removeOrderList;
                         btn.style.background = 'white';
                         console.log("removeOrderList : ", removeOrderList);
                         console.log("sendRemoveList : ", sendRemoveList);
                         return;
                     }
                     removeOrderList.push(btn.innerText);
-                    sendRemoveList.push(btn.innerText);
+                    //sendRemoveList.push(btn.innerText);
+                    sendRemoveList = removeOrderList;
                     btn.style.background = 'red';
                     console.log("removeOrderList : ", removeOrderList);
                     console.log("sendRemoveList : ", sendRemoveList);
