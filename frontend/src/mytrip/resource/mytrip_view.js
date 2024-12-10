@@ -9,17 +9,15 @@ let map;
 const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 //============================== fetch  ==============================
 
-function timeAndPlace(time, place) {
+function timeAndPlace(time, place, order) {
     return {
         time: time,
-        place: place
+        place: place,
+        order: order
     };
 }
 
-// function removeSchedule(){
-// }
-
-
+let order =1;
 let timeAndPlaces=[]
 let daycount = 0;
 
@@ -64,7 +62,8 @@ fetch('http://localhost:8080/api/searchTrip',{
                 dayDiv.appendChild(planP);
 
                 if(!item['장소'].includes("호텔")) {
-                    timeAndPlaces.push(timeAndPlace(item['시간'], item['장소']));
+                    timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'],order));
+                    order++;
                 }
             });
         });
@@ -77,16 +76,14 @@ fetch('http://localhost:8080/api/searchTrip',{
             btn.addEventListener('click', () => {
                 if (removeOrderList.includes(btn.innerText)) {
                     removeOrderList = removeOrderList.filter(item => item !== btn.innerText);
-                    sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
+                    sendRemoveList = removeOrderList;
                     btn.style.background = 'white';
-                    console.log("removeOrderList : ", removeOrderList);
                     console.log("sendRemoveList : ", sendRemoveList);
                     return;
                 }
                 removeOrderList.push(btn.innerText);
-                sendRemoveList.push(btn.innerText);
+                sendRemoveList = removeOrderList;
                 btn.style.background = 'red';
-                console.log("removeOrderList : ", removeOrderList);
                 console.log("sendRemoveList : ", sendRemoveList);
             });
         });
@@ -94,7 +91,6 @@ fetch('http://localhost:8080/api/searchTrip',{
 
         console.log("가져온데이터:", timeAndPlaces);
         initMap();
-        //document.getElementById('order-01').textContent = JSON.stringify(data, null, 2);
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -193,9 +189,7 @@ reSearchBtn.addEventListener('click', (event) => {
 
             timeAndPlaces = [];
             daycount = 0;
-
-
-
+            order = 1;
             Object.keys(obj).forEach(day => {
 
                 const dayDiv = document.createElement('div');
@@ -216,7 +210,8 @@ reSearchBtn.addEventListener('click', (event) => {
                     dayDiv.appendChild(planP);
 
                     if(!item['장소'].includes("호텔")) {
-                        timeAndPlaces.push(timeAndPlace(item['시간'], item['장소']));
+                        timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'],order));
+                        order++;
                     }
                 });
             });
@@ -229,18 +224,14 @@ reSearchBtn.addEventListener('click', (event) => {
                 btn.addEventListener('click', () => {
                     if (removeOrderList.includes(btn.innerText)) {
                         removeOrderList = removeOrderList.filter(item => item !== btn.innerText);
-                        //sendRemoveList = sendRemoveList.filter(item => item !== btn.innerText);
                         sendRemoveList = removeOrderList;
                         btn.style.background = 'white';
-                        console.log("removeOrderList : ", removeOrderList);
                         console.log("sendRemoveList : ", sendRemoveList);
                         return;
                     }
                     removeOrderList.push(btn.innerText);
-                    //sendRemoveList.push(btn.innerText);
                     sendRemoveList = removeOrderList;
                     btn.style.background = 'red';
-                    console.log("removeOrderList : ", removeOrderList);
                     console.log("sendRemoveList : ", sendRemoveList);
                 });
             });
