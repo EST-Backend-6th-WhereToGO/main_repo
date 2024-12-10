@@ -5,6 +5,7 @@ spring:
     hikari:
       username: root
       password: adminadmin
+
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -22,3 +23,13 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         use_second_level_cache: false
         use_query_cache: false
+
+naver:
+  api:
+    client-id: f_RBGWugYA2H_7GR4RxT
+    client-secret: i3IrW_o9N0
+
+youtube:
+  api:
+    key: AIzaSyCDLfZu6g6FsicOkrItO7rrB8MJrMOeaZs
+

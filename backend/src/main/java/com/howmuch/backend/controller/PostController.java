@@ -9,50 +9,59 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<Void> createPosts() {
-        return null;
+    public ResponseEntity createPosts() {
+
+        return ResponseEntity.ok("작성완료");
     }
 
     // 게시글 수정
     @PutMapping("/modify")
-    public ResponseEntity<Void> modifyPosts() {
-        return null;
+    public ResponseEntity modifyPosts() {
+
+        return ResponseEntity.ok("수정완료");
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePosts() {
-        return null;
+    public ResponseEntity deletePosts() {
+
+        return ResponseEntity.ok("삭제완료");
     }
 
     // 게시글 전체 조회
     @GetMapping
-    public ResponseEntity<Void> getPosts() {
-        return null;
+    public ResponseEntity getPosts() {
+
+        return ResponseEntity.ok("조회완료");
     }
 
     // 게시글 단건 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<Void> getPostId() {
-        return null;
+    public ResponseEntity getPostId() {
+
+        return ResponseEntity.ok("조회완료");
     }
 
     // 게시글 좋아요 On/Off
     @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> toggleLike() {
-        return null;
+    public ResponseEntity toggleLike() {
+
+        return ResponseEntity.ok("성공적으로 처리되었습니다");
     }
 
     // 좋아요 수 인기게시물 조회
     @GetMapping("/by-likes")
-    public ResponseEntity<Void> getPostsByLikes() {
-        return null;
+    public ResponseEntity getPostsByLikes() {
+
+        return ResponseEntity.ok("조회완료");
     }
 
 
     // 조회수 인기게시물 조회
     @GetMapping("/by-views")
-    public ResponseEntity<Void> getPostsByViews() {
-        return null;
+    public ResponseEntity getPostsByViews() {
+
+        return ResponseEntity.ok("조회완료");
+
     }
 }

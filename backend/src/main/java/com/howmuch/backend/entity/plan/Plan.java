@@ -18,7 +18,7 @@ public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "plan_id")
-    private Long plan_id;
+    private Long planId;
 
     @ManyToOne
     @JoinColumn(name="user_id")
