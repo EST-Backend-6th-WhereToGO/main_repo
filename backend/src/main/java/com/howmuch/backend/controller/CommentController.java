@@ -25,4 +25,5 @@ public class CommentController {
     public ResponseEntity<?> deleteComment() {
 
         return ResponseEntity.ok("삭제완료");
+    }
 }
