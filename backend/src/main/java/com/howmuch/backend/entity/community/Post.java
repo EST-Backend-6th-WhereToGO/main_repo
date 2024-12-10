@@ -34,10 +34,10 @@ public class Post {
     private String content;
 
     @Column(name="like_count", nullable = false)
-    private Long like_count;
+    private Long likeCount;
 
     @Column(name="view_count", nullable = false)
-    private Long view_count;
+    private Long viewCount;
 
     @CreatedDate
     @Column(name="created_at", updatable = false)
