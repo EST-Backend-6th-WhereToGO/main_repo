@@ -1,11 +1,17 @@
 <!doctype html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>test page</title>
-    <link rel="stylesheet" type="text/css" href="./resource/style.css" />
-    <script type="module" src="./resource/mytrip_view.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <script type="module" src="/mytrip_view.js" defer></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var aiRequest = /*[[${aiRequest}]]*/ 'default';
+        var savePlanDTO = /*[[${savePlanDTO}]]*/ {};
+        /*]]>*/
+    </script>
 </head>
 <body>
 <header>

@@ -17,4 +17,8 @@ public class CityService {
     public List<City> getCitiesByCategory(Long categoryId) {
         return cityRepository.findCitiesByCategoryId(categoryId);
     }
+
+    public City getCityById(Long cityId) {
+        return cityRepository.findById(cityId).orElseThrow();
+    }
 }
