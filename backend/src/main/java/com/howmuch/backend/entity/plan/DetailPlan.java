@@ -3,9 +3,11 @@ package com.howmuch.backend.entity.plan;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name="detail_plan")
 public class DetailPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long detailPlanId;
 
     @ManyToOne

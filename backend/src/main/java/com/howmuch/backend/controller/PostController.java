@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
-
 public class PostController {
 
     // 게시글 작성
@@ -63,5 +62,6 @@ public class PostController {
     public ResponseEntity getPostsByViews() {
 
         return ResponseEntity.ok("조회완료");
+
     }
 }
