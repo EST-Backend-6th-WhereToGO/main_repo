@@ -1,7 +1,11 @@
 package com.howmuch.backend.entity.community;
 
+import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,12 +16,15 @@ import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "post")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Long post_id;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -52,4 +59,8 @@ public class Post {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
     private List<PostComment> postComments;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
 }
