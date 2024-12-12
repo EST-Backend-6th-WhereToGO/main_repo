@@ -3,7 +3,7 @@ package com.howmuch.backend.controller;
 import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.entity.city_info.City;
 import com.howmuch.backend.entity.dto.PlanRequest;
-import com.howmuch.backend.entity.dto.SavePlanDTO;
+import com.howmuch.backend.entity.dto.MyPlanDTO;
 import com.howmuch.backend.entity.user.User;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.service.CityService;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -66,9 +65,9 @@ public class PlanController {
         City selectedCity = cityService.getCityById(cityId);
         planRequest.setCity(selectedCity.getCityName());
 
-        User testUser = userService.getUserById(1L);
+        Long userId = 1L;
 
-        SavePlanDTO savePlanDTO = new SavePlanDTO(planRequest, selectedCity, testUser);
+        MyPlanDTO myPlanDTO = new MyPlanDTO(planRequest, cityId, userId);
 
 
         String aiRequest = String.format(
@@ -80,7 +79,7 @@ public class PlanController {
 
         // 필요시 모델에 PlanRequest 추가
         model.addAttribute("aiRequest", aiRequest);
-        model.addAttribute("savePlanDTO", savePlanDTO);
+        model.addAttribute("myPlanDTO", myPlanDTO);
 
 
         // 결과 페이지로 이동 -> 추후에 연결된페이지

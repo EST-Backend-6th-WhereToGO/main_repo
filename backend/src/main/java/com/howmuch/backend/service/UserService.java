@@ -14,6 +14,6 @@ public class UserService {
     }
 
     public User getUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow();
+        return userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
     }
 }

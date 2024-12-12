@@ -1,5 +1,5 @@
 console.log("AI Request: ", aiRequest);
-console.log("Save Plan DTO: ", savePlanDTO);
+console.log("My Plan DTO: ", myPlanDTO);
 
 
 (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
@@ -12,10 +12,11 @@ let map;
 const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 //============================== fetch  ==============================
 
-function timeAndPlace(time, place, order) {
+function timeAndPlace(time, place, day, order) {
     return {
         time: time,
         place: place,
+        day: day,
         order: order
     };
 }
@@ -34,7 +35,11 @@ fetch('http://localhost:8080/api/searchTrip',{
     },
     body: JSON.stringify({
         "aiRequest": aiRequest,
-        "savePlanDTO": savePlanDTO
+        "startedAt": myPlanDTO.startedAt,
+        "endedAt" : myPlanDTO.endedAt,
+        "userId" : myPlanDTO.userId,
+        "cityId" : myPlanDTO.cityId,
+        "cityName" : myPlanDTO.cityName
     })
 })
     .then(response => {
@@ -69,7 +74,7 @@ fetch('http://localhost:8080/api/searchTrip',{
                 dayDiv.appendChild(planP);
 
                 if(!item['장소'].includes("호텔")) {
-                    timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'],order));
+                    timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'], daycount, order));
                     order++;
                 }
             });
@@ -198,7 +203,11 @@ reSearchBtn.addEventListener('click', (event) => {
         },
         body: JSON.stringify({
             "aiRequest": aiRequest,
-            "savePlanDTO": savePlanDTO
+            "startedAt": myPlanDTO.startedAt,
+            "endedAt" : myPlanDTO.endedAt,
+            "userId" : myPlanDTO.userId,
+            "cityId" : myPlanDTO.cityId,
+            "cityName" : myPlanDTO.cityName
         })
     })
         .then(response => {
@@ -236,7 +245,7 @@ reSearchBtn.addEventListener('click', (event) => {
                     dayDiv.appendChild(planP);
 
                     if(!item['장소'].includes("호텔")) {
-                        timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'],order));
+                        timeAndPlaces.push(timeAndPlace(item['시간'], item['장소'],daycount, order));
                         order++;
                     }
                 });
@@ -272,3 +281,44 @@ reSearchBtn.addEventListener('click', (event) => {
 });
 
 
+// ======================= 일정 저장 ======================================
+let saveBtn = document.getElementById('save');
+
+saveBtn.addEventListener('click', (event) => {
+
+    let myTripOrderList = [];
+
+    for (let i=0; i<timeAndPlaces.length; i++) {
+        myTripOrderList.push({
+            "time": timeAndPlaces[i].time,
+            "place": timeAndPlaces[i].place,
+            "order": timeAndPlaces[i].order,
+            "day": timeAndPlaces[i].day
+        });
+    }
+
+    fetch('http://localhost:8080/api/savePlan',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "myTripOrderList": myTripOrderList,
+            "startedAt": myPlanDTO.startedAt,
+            "endedAt" : myPlanDTO.endedAt,
+            "userId" : myPlanDTO.userId,
+            "cityId" : myPlanDTO.cityId,
+            "cityName" : myPlanDTO.cityName
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            console.log("plan 저장 성공")
+            alert("일정이 저장 됐다.")
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+});

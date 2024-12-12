@@ -1,17 +1,22 @@
 package com.howmuch.backend.entity.plan;
 
 import com.howmuch.backend.entity.city_info.City;
+import com.howmuch.backend.entity.dto.MyPlanDTO;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 @Table(name = "plan")
 public class Plan {
 
@@ -47,4 +52,15 @@ public class Plan {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "plan")
     private List<DetailPlan> detailPlans;
+
+    public Plan(MyPlanDTO myPlanDTO, User user, City city) {
+        this.user = user;
+        this.city = city;
+        this.isPublic=true;
+
+        LocalDate start = LocalDate.parse(myPlanDTO.getStartedAt(), DateTimeFormatter.ISO_DATE);
+        this.startAt = start.atStartOfDay();
+        LocalDate end = LocalDate.parse(myPlanDTO.getEndedAt(), DateTimeFormatter.ISO_DATE);
+        this.endAt = end.atStartOfDay();
+    }
 }

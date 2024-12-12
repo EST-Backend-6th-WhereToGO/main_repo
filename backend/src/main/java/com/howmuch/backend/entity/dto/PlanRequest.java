@@ -1,6 +1,5 @@
 package com.howmuch.backend.entity.dto;
 
-import com.howmuch.backend.entity.city_info.City;
 import lombok.Data;
 
 import java.time.LocalDate;
