@@ -26,12 +26,16 @@ let daycount = 0;
 
 let sendRemoveList=[];
 
+
 fetch('http://localhost:8080/api/searchTrip',{
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
-    //body: JSON.stringify({removeList: sendRemoveList})
+    body: JSON.stringify({
+        "aiRequest": aiRequest,
+        "savePlanDTO": savePlanDTO
+    })
 })
     .then(response => {
         if (!response.ok) {
@@ -170,13 +174,32 @@ reSearchBtn.addEventListener('click', (event) => {
     const deletePlan = Array.from(document.getElementsByClassName('planOrder'));
     deletePlan.forEach(element => element.remove());
 
+    let aiRequest = "";
+
+    for (let i=0; i<sendRemoveList.length; i++) {
+        let split = sendRemoveList[i].split(' ');
+        let place = "";
+        for (let j=1; j<split.length; j++) {
+            place += split[j] + " ";
+        }
+
+        if (i === sendRemoveList.length-1) {
+            aiRequest = aiRequest + place + " ";
+        } else {
+            aiRequest = aiRequest + place + ",";
+        }
+    }
+    aiRequest += "일정만 다른 일정으로 바꿔서 다시 추천해주세요.";
+
     fetch('http://localhost:8080/api/searchTrip',{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(sendRemoveList)
-
+        body: JSON.stringify({
+            "aiRequest": aiRequest,
+            "savePlanDTO": savePlanDTO
+        })
     })
         .then(response => {
             if (!response.ok) {

@@ -18,6 +18,7 @@ public class SavePlanDTO {
     private LocalDate endedAt;
     private boolean isPublic;
 
+    private String aiRequest;
 
     public SavePlanDTO(PlanRequest planRequest, City selectedCity, User testUser) {
         this.user = testUser;
