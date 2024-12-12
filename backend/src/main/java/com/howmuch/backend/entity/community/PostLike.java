@@ -13,14 +13,14 @@ public class PostLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_id")
-    private Long like_id;
+    private Long likeId;
 
     @ManyToOne
     @JoinColumn(name="post_id")
     private Post post;
 
     @Column(name="user_id", nullable = false)
-    private Long user_id;
+    private Long userId;
 
     @CreatedDate
     @Column(name="created_at", updatable = false)
