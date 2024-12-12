@@ -1,45 +1,59 @@
 package com.howmuch.backend.controller;
 
+import com.howmuch.backend.entity.community.Post;
+import com.howmuch.backend.entity.dto.AddPostRequest;
+import com.howmuch.backend.entity.dto.UpdatePostRequest;
+import com.howmuch.backend.service.PostService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity createPosts() {
-
-        return ResponseEntity.ok("작성완료");
+    public ResponseEntity<Post> createPosts(@RequestBody AddPostRequest addPostRequest) {
+        Post post = postService.createPost(addPostRequest);
+        return ResponseEntity.ok(post);
     }
 
     // 게시글 수정
-    @PutMapping("/modify")
-    public ResponseEntity modifyPosts() {
-
-        return ResponseEntity.ok("수정완료");
+    @PutMapping("/{postId}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long postId,
+                                           @RequestBody UpdatePostRequest updateRequest) {
+        Long sessionUserId = 1L; // 임시값
+        Post post = postService.updatePost(postId, sessionUserId, updateRequest);
+        return ResponseEntity.ok(post);
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity deletePosts() {
+    public ResponseEntity<Void> deletePosts(@PathVariable Long postId) {
+        Long sessionUserId = 1L; // 임시값
 
-        return ResponseEntity.ok("삭제완료");
+        postService.deletePostById(postId, sessionUserId);
+        return ResponseEntity.noContent().build();
     }
 
     // 게시글 전체 조회
     @GetMapping
-    public ResponseEntity getPosts() {
-
-        return ResponseEntity.ok("조회완료");
+    public ResponseEntity<Page<Post>> getVisiblePosts(@RequestParam(defaultValue = "1") int page) {
+        Page<Post> posts = postService.getVisiblePosts(page-1);
+        return ResponseEntity.ok(posts);
     }
 
     // 게시글 단건 조회
     @GetMapping("/{postId}")
-    public ResponseEntity getPostId() {
-
-        return ResponseEntity.ok("조회완료");
+    public ResponseEntity<Post> getPostId(@PathVariable Long postId) {
+        Post post = postService.getPostById(postId);
+        return ResponseEntity.ok(post);
     }
 
     // 게시글 좋아요 On/Off
@@ -63,5 +77,14 @@ public class PostController {
 
         return ResponseEntity.ok("조회완료");
 
+    }
+
+    // 헤더별 게시글 조회
+    @GetMapping("/by-header")
+    public ResponseEntity<Page<Post>> getPostsByHeader(
+            @RequestParam String header,
+            @RequestParam(defaultValue = "1") int page) {
+        Page<Post> posts = postService.getPostsByHeader(header, page -1);
+        return ResponseEntity.ok(posts);
     }
 }
