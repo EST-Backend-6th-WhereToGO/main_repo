@@ -13,9 +13,9 @@ import org.springframework.web.client.RestTemplate;
 public class SearchTripController {
 
     // 진헌 id
-    private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
+    // private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
     // 5조 id
-    // private final String CLIENT_ID = "99259756-c519-4c2a-814d-5495354a1474";
+    private final String CLIENT_ID = "99259756-c519-4c2a-814d-5495354a1474";
 
     MyPlanService myPlanService;
 

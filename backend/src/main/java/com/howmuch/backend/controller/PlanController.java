@@ -4,7 +4,6 @@ import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.entity.city_info.City;
 import com.howmuch.backend.entity.dto.PlanRequest;
 import com.howmuch.backend.entity.dto.MyPlanDTO;
-import com.howmuch.backend.entity.user.User;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.service.CityService;
 import com.howmuch.backend.service.UserService;
@@ -21,13 +20,10 @@ public class PlanController {
 
     private final CategoryService categoryService;
     private final CityService cityService;
-    private final UserService userService;
 
-    public PlanController(CategoryService categoryService, CityService cityService
-            ,UserService userService) {
+    public PlanController(CategoryService categoryService, CityService cityService) {
         this.categoryService = categoryService;
         this.cityService = cityService;
-        this.userService = userService;
     }
 
     @GetMapping("/plan/form")

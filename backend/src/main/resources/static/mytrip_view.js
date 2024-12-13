@@ -65,7 +65,9 @@ fetch('http://localhost:8080/api/searchTrip',{
             document.getElementById('trip-order').appendChild(dayDiv);
             daycount++;
 
-            obj[day].forEach(item => {
+            const dayArray = obj[day].Day;
+
+            dayArray.forEach(item => {
                 console.log("item : ", item);
 
                 const planP = document.createElement('p');
