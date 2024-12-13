@@ -1,6 +1,8 @@
 package com.howmuch.backend.service;
 
+
 import com.howmuch.backend.entity.community.Post;
+import com.howmuch.backend.entity.community.PostLike;
 import com.howmuch.backend.entity.community.PostHeader;
 import com.howmuch.backend.entity.dto.AddPostRequest;
 import com.howmuch.backend.entity.dto.PostResponse;
@@ -10,18 +12,28 @@ import com.howmuch.backend.entity.user.User;
 import com.howmuch.backend.repository.PlanRepository;
 import com.howmuch.backend.repository.PostRepository;
 import com.howmuch.backend.repository.UserRepository;
+import com.howmuch.backend.repository.PostLikeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
+@Component
+@RequiredArgsConstructor
+
 public class PostService {
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
     private static final int PAGE_SIZE = 20;
 
     public PostService(PostRepository postRepository, UserRepository userRepository, PlanRepository planRepository) {
@@ -123,5 +135,59 @@ public class PostService {
         response.setUpdatedAt(post.getUpdatedAt());
 
         return response;
+    }
+  
+   // 좋아요 등록
+    @Transactional
+    public void likePost(Long postId, Long userId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        postLikeRepository.findByPost_PostIdAndUserId(postId, userId)
+                .ifPresent(like -> {
+                    throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+
+                });
+        PostLike postLike = new PostLike(post, userId);
+        postLikeRepository.save(postLike);
+
+        post.incrementLikeCount();
+        postRepository.save(post);
+    }
+
+    // 좋아요 취소
+    @Transactional
+    public void unlikePost(Long postId, Long userId) {
+
+        PostLike postLike = postLikeRepository.findByPost_PostIdAndUserId(postId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("좋아요 기록이 존재하지 않습니다."));
+
+        Post post = postLike.getPost();
+        postLikeRepository.delete(postLike);
+
+        post.decrementLikeCount();
+        postRepository.save(post);
+    }
+
+    // 게시물 좋아요 순 조회
+    @Transactional(readOnly = true)
+    public List<Post> getAllPostsByLikeCount() {
+        return postRepository.findAllByOrderByLikeCountDesc();
+    }
+
+    // 게시물 조회수 증가
+    @Transactional
+    public void incrementViewCount(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        post.setViewCount(post.getViewCount() + 1);
+        postRepository.save(post);
+    }
+
+    // 게시물 조회수 순 조회
+    @Transactional(readOnly = true)
+    public List<Post> getAllPostsByViewCount() {
+        return postRepository.findAllByOrderByViewCountDesc();
     }
 }

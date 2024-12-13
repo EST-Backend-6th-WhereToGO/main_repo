@@ -1,5 +1,7 @@
 package com.howmuch.backend.controller;
 
+
+import lombok.RequiredArgsConstructor;
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.dto.AddPostRequest;
 import com.howmuch.backend.entity.dto.PostResponse;
@@ -8,15 +10,21 @@ import com.howmuch.backend.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/posts")
+
+
 public class PostController {
     private final PostService postService;
 
     public PostController(PostService postService) {
         this.postService = postService;
     }
+
+    private final PostService postService;
 
     // 게시글 작성
     @PostMapping
@@ -57,27 +65,37 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    // 게시글 좋아요 On/Off
+    // 게시글 좋아요
     @PostMapping("/{postId}/like")
-    public ResponseEntity toggleLike() {
-
-        return ResponseEntity.ok("성공적으로 처리되었습니다");
+    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestParam Long userId) {
+        postService.likePost(postId, userId);
+        return ResponseEntity.ok("좋아요 등록 완료");
     }
 
-    // 좋아요 수 인기게시물 조회
+    //게시글 좋아요 취소
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<String> unlikePost(@PathVariable Long postId, @RequestParam Long userId) {
+        postService.unlikePost(postId, userId);
+        return ResponseEntity.ok("좋아요 취소 완료");
+    }
+
+    // 좋아요 순 인기게시물 조회
     @GetMapping("/by-likes")
-    public ResponseEntity getPostsByLikes() {
-
-        return ResponseEntity.ok("조회완료");
+    public ResponseEntity<List<Post>> getAllPostsByLikeCount() {
+        List<Post> popularPosts = postService.getAllPostsByLikeCount();
+        return ResponseEntity.ok(popularPosts);
     }
-
 
     // 조회수 인기게시물 조회
     @GetMapping("/by-views")
+
+    public ResponseEntity<List<Post>> getAllPostsByViewCount() {
+        List<Post> popularPosts = postService.getAllPostsByViewCount();
+        return ResponseEntity.ok(popularPosts);
+
     public ResponseEntity getPostsByViews() {
 
         return ResponseEntity.ok("조회완료");
-
     }
 
     // 헤더별 게시글 조회
