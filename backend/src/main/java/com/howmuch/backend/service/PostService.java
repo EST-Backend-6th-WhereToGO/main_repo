@@ -13,6 +13,7 @@ import com.howmuch.backend.repository.PlanRepository;
 import com.howmuch.backend.repository.PostRepository;
 import com.howmuch.backend.repository.UserRepository;
 import com.howmuch.backend.repository.PostLikeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,6 @@ import java.util.List;
 @Service
 @Component
 @RequiredArgsConstructor
-
 public class PostService {
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
@@ -36,11 +36,14 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private static final int PAGE_SIZE = 20;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, PlanRepository planRepository) {
+    @Autowired
+    public PostService(PostRepository postRepository, UserRepository userRepository, PlanRepository planRepository, PostLikeRepository postLikeRepository) {
         this.postRepository = postRepository;
         this.planRepository = planRepository;
         this.userRepository = userRepository;
+        this.postLikeRepository = postLikeRepository;
     }
+
 
     public PostResponse createPost(AddPostRequest addPostRequest, Long sessionUserId) {
         User user = userRepository.findById(sessionUserId)
