@@ -1,7 +1,10 @@
 package com.howmuch.backend.entity.community;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,17 +14,26 @@ import java.util.List;
 
 
 @Entity
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "post")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private Long post_id;
+    private Long postId;
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="header", nullable = false)

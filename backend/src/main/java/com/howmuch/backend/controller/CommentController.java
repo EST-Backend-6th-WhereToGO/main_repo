@@ -10,7 +10,7 @@ public class CommentController {
 
     public ResponseEntity<?> createComment() {
 
-        return ResponseEntity.ok("작성완료");   
+        return ResponseEntity.ok("작성완료");
     }
 
     // 게시글 댓글 수정 (작성자만 가능)
@@ -25,4 +25,5 @@ public class CommentController {
     public ResponseEntity<?> deleteComment() {
 
         return ResponseEntity.ok("삭제완료");
+    }
 }
