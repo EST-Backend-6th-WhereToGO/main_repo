@@ -1,5 +1,7 @@
 package com.howmuch.backend.entity.community;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,8 +14,13 @@ import java.util.List;
 
 
 @Entity
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "post")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +30,10 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "header", nullable = false)
@@ -37,8 +48,6 @@ public class Post {
     @Column(name = "like_count", nullable = false)
     private Long likeCount;
 
-    @Getter
-    @Setter
     @Column(name = "view_count", nullable = false)
     private Long viewCount;
 

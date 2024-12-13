@@ -1,0 +1,87 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+/* Set the size of the div element that contains the map */
+#map {
+    height: 500px; /* The height is 400 pixels */
+    width: 800px; /* The width is the width of the web page */
+}
+
+
+
+#trip-order {
+    width:800px;
+    height:600px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap:20px;
+
+    border: 1px solid black;
+}
+
+#day {
+    width: 160px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    border: 1px solid black;
+
+    margin : 10px
+}
+
+span {
+    display: block;
+    width: 140px;
+    height: 30px;
+    text-align: center;
+    line-height: 40px;
+    margin: 10px;
+}
+
+p {
+    display:block;
+    width: 140px;
+    height: 40px;
+    text-align: center;
+
+    border: 1px solid black;
+    margin:  10px;
+}
+
+
+#middle {
+    width: 800px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 50px
+}
+
+#re-search {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+#bottom {
+    width: 800px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 50px
+}
+

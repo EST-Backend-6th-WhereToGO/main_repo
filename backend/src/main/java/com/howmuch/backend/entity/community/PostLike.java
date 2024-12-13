@@ -28,6 +28,7 @@ public class PostLike {
     @Column(name="created_at", updatable = false)
     private LocalDateTime createdAt;
 
+
     protected PostLike() {}
 
     public PostLike(Post post, Long userId) {
