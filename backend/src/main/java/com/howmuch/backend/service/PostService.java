@@ -116,6 +116,7 @@ public class PostService {
         response.setPostId(post.getPostId());
         response.setTitle(post.getTitle());
         response.setContent(post.getContent());
+        response.setNickname(post.getUser().getNickname());
         response.setLikeCount(post.getLikeCount());
         response.setViewCount(post.getViewCount());
         response.setCreatedAt(post.getCreatedAt());

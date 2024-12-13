@@ -12,6 +12,7 @@ public class PostResponse {
     private Long postId;
     private String title;
     private String content;
+    private String nickname;
     private Long likeCount;
     private Long viewCount;
     private LocalDateTime createdAt;
