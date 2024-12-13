@@ -2,6 +2,7 @@ package com.howmuch.backend.entity.community;
 
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,31 +21,33 @@ public class Post {
     private Long postId;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name ="header", nullable = false)
+    @Column(name = "header", nullable = false)
     private PostHeader header;
 
-    @Column(name ="title", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name="content")
+    @Column(name = "content")
     private String content;
 
-    @Column(name="like_count", nullable = false)
+    @Column(name = "like_count", nullable = false)
     private Long likeCount;
 
-    @Column(name="view_count", nullable = false)
+    @Getter
+    @Setter
+    @Column(name = "view_count", nullable = false)
     private Long viewCount;
 
     @CreatedDate
-    @Column(name="created_at", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
@@ -52,4 +55,26 @@ public class Post {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
     private List<PostComment> postComments;
+
+
+    //좋아요 수 증가
+    public void incrementLikeCount() {
+        if (likeCount == null) {
+            likeCount = 0L;
+        }
+        this.likeCount++;
+    }
+
+    // 좋아요 수 감소
+    public void decrementLikeCount() {
+        if (likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public long getLikeCount() {
+        return likeCount;
+    }
+
 }
+
