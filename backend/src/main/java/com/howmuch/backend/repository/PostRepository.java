@@ -36,5 +36,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findTripPosts(Pageable pageable);
 
 
-
 }

@@ -2,6 +2,7 @@ package com.howmuch.backend.controller;
 
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.dto.AddPostRequest;
+import com.howmuch.backend.entity.dto.PostResponse;
 import com.howmuch.backend.entity.dto.UpdatePostRequest;
 import com.howmuch.backend.service.PostService;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
 
@@ -19,18 +20,18 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<Post> createPosts(@RequestBody AddPostRequest addPostRequest) {
-        Post post = postService.createPost(addPostRequest);
-        return ResponseEntity.ok(post);
+    public ResponseEntity<PostResponse> createPosts(@RequestBody AddPostRequest addPostRequest, @RequestHeader("userId") Long sessionUserId) {
+        PostResponse posts = postService.createPost(addPostRequest, sessionUserId); // test 목적으로 @RequestHeader 어노테이션 사용
+        return ResponseEntity.ok(posts);
     }
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId,
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId,
                                            @RequestBody UpdatePostRequest updateRequest) {
         Long sessionUserId = 1L; // 임시값
-        Post post = postService.updatePost(postId, sessionUserId, updateRequest);
-        return ResponseEntity.ok(post);
+        PostResponse posts = postService.updatePost(postId, sessionUserId, updateRequest);
+        return ResponseEntity.ok(posts);
     }
 
     // 게시글 삭제
@@ -44,16 +45,16 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping
-    public ResponseEntity<Page<Post>> getVisiblePosts(@RequestParam(defaultValue = "1") int page) {
-        Page<Post> posts = postService.getVisiblePosts(page-1);
+    public ResponseEntity<Page<PostResponse>> getVisiblePosts(@RequestParam(defaultValue = "1") int page) {
+        Page<PostResponse> posts = postService.getVisiblePosts(page-1);
         return ResponseEntity.ok(posts);
     }
 
     // 게시글 단건 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<Post> getPostId(@PathVariable Long postId) {
-        Post post = postService.getPostById(postId);
-        return ResponseEntity.ok(post);
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId) {
+        PostResponse posts = postService.getPostById(postId);
+        return ResponseEntity.ok(posts);
     }
 
     // 게시글 좋아요 On/Off
@@ -81,10 +82,10 @@ public class PostController {
 
     // 헤더별 게시글 조회
     @GetMapping("/by-header")
-    public ResponseEntity<Page<Post>> getPostsByHeader(
+    public ResponseEntity<Page<PostResponse>> getPostsByHeader(
             @RequestParam String header,
             @RequestParam(defaultValue = "1") int page) {
-        Page<Post> posts = postService.getPostsByHeader(header, page -1);
+        Page<PostResponse> posts = postService.getPostsByHeader(header, page -1);
         return ResponseEntity.ok(posts);
     }
 }
