@@ -1,5 +1,6 @@
 package com.howmuch.backend.entity.community;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
