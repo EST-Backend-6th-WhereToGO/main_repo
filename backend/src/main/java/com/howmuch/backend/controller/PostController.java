@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/posts")
 
 
@@ -23,8 +22,6 @@ public class PostController {
     public PostController(PostService postService) {
         this.postService = postService;
     }
-
-    private final PostService postService;
 
     // 게시글 작성
     @PostMapping
@@ -92,10 +89,6 @@ public class PostController {
     public ResponseEntity<List<Post>> getAllPostsByViewCount() {
         List<Post> popularPosts = postService.getAllPostsByViewCount();
         return ResponseEntity.ok(popularPosts);
-
-    public ResponseEntity getPostsByViews() {
-
-        return ResponseEntity.ok("조회완료");
     }
 
     // 헤더별 게시글 조회
