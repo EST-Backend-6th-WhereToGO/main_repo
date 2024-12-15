@@ -1,7 +1,9 @@
 package com.howmuch.backend.controller;
 
 
+import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostComment;
+import com.howmuch.backend.entity.dto.CommentRequestDTO;
 import com.howmuch.backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +37,11 @@ public class CommentController {
     }
 
     @PostMapping("/comments")
-    public ResponseEntity<PostComment> createComment(@RequestBody PostComment comment) {
+    public ResponseEntity<PostComment> createComment(@RequestBody CommentRequestDTO requestDTO) {
+        Post post = new Post(); // Post 객체 생성
+        post.setPostId(requestDTO.getPostId()); // postId 설정
+
+        PostComment comment = new PostComment(post, requestDTO.getUserId(), requestDTO.getContent()); // 변환
         PostComment createdComment = commentService.createComment(comment);
         return ResponseEntity.ok(createdComment);
     }
