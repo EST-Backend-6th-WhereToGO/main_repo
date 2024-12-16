@@ -56,7 +56,6 @@ public class Post {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -84,6 +83,12 @@ public class Post {
 
     public long getLikeCount() {
         return likeCount;
+    }
+
+    public void updatePost(String title, String content) {
+        this.title = title;
+        this.content = content;
+        this.updatedAt = LocalDateTime.now(); // 명시적으로 수정 시간 설정
     }
 }
 
