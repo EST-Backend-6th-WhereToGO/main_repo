@@ -3,6 +3,8 @@ package com.howmuch.backend.entity.user;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.community.Post;
 import jakarta.persistence.*;
+import lombok.Data;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+@Data
 @Table(name = "user")
 public class User {
     @Id
@@ -40,13 +43,11 @@ public class User {
     @Column(name ="mbti", nullable = false)
     private String mbti;
 
-    @CreatedDate
-    @Column(name="created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @LastModifiedDate
-    @Column(name="updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name ="token", nullable = false)
     private String token;

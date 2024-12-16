@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql:// project-3rd.cd6ykcyi6r36.ap-northeast-2.rds.amazonaws.com:3306/project03?serverTimezone=Asia/Seoul
+    url: jdbc:mysql:// project03.c98u8m28y5zy.ap-northeast-2.rds.amazonaws.com:3306/project03?serverTimezone=Asia/Seoul
     hikari:
       username: root
       password: adminadmin
@@ -22,3 +22,24 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         use_second_level_cache: false
         use_query_cache: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 77392903689-lq51vasdba3q55ebma0lrq0qv4uqt2ho.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+youtube:
+  api:
+    key: AIzaSyCDLfZu6g6FsicOkrItO7rrB8MJrMOeaZs
