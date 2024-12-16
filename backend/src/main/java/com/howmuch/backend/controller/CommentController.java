@@ -3,6 +3,7 @@ package com.howmuch.backend.controller;
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostComment;
 import com.howmuch.backend.entity.dto.CommentRequestDTO;
+import com.howmuch.backend.entity.dto.CommentResponseDTO;
 import com.howmuch.backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,8 +20,8 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/post/{postId}/comments")
-    public ResponseEntity<List<PostComment>> getCommentsByPostId(@PathVariable Long postId) {
-        List<PostComment> comments = commentService.getCommentsByPostId(postId);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByPostId(@PathVariable Long postId) {
+        List<CommentResponseDTO> comments = commentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
 
@@ -32,14 +33,12 @@ public class CommentController {
     }
 
     @PostMapping("/comments")
-    public ResponseEntity<PostComment> createComment(@RequestBody CommentRequestDTO requestDTO) {
-        Post post = new Post(); // Post 객체 생성
-        post.setPostId(requestDTO.getPostId()); // postId 설정
+    public ResponseEntity<CommentResponseDTO> createComment(@RequestBody CommentRequestDTO requestDTO) {
 
-        PostComment comment = new PostComment(post, requestDTO.getUserId(), requestDTO.getContent()); // 변환
-        PostComment createdComment = commentService.createComment(comment);
-        return ResponseEntity.ok(createdComment);
+        CommentResponseDTO responseDTO = commentService.createComment(requestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
+
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<PostComment> updateComment(@PathVariable Long commentId, @RequestBody PostComment updatedComment) {
         Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
