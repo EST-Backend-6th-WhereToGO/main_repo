@@ -1,6 +1,5 @@
 package com.howmuch.backend.controller;
 
-
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostComment;
 import com.howmuch.backend.entity.dto.CommentRequestDTO;
@@ -8,15 +7,11 @@ import com.howmuch.backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 import java.util.Optional;
 
 @RestController
-
 @RequestMapping("/api")
 public class CommentController {
 
@@ -58,5 +53,4 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
-
 }

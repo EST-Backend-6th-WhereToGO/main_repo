@@ -19,7 +19,7 @@ public class CommentService {
     private CommentRepository commentRepository;
 
     @Autowired
-    private PostRepository postRepository; // PostRepository 추가 필요
+    private PostRepository postRepository;
 
     public List<PostComment> getCommentsByPostId(Long postId) {
         return commentRepository.findAll().stream()
@@ -33,14 +33,11 @@ public class CommentService {
 
     @Transactional
     public PostComment createComment(PostComment comment) {
-        // Post 객체를 데이터베이스에서 조회
         Post post = postRepository.findById(comment.getPost().getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + comment.getPost().getPostId()));
 
-        // Post 객체 설정
         comment.setPost(post);
 
-        // 댓글 저장
         return commentRepository.save(comment);
     }
 
