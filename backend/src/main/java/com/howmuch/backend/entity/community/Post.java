@@ -19,12 +19,9 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(name = "post")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,10 +66,6 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
     private List<PostComment> postComments;
 
-
-    @ManyToOne
-    @JoinColumn(name = "plan_id")
-    private Plan plan;
 
     //좋아요 수 증가
     public void incrementLikeCount() {
