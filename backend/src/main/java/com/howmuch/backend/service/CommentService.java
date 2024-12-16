@@ -42,8 +42,16 @@ public class CommentService {
                 .toList();
     }
 
-    public Optional<PostComment> getCommentById(Long commentId) {
-        return commentRepository.findById(commentId);
+    public Optional<CommentResponseDTO> getCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .map(comment -> new CommentResponseDTO(
+                        comment.getCommentId(),
+                        comment.getPost().getPostId(),
+                        comment.getUser().getNickname(),
+                        comment.getContent(),
+                        comment.getCreatedAt(),
+                        comment.getUpdatedAt()
+                ));
     }
 
     @Transactional

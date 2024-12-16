@@ -1,6 +1,7 @@
 package com.howmuch.backend.entity.community;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,9 @@ public class PostComment {
     @JsonIgnore
     private Post post;
 
-    @Column(name="user_id", nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name="content", nullable = false)
     private String content;
@@ -43,9 +45,9 @@ public class PostComment {
 
     public PostComment() {}
 
-    public PostComment(Post post, Long userId, String content) {
+    public PostComment(Post post, User user, String content) {
         this.post = post;
-        this.userId = userId;
+        this.user = user;
         this.content = content;
     }
 }
