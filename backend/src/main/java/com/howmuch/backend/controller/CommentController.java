@@ -40,7 +40,6 @@ public class CommentController {
         PostComment createdComment = commentService.createComment(comment);
         return ResponseEntity.ok(createdComment);
     }
-
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<PostComment> updateComment(@PathVariable Long commentId, @RequestBody PostComment updatedComment) {
         Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
@@ -52,5 +51,6 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
+
     }
 }

@@ -2,16 +2,18 @@ package com.howmuch.backend.entity.city_info;
 
 import com.howmuch.backend.entity.plan.Plan;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "city")
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "city_id")
-    private Long city_id;
+    private Long cityId;
 
     @ManyToOne
     @JoinColumn(name="category_id")
@@ -21,20 +23,20 @@ public class City {
     private boolean isDomestic;
 
     @Column(name="city_name", nullable = false)
-    private String city_name;
+    private String cityName;
 
     @Column(name="description")
     private String description; // 설명
 
     private String photo;  // 이미지 파일 저장 경로
 
-    private int flight_time; // 비행시간(분단위로 저장)
+    private int flightTime; // 비행시간(분단위로 저장)
 
-    private String visa_info; // 비자정보
+    private String visaInfo; // 비자정보
 
     private String currency; // 통화
 
-    private String time_diff; // 시차
+    private String timeDiff; // 시차
 
     private String language; // 언어
 
