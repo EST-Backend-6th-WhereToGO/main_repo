@@ -6,14 +6,16 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data // @Getter, @Setter, @ToString, @EqualsAndHashCode, @RequiredArgsConstructor 포함
+
+@Data
 @Entity
 @Table(name = "city")
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "city_id")
-    private Long cityId; // Camel Case로 변경
+
+    private Long cityId;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -22,13 +24,14 @@ public class City {
     @Column(name = "domestic", nullable = false)
     private boolean domestic; // Camel Case로 변경
 
-    @Column(name = "city_name", nullable = false)
-    private String cityName; // Camel Case로 변경
+    @Column(name="city_name", nullable = false)
+    private String cityName;
 
     @Column(name = "description")
     private String description;
 
     private String photo;
+
 
     @Column(name = "flight_time")
     private int flightTime; // Camel Case로 변경
@@ -40,6 +43,7 @@ public class City {
 
     @Column(name = "time_diff")
     private String timeDiff; // Camel Case로 변경
+
 
     private String language;
 

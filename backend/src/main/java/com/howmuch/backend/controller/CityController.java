@@ -12,17 +12,34 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import java.util.Optional;
 
+import com.howmuch.backend.entity.city_info.City;
+import com.howmuch.backend.entity.dto.CityResponse;
+import com.howmuch.backend.service.CityService;
+
+import java.util.List;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/cities")
 public class CityController {
 
-	private final CityRepository cityRepository;
+    private final CityService cityService;
 
-	public CityController(CityRepository cityRepository) {
-		this.cityRepository = cityRepository;
-	}
+    public CityController(CityService cityService) {
+        this.cityService = cityService;
+    }
 
-	@GetMapping("/cities")
+    @GetMapping("/{categoryId}") // 카테고리별 도시 불러오는
+    public ResponseEntity<List<CityResponse>> getCitiesByCategory(@PathVariable Long categoryId) {
+        List<City> cities = cityService.getCitiesByCategory(categoryId);
+
+        List<CityResponse> response = cities.stream()
+                .map(city -> new CityResponse(city.getCityName()))
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+	@GetMapping
 	public ResponseEntity<?> getCityByName(@RequestParam String cityName) {
 		Optional<City> city = cityRepository.findByCityName(cityName);
 

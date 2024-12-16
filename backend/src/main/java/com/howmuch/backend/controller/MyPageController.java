@@ -1,6 +1,5 @@
-package com.howmuch.backend.mypage.controller;
+package com.howmuch.backend.controller;
 
-import org.hibernate.jdbc.Expectation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

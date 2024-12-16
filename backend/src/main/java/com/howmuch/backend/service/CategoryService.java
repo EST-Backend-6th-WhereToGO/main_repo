@@ -1,6 +1,7 @@
 package com.howmuch.backend.service;
 
 import com.howmuch.backend.entity.DTO.CategoryDTO;
+
 import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -25,4 +26,8 @@ public class CategoryService {
 			))
 			.collect(Collectors.toList());
 	}
+
+	public Long findCategoryIdByName(String categoryName) {
+        return categoryRepository.findByCategoryName(categoryName).getCategoryId();
+    }
 }

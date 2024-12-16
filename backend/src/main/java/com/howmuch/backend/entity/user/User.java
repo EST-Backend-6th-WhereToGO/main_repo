@@ -1,10 +1,10 @@
 package com.howmuch.backend.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.community.Post;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,11 +16,12 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "user")
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long user_id;
+    private Long userId;
 
     @Column(name ="email", nullable = false)
     private String email;

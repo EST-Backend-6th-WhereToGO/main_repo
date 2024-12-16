@@ -21,7 +21,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.projectlombok:lombok'
+
+	implementation 'org.projectlombok:lombok:1.18.28' // 최신 버전 사용
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -31,8 +34,25 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	implementation 'org.projectlombok:lombok:1.18.28' // 최신 버전 사용
-	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+	// https://mvnrepository.com/artifact/org.json/json
+	implementation group: 'org.json', name: 'json', version: '20240303'
+
+	implementation 'org.springframework:spring-context:6.1.14'
+
+	// Youtube API
+	implementation 'com.google.api-client:google-api-client:2.7.0'
+	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+	implementation 'com.google.apis:google-api-services-youtube:v3-rev20230816-2.0.0'
+	implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
+
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+}
+
 
 }
 
