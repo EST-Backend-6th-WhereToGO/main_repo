@@ -1,6 +1,5 @@
 package com.howmuch.backend.controller;
 
-
 import lombok.RequiredArgsConstructor;
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.dto.AddPostRequest;

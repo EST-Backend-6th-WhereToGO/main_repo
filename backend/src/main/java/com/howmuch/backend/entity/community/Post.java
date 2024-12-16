@@ -1,5 +1,6 @@
 package com.howmuch.backend.entity.community;
 
+import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
@@ -16,6 +17,9 @@ import java.util.List;
 @Entity
 @Builder
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "post")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -66,6 +70,10 @@ public class Post {
     private List<PostComment> postComments;
 
 
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
+
     //좋아요 수 증가
     public void incrementLikeCount() {
         if (likeCount == null) {
@@ -84,6 +92,5 @@ public class Post {
     public long getLikeCount() {
         return likeCount;
     }
-
 }
 
