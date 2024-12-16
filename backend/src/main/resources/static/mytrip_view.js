@@ -68,7 +68,6 @@ fetch('http://localhost:8080/api/searchTrip',{
             const dayArray = obj[day].Day;
 
             dayArray.forEach(item => {
-                console.log("item : ", item);
 
                 const planP = document.createElement('p');
                 planP.className='planOrder';
@@ -142,7 +141,7 @@ async function initMap() {
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 for (let i = 0; i < results.length; i++) {
                     createMarker(results[i]);
-                    console.log("results : ", results[i]);
+                    //console.log("results : ", results[i]);
                 }
                 map.setCenter(results[0].geometry.location);
             }
@@ -238,8 +237,9 @@ reSearchBtn.addEventListener('click', (event) => {
                 document.getElementById('trip-order').appendChild(dayDiv);
                 daycount++;
 
-                obj[day].forEach(item => {
-                    console.log("item : ", item);
+                const dayArray = obj[day].Day;
+
+                dayArray.forEach(item => {
 
                     const planP = document.createElement('p');
                     planP.className='planOrder';

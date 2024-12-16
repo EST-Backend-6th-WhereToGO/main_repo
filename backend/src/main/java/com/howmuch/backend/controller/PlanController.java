@@ -6,7 +6,6 @@ import com.howmuch.backend.entity.dto.PlanRequest;
 import com.howmuch.backend.entity.dto.MyPlanDTO;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.service.CityService;
-import com.howmuch.backend.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
