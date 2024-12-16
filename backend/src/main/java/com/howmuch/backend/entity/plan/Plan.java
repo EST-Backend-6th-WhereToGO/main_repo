@@ -5,6 +5,9 @@ import com.howmuch.backend.entity.dto.MyPlanDTO;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,6 +21,8 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @Table(name = "plan")
+@Getter
+@Setter
 public class Plan {
 
     @Id
@@ -33,7 +38,7 @@ public class Plan {
     @JoinColumn(name="city_id")
     private City city;
 
-    @Column(name="public", nullable = false)
+    @Column(name = "public", nullable = false)
     private boolean isPublic;
 
     @Column(name="start_at", nullable = false)
