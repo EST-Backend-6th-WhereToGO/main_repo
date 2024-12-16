@@ -58,6 +58,7 @@ public class PostController {
     // 게시글 단건 조회
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId) {
+        postService.incrementViewCount(postId);
         PostResponse posts = postService.getPostById(postId);
         return ResponseEntity.ok(posts);
     }
