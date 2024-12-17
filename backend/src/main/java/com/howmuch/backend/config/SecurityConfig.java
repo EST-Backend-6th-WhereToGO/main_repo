@@ -10,6 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class SecurityConfig {
@@ -49,9 +51,9 @@ public class SecurityConfig {
 			} else {
 				// 신규 사용자 → Step1로 리다이렉트
 				response.sendRedirect("http://localhost:3000/step1?name="
-					+ token.getPrincipal().getAttribute("name") +
-					"&email=" + email +
-					"&sub=" + token.getPrincipal().getAttribute("sub"));
+						+ URLEncoder.encode(token.getPrincipal().getAttribute("name"), StandardCharsets.UTF_8)
+						+ "&email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
+						+ "&sub=" + URLEncoder.encode(token.getPrincipal().getAttribute("sub"), StandardCharsets.UTF_8));
 			}
 		};
 	}
