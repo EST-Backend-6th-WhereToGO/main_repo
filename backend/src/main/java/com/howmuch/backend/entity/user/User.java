@@ -14,6 +14,7 @@ import java.util.List;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+@Data
 @Table(name = "user")
 @Data
 public class User {
@@ -43,13 +44,11 @@ public class User {
     @Column(name ="mbti", nullable = false)
     private String mbti;
 
-    @CreatedDate
-    @Column(name="created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @LastModifiedDate
-    @Column(name="updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name ="token", nullable = false)
     private String token;

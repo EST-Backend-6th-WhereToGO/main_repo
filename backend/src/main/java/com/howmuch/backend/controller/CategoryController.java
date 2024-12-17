@@ -1,5 +1,7 @@
 package com.howmuch.backend.controller;
 
+import com.howmuch.backend.entity.DTO.CategoryDTO;
+import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.service.CategoryService;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +26,10 @@ public class CategoryController {
                 .toList();
         return ResponseEntity.ok(categoryNames);
     }
+
+    @GetMapping("/categories")
+	public List<CategoryDTO> getCategories() {
+		return categoryService.getAllCategories();
+	}
 
 }

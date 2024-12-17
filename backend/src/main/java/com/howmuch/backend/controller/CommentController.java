@@ -45,6 +45,7 @@ public class CommentController {
         Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
         return comment.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/comments/{commentId}")
