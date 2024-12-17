@@ -7,6 +7,7 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import Result from './ResultPage';
 import './App.css';
+import CitySelectionPage from './CitySelectionPage';
 
 function App() {
   const [progress, setProgress] = useState(0); // 진행 상태 (0~100)
