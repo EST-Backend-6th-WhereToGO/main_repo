@@ -1,4 +1,4 @@
-package com.howmuch.backend.entity.dto;
+package com.howmuch.backend.entity.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

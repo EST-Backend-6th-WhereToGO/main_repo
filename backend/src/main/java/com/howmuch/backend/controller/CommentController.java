@@ -2,7 +2,7 @@ package com.howmuch.backend.controller;
 
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostComment;
-import com.howmuch.backend.entity.dto.CommentRequestDTO;
+import com.howmuch.backend.entity.DTO.CommentRequestDTO;
 import com.howmuch.backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,6 +45,7 @@ public class CommentController {
         Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
         return comment.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/comments/{commentId}")
