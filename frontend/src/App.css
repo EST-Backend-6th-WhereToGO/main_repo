@@ -169,3 +169,19 @@ button:hover {
   color: #4caf50;
   margin-top: 30px;
 }
+
+.date-range-picker {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.date-picker {
+  width: 45%;
+}
+
+.search-container,
+.date-picker-container,
+.navigate-container {
+  margin: 20px 0;
+}

@@ -2,9 +2,9 @@ package com.howmuch.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import com.howmuch.backend.entity.community.Post;
-import com.howmuch.backend.entity.dto.AddPostRequest;
-import com.howmuch.backend.entity.dto.PostResponse;
-import com.howmuch.backend.entity.dto.UpdatePostRequest;
+import com.howmuch.backend.entity.DTO.AddPostRequest;
+import com.howmuch.backend.entity.DTO.PostResponse;
+import com.howmuch.backend.entity.DTO.UpdatePostRequest;
 import com.howmuch.backend.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

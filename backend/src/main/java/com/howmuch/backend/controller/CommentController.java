@@ -6,7 +6,6 @@ import com.howmuch.backend.entity.dto.CommentRequestDTO;
 import com.howmuch.backend.entity.dto.CommentResponseDTO;
 import com.howmuch.backend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -44,6 +43,7 @@ public class CommentController {
         Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
         return comment.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/comments/{commentId}")

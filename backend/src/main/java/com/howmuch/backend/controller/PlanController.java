@@ -1,21 +1,21 @@
 package com.howmuch.backend.controller;
 
+import com.howmuch.backend.entity.DTO.CategoryDTO;
 import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.entity.city_info.City;
-import com.howmuch.backend.entity.dto.PlanRequest;
+import com.howmuch.backend.entity.DTO.PlanRequest;
+import com.howmuch.backend.entity.DTO.MyPlanDTO;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.service.CityService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/plan")
 public class PlanController {
 
     private final CategoryService categoryService;
@@ -26,14 +26,14 @@ public class PlanController {
         this.cityService = cityService;
     }
 
-    @GetMapping("/form")
+    @GetMapping("/plan/form")
     public String showPlanForm(Model model) {
-        List<Category> categories = categoryService.getAllCategories();
+        List<CategoryDTO> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         return "plan-form";
     }
 
-    @PostMapping("/form")
+    @PostMapping("/plan/form")
     public String showCities(@RequestParam("purpose") String purpose,
                              @RequestParam("period") String period,
                              Model model) {
@@ -48,30 +48,37 @@ public class PlanController {
         return "plan-form";
     }
 
-    @PostMapping("/submit") // 객체에 저장
+    @PostMapping("/plan/submit") // 객체에 저장
     public String submitPlan(@RequestParam("purpose") String purpose,
                              @RequestParam("period") String period,
-                             @RequestParam("city") String city,
+                             @RequestParam("city") Long cityId,
                              Model model) {
 
         PlanRequest planRequest = new PlanRequest();
         planRequest.setPurpose(purpose);
         planRequest.setPeriod(period);
-        planRequest.setCity(city);
+
+        City selectedCity = cityService.getCityById(cityId);
+        planRequest.setCity(selectedCity.getCityName());
+
+        Long userId = 1L;
+
+        MyPlanDTO myPlanDTO = new MyPlanDTO(planRequest, cityId, userId);
+
+
+        String aiRequest = String.format(
+                "%s 목적으로 %s 동안 %s 여행 계획을 만들어 줘",
+                planRequest.getPurpose(),
+                planRequest.getDays(),
+                planRequest.getCity()
+        );
 
         // 필요시 모델에 PlanRequest 추가
-        model.addAttribute("planRequest", planRequest);
-
-        // 프롬프터 작성 예시
-//        String prompt = String.format(
-//                "%s\n목적으로 %s\n동안 %s\n 여행 계획을 만들어줘",
-//                planRequest.getPurpose(),
-//                planRequest.getDays(),
-//                planRequest.getCity()
-//        );
+        model.addAttribute("aiRequest", aiRequest);
+        model.addAttribute("myPlanDTO", myPlanDTO);
 
 
         // 결과 페이지로 이동 -> 추후에 연결된페이지
-        return "plan-result";
+        return "/mytrip/mytrip_view";
     }
 }

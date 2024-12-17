@@ -1,75 +1,62 @@
 package com.howmuch.backend.controller;
 
-import org.json.JSONArray;
+import com.howmuch.backend.entity.DTO.MyPlanDTO;
+import com.howmuch.backend.entity.plan.Plan;
+import com.howmuch.backend.service.MyPlanService;
 import org.json.JSONException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 public class SearchTripController {
 
-    private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
+    // 진헌 id
+    // private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
+    // 5조 id
+    private final String CLIENT_ID = "99259756-c519-4c2a-814d-5495354a1474";
+
+    MyPlanService myPlanService;
+
+    public SearchTripController(MyPlanService myPlanService) {
+        this.myPlanService = myPlanService;
+    }
+
 
     @PostMapping("/searchTrip")
-    public ResponseEntity<String> searchTrip(@RequestBody(required = false) String removeOrderListJson) throws JSONException {
+    public ResponseEntity<String> searchTrip(@RequestBody(required = false) MyPlanDTO myPlan) throws JSONException {
 
-        boolean isFirstSearch;
-
-        if (removeOrderListJson == null) {
-            isFirstSearch = true;
-        } else {
-            isFirstSearch = false;
-        }
-
-        System.out.println(removeOrderListJson);
+        System.out.println("myPlan : "+myPlan.getStartedAt()+ "  "+myPlan.getEndedAt());
+        System.out.println("aiRequest :" +myPlan.getAiRequest());
+        String aiRequest = myPlan.getAiRequest();
 
         String object ="";
 
-        if(!isFirstSearch) {
-            // removeOrderList가 비어있지 않은 경우 제거하고 다시 호출!!!
-            System.out.println("여기 호출");
-
-            JSONArray jsonArray = new JSONArray(removeOrderListJson);
-            List<String> removeList = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                removeList.add(jsonArray.get(i).toString());
-            }
-
-            for (String s : removeList) {
-                System.out.println("s = " + s);
-            }
-
-            String requestUrl = "https://kdt-api-function.azurewebsites.net/api/v1/question?content=" +
-                    "제주도 1박2일 여행일정 만들어줘&" +
-                    "client_id=" + CLIENT_ID;
-
-            try {
-                object = new RestTemplate().getForObject(requestUrl, String.class);
-                return ResponseEntity.ok(object);
-            } catch (Exception e) {
-                System.out.println("error");
-                return ResponseEntity.badRequest().body("error");
-            }
-        } else {
-            // 파라미터가 null 일때 제거할 일정이 없을 때
-            String requestUrl = "https://kdt-api-function.azurewebsites.net/api/v1/question?content=" +
-                    "제주도 2박3일 여행일정 만들어줘&" +
-                    "client_id=" + CLIENT_ID;
-
-            try {
-                object = new RestTemplate().getForObject(requestUrl, String.class);
-                return ResponseEntity.ok(object);
-            } catch (Exception e) {
-                System.out.println("error");
-                return ResponseEntity.badRequest().body("error");
-            }
+        String requestUrl = "https://kdt-api-function.azurewebsites.net/api/v1/question?content=" +
+                aiRequest +
+                "&client_id=" + CLIENT_ID;
+        System.out.println("requestUrl = " + requestUrl);
+        try {
+            object = new RestTemplate().getForObject(requestUrl, String.class);
+            return ResponseEntity.ok(object);
+        } catch (Exception e) {
+            System.out.println("error");
+            return ResponseEntity.badRequest().body("error");
         }
-
     }
 
+    @PostMapping("/savePlan")
+    public ResponseEntity<Void> savePlan(@RequestBody MyPlanDTO myPlan) {
+        myPlan.getMyTripOrderList()
+                .forEach(x->System.out.println(x.getTime() + " " + x.getPlace() + " " + x.getOrder()));
+
+        // 일정 저장
+        Plan plan = myPlanService.savePlan(myPlan);
+
+        // 세부 일정 저장
+        myPlanService.saveDetailPlan(plan, myPlan.getMyTripOrderList());
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.List;
 
+
 @Data
 @Entity
 @Table(name = "city")
@@ -13,40 +14,49 @@ public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "city_id")
+
     private Long cityId;
 
     @ManyToOne
-    @JoinColumn(name="category_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name="domestic", nullable = false)
-    private boolean isDomestic;
+    @Column(name = "domestic", nullable = false)
+    private boolean domestic; // Camel Case로 변경
 
     @Column(name="city_name", nullable = false)
     private String cityName;
 
-    @Column(name="description")
-    private String description; // 설명
+    @Column(name = "description")
+    private String description;
 
-    private String photo;  // 이미지 파일 저장 경로
+    private String photo;
 
-    private int flightTime; // 비행시간(분단위로 저장)
 
-    private String visaInfo; // 비자정보
+    @Column(name = "flight_time")
+    private int flightTime; // Camel Case로 변경
 
-    private String currency; // 통화
+    @Column(name = "visa_info")
+    private String visaInfo; // Camel Case로 변경
 
-    private String timeDiff; // 시차
+    private String currency;
 
-    private String language; // 언어
+    @Column(name = "time_diff")
+    private String timeDiff; // Camel Case로 변경
 
-    private String weather; // 추천계절
 
-    private String clothes; // 추천옷차림
+    private String language;
 
-    private String period; // 추천 여행 기간
+    private String weather;
 
-    private String expense; // 예상경비
+    private String clothes;
+
+    private String period;
+
+    private String expense;
+
+    @Column(name = "eng_city_name")
+    private String engCityName; // Camel Case 유지
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "city")
     private List<Plan> planList;

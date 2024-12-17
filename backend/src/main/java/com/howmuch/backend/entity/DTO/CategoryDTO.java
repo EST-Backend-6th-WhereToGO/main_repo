@@ -1,13 +1,12 @@
 package com.howmuch.backend.entity.DTO;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-public class UpdatePostRequest {
-    String title;
-    String content;
+public class CategoryDTO {
+	private Long id;
+	private String name;
 }
