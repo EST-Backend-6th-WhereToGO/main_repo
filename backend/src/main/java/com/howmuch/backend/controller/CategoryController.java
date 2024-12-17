@@ -3,7 +3,6 @@ package com.howmuch.backend.controller;
 import com.howmuch.backend.entity.DTO.CategoryDTO;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.entity.city_info.Category;
-import com.howmuch.backend.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +17,16 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping // category 리스트 불러오는
-    public ResponseEntity<List<String>> getAllCategories() {
-        List<String> categoryNames = categoryService.getAllCategories()
-                .stream()
-                .map(Category::getCategoryName)
-                .toList();
-        return ResponseEntity.ok(categoryNames);
-    }
+	@GetMapping // category 리스트 불러오는
+	public ResponseEntity<List<String>> getAllCategories() {
+		List<String> categoryNames = categoryService.getAllCategories()
+			.stream()
+			.map(CategoryDTO::getName) // CategoryDTO의 getName() 참조
+			.toList();
+		return ResponseEntity.ok(categoryNames);
+	}
 
-    @GetMapping("/categories")
+	@GetMapping("/categories")
 	public List<CategoryDTO> getCategories() {
 		return categoryService.getAllCategories();
 	}
