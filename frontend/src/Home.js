@@ -14,12 +14,34 @@ function Home() {
     const [weatherData, setWeatherData] = useState([]);
     const [currentWeatherIndex, setCurrentWeatherIndex] = useState(0);
     const [currentWeather, setCurrentWeather] = useState(null);
+    const [loginStatus, setLoginStatus] = useState("Checking...");
     const navigate = useNavigate();
 
     // 로그인 버튼 클릭 시 실행되는 함수
     const handleLogin = () => {
         window.location.href = "http://localhost:8080/oauth2/authorization/google";
     };
+
+    // 로그인 상태 확인
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const response = await fetch("/api/auth/status", { credentials: "include" });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === "LoggedIn") {
+                        setLoginStatus(`Logged In as ${data.email}`);
+                    } else {
+                        setLoginStatus("Not Logged In");
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking login status:", error);
+                setLoginStatus("Error checking login status");
+            }
+        };
+        checkLoginStatus();
+    }, []);
 
     // 로그인 성공 시 사용자 정보 확인 및 라우팅
     useEffect(() => {
@@ -176,6 +198,11 @@ function Home() {
             </div>
 
             <SearchPage />
+
+            {/* 로그인 상태 출력 */}
+            <footer>
+                <h3>로그인 상태: {loginStatus}</h3>
+            </footer>
         </div>
     );
 }

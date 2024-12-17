@@ -15,7 +15,7 @@ function CitySelectionPage() {
             return;
         }
 
-        fetch(`http://localhost:8080/api/cities/${categoryId}`) // 서버의 절대 경로
+        fetch(`/api/cities/${categoryId}`) // 서버의 절대 경로
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`데이터를 가져오는데 실패했습니다: ${response.status}`);
