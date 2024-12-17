@@ -1,9 +1,10 @@
 package com.howmuch.backend.controller;
 
+import com.howmuch.backend.entity.DTO.CategoryDTO;
 import com.howmuch.backend.entity.city_info.Category;
 import com.howmuch.backend.entity.city_info.City;
-import com.howmuch.backend.entity.dto.PlanRequest;
-import com.howmuch.backend.entity.dto.MyPlanDTO;
+import com.howmuch.backend.entity.DTO.PlanRequest;
+import com.howmuch.backend.entity.DTO.MyPlanDTO;
 import com.howmuch.backend.service.CategoryService;
 import com.howmuch.backend.service.CityService;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class PlanController {
 
     @GetMapping("/plan/form")
     public String showPlanForm(Model model) {
-        List<Category> categories = categoryService.getAllCategories();
+        List<CategoryDTO> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         return "plan-form";
     }

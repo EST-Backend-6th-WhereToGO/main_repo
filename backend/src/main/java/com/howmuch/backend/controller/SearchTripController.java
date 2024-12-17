@@ -1,6 +1,6 @@
 package com.howmuch.backend.controller;
 
-import com.howmuch.backend.entity.dto.MyPlanDTO;
+import com.howmuch.backend.entity.DTO.MyPlanDTO;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.service.MyPlanService;
 import org.json.JSONException;
