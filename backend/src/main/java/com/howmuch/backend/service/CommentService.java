@@ -3,8 +3,8 @@ package com.howmuch.backend.service;
 
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostComment;
-import com.howmuch.backend.entity.dto.CommentRequestDTO;
-import com.howmuch.backend.entity.dto.CommentResponseDTO;
+import com.howmuch.backend.entity.DTO.CommentRequestDTO;
+import com.howmuch.backend.entity.DTO.CommentResponseDTO;
 import com.howmuch.backend.entity.user.User;
 import com.howmuch.backend.repository.CommentRepository;
 import com.howmuch.backend.repository.PostRepository;
