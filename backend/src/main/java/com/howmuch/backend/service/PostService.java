@@ -90,6 +90,7 @@ public class PostService {
         return posts.map(this::toPostResponse);
     }
 
+    @Transactional(readOnly = true)
     public PostResponse getPostById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
