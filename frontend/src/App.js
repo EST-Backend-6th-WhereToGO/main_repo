@@ -17,7 +17,6 @@ function App() {
   };
 
   return (
-      <GoogleOAuthProvider clientId="77392903689-lq51vasdba3q55ebma0lrq0qv4uqt2ho.apps.googleusercontent.com">
         <Router>
           <div className="App">
             <div className="progress-bar" style={{ width: `${progress}%` }}></div>
@@ -30,7 +29,6 @@ function App() {
             </Routes>
           </div>
         </Router>
-      </GoogleOAuthProvider>
   );
 }
 

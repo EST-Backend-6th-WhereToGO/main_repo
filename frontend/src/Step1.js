@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './Step1.css'; // CSS 파일 추가
+import './Step1.css';
 import axios from 'axios';
 
 function Step1({ updateProgress }) {
@@ -13,11 +13,21 @@ function Step1({ updateProgress }) {
   const [selectedRegion, setSelectedRegion] = useState('');
   const [cities, setCities] = useState([]); // 두 번째 드롭다운 데이터
   const [selectedCity, setSelectedCity] = useState('');
+  const [token, setToken] = useState(''); // sub 값을 token으로 저장
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Google 로그인에서 전달된 이메일
-  const email = location.state?.email;
+  // URL 파라미터에서 값 추출
+  const queryParams = new URLSearchParams(location.search);
+  const email = queryParams.get('email');
+  const name = queryParams.get('name');
+  const sub = queryParams.get('sub');
+
+  // 초기값 설정 (name → 닉네임, sub → token)
+  useEffect(() => {
+    if (name) setNickname(name); // name 값이 있으면 닉네임 초기화
+    if (sub) setToken(sub); // sub 값을 token에 저장
+  }, [name, sub]);
 
   const AUTH_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json';
   const REGION_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json';
@@ -36,7 +46,7 @@ function Step1({ updateProgress }) {
           },
         });
         if (response.data.result?.accessToken) {
-          setAccessToken(response.data.result.accessToken); // Access Token 저장
+          setAccessToken(response.data.result.accessToken);
         } else {
           console.error('Access Token을 가져오는 데 실패했습니다.');
         }
@@ -47,19 +57,15 @@ function Step1({ updateProgress }) {
     fetchAccessToken();
   }, []);
 
-  // 2. 첫 번째 드롭다운 데이터 로드
+  // 첫 번째 드롭다운 데이터 로드
   useEffect(() => {
     const fetchRegions = async () => {
-      if (!accessToken) return; // Access Token이 없으면 호출하지 않음
+      if (!accessToken) return;
       try {
         const response = await axios.get(REGION_API_URL, {
-          params: {
-            accessToken: accessToken,
-          },
+          params: { accessToken },
         });
-        if (response.data.result) {
-          setRegions(response.data.result);
-        }
+        if (response.data.result) setRegions(response.data.result);
       } catch (error) {
         console.error('첫 번째 드롭다운 데이터 로드 실패:', error);
       }
@@ -67,20 +73,15 @@ function Step1({ updateProgress }) {
     fetchRegions();
   }, [accessToken]);
 
-  // 3. 두 번째 드롭다운 데이터 로드
+  // 두 번째 드롭다운 데이터 로드
   useEffect(() => {
     const fetchCities = async () => {
-      if (!accessToken || !selectedRegion) return; // Access Token 또는 선택된 지역이 없으면 호출하지 않음
+      if (!accessToken || !selectedRegion) return;
       try {
         const response = await axios.get(REGION_API_URL, {
-          params: {
-            accessToken: accessToken,
-            cd: selectedRegion,
-          },
+          params: { accessToken, cd: selectedRegion },
         });
-        if (response.data.result) {
-          setCities(response.data.result);
-        }
+        if (response.data.result) setCities(response.data.result);
       } catch (error) {
         console.error('두 번째 드롭다운 데이터 로드 실패:', error);
       }
@@ -90,13 +91,14 @@ function Step1({ updateProgress }) {
 
   const handleRegionChange = (e) => {
     setSelectedRegion(e.target.value);
-    setSelectedCity(''); // 첫 번째 드롭박스 선택 시 두 번째 드롭박스를 초기화
+    setSelectedCity('');
   };
 
   const handleCityChange = (e) => {
     setSelectedCity(e.target.value);
   };
 
+  // 데이터 전송
   const handleNext = async () => {
     if (nickname && age && gender && selectedRegion && selectedCity) {
       try {
@@ -108,11 +110,15 @@ function Step1({ updateProgress }) {
           mbti,
           region: selectedRegion,
           city: selectedCity,
+          token, // sub 값을 token으로 저장
         };
+        console.log("Payload:", payload);
+
         await axios.post('/api/users/save', payload);
 
-        updateProgress(100); // 진행 상태 업데이트
-        navigate('/step2'); // 회원가입 완료 화면으로 이동
+        updateProgress(100);
+        alert('회원가입이 완료되었습니다!');
+        navigate('/step3');
       } catch (error) {
         console.error('회원가입 데이터 저장 실패:', error);
       }
