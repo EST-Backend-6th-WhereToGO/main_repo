@@ -7,6 +7,9 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import Post from './Post';
 import Result from './ResultPage';
+import Board from './Board';
+import CreatePost from "./CreatePost";
+
 import './App.css';
 import CitySelectionPage from './CitySelectionPage';
 
@@ -29,6 +32,8 @@ function App() {
           <Route path="/post" element={<Post updateProgress={updateProgress} />} />
           <Route path="/post/:postId" element={<Post />} /> {/* 동적 라우팅 */}
           <Route path="/results" element={<Result />} />
+          <Route path="/board" element={<Board />} />
+          <Route path="/create-post" element={<CreatePost />} />
         </Routes>
       </div>
     </Router>
