@@ -5,7 +5,8 @@ const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [header, setHeader] = useState('TIP'); // 기본 카테고리 Enum 값
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null); // 세션에서 로그인된 사용자 ID
+    const [error, setError] = useState(null); // 오류 상태 추가
     const navigate = useNavigate();
 
     // 사용자 친화적인 이름과 Enum 값 매핑
@@ -30,25 +31,17 @@ const CreatePost = () => {
             }
         } catch (error) {
             console.error('Failed to fetch session user:', error);
-            alert('세션 정보를 불러오는데 실패했습니다.');
+            setError('세션 정보를 불러오는데 실패했습니다.');
         }
-    }, [navigate]); // navigate를 종속성 배열에 추가
+    }, [navigate]);
 
     // 컴포넌트 로드 시 사용자 정보 가져오기
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await fetchSessionUser();
-                console.log('Session user fetched successfully');
-            } catch (error) {
-                console.error('Error fetching session user:', error);
-            }
-        };
-        fetchData();
+        fetchSessionUser();
     }, [fetchSessionUser]);
 
     // 게시글 제출
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!userId) {
@@ -56,28 +49,36 @@ const CreatePost = () => {
             return;
         }
 
-        // 데이터 서버로 전송
-        fetch('http://localhost:8080/api/posts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'userId': userId, // 세션 사용자 ID 추가
-            },
-            body: JSON.stringify({ title, content, header }),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    alert('게시글이 성공적으로 작성되었습니다!');
-                    navigate('/board'); // 게시판 페이지로 이동
-                } else {
-                    alert('게시글 작성 중 오류가 발생했습니다.');
-                }
-            })
-            .catch((error) => {
-                console.error('게시글 작성 실패:', error);
-                alert('게시글 작성 중 오류가 발생했습니다.');
+        const postData = { title, content, header, userId };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(postData),
             });
+
+            if (response.ok) {
+                alert('게시글이 성공적으로 작성되었습니다!');
+                navigate('/board'); // 게시판 페이지로 이동
+            } else {
+                const errorMessage = await response.text();
+                console.error('Error creating post:', errorMessage);
+                alert('게시글 작성 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('게시글 작성 실패:', error);
+            alert('게시글 작성 중 오류가 발생했습니다.');
+        }
     };
+
+    // 에러 발생 시 처리
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         <div style={styles.container}>
