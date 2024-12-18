@@ -1,8 +1,8 @@
 package com.howmuch.backend.service;
 
 import com.howmuch.backend.entity.city_info.City;
-import com.howmuch.backend.entity.dto.MyPlanDTO;
-import com.howmuch.backend.entity.dto.MyTripOrder;
+import com.howmuch.backend.entity.DTO.MyPlanDTO;
+import com.howmuch.backend.entity.DTO.MyTripOrder;
 import com.howmuch.backend.entity.plan.DetailPlan;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
