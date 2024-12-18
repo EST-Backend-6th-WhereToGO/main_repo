@@ -29,7 +29,7 @@ public class BlogApiService {
             // 도시명 + 여행
             String fixedKeyword = "여행";
             String encodedQuery = URLEncoder.encode(query + fixedKeyword, StandardCharsets.UTF_8);
-            String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + encodedQuery;
+            String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + encodedQuery + "&display=3";
 
             // 네이버 API 호출
             HttpURLConnection connection = (HttpURLConnection) new URL(apiURL).openConnection();

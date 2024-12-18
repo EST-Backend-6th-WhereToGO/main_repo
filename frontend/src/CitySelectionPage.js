@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // URL 파라미터를 가져오기 위한 훅
+import './CitySelectionPage.css';
 
-function CitySelectionPage() {
-    const { categoryId } = useParams(); // URL에서 categoryId 가져오기
-    const [cities, setCities] = useState([]); // 도시 목록 상태
-    const [selectedCity, setSelectedCity] = useState(''); // 선택된 도시 상태
-    const [loading, setLoading] = useState(true); // 로딩 상태
-    const [error, setError] = useState(null); // 에러 상태
+function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
+    const [cities, setCities] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [selectedCity, setSelectedCity] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const itemsPerPage = 9;
 
     useEffect(() => {
         if (!categoryId) {
@@ -15,7 +16,7 @@ function CitySelectionPage() {
             return;
         }
 
-        fetch(`/api/cities/${categoryId}`) // 서버의 절대 경로
+        fetch(`/api/cities/${categoryId}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`데이터를 가져오는데 실패했습니다: ${response.status}`);
@@ -23,7 +24,7 @@ function CitySelectionPage() {
                 return response.json();
             })
             .then((data) => {
-                setCities(data); // 도시 목록 업데이트
+                setCities(data);
                 setLoading(false);
             })
             .catch((error) => {
@@ -32,40 +33,72 @@ function CitySelectionPage() {
             });
     }, [categoryId]);
 
-    const handleCitySelection = (event) => {
-        setSelectedCity(event.target.value);
+    const handleCitySelection = (city) => {
+        setSelectedCity(city);
     };
 
     const handleConfirm = () => {
         if (selectedCity) {
-            alert(`선택된 도시: ${selectedCity}`);
+            onCitySelect(selectedCity);
         } else {
             alert('도시를 선택해주세요!');
         }
+    };
+
+    const totalPages = Math.ceil(cities.length / itemsPerPage);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 0) setCurrentPage(currentPage - 1);
+    };
+
+    const getPaginatedCities = () => {
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        return cities.slice(start, end);
     };
 
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>에러 발생: {error}</p>;
 
     return (
-        <div>
+        <div className="city-selection-container">
             <h1>도시 선택</h1>
-            <ul>
-                {cities.map((city, index) => (
-                    <li key={index}>
-                        <label>
-                            <input
-                                type="radio"
-                                name="city"
-                                value={city.cityName}
-                                onChange={handleCitySelection}
-                            />
-                            {city.cityName}
-                        </label>
-                    </li>
+
+            <div className="pagination-buttons">
+                <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 0}
+                >
+                    이전
+                </button>
+                <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages - 1 || totalPages === 0}
+                >
+                    다음
+                </button>
+            </div>
+
+            <div className="grid-container">
+                {getPaginatedCities().map((city, index) => (
+                    <div
+                        key={index}
+                        className={`grid-item ${selectedCity === city ? 'selected' : ''}`}
+                        onClick={() => handleCitySelection(city)}
+                    >
+                        {city.cityName}
+                    </div>
                 ))}
-            </ul>
-            <button onClick={handleConfirm}>확인</button>
+            </div>
+
+            <div className="button-group">
+                <button onClick={handleConfirm}>확인</button>
+                <button onClick={onClose}>닫기</button>
+            </div>
         </div>
     );
 }

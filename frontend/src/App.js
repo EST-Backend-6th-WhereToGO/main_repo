@@ -8,7 +8,7 @@ import Step3 from './Step3';
 import Post from './Post';
 import Result from './ResultPage';
 import './App.css';
-import CitySelectionPage from './CitySelectionPage';
+import TripPlanner from "./TripPlanner";
 
 function App() {
   const [progress, setProgress] = useState(0); // 진행 상태 (0~100)
@@ -29,6 +29,7 @@ function App() {
           <Route path="/post" element={<Post updateProgress={updateProgress} />} />
           <Route path="/post/:postId" element={<Post />} /> {/* 동적 라우팅 */}
           <Route path="/results" element={<Result />} />
+          <Route path="/tripplan" element={<TripPlanner />} />
         </Routes>
       </div>
     </Router>

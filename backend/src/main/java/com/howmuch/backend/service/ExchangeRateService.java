@@ -26,6 +26,13 @@ public class ExchangeRateService {
 			String yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			cachedRates = fetchExchangeRates(yesterday);
 		}
+
+		// `KRW` 데이터를 필터링
+		if (cachedRates != null) {
+			cachedRates = cachedRates.stream()
+				.filter(rate -> !"KRW".equals(rate.get("cur_unit")))
+				.toList();
+		}
 	}
 
 	@Cacheable("exchangeRates")
@@ -45,3 +52,4 @@ public class ExchangeRateService {
 		}
 	}
 }
+

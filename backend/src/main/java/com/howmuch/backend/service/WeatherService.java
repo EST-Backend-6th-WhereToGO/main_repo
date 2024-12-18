@@ -9,8 +9,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +39,13 @@ public class WeatherService {
 	public synchronized void updateWeatherData() {
 		RestTemplate restTemplate = new RestTemplate();
 		try {
+			// DB에서 모든 도시 이름 조회
 			List<Object[]> cities = cityRepository.findAllCityNamesAndEngCityNames();
 
+			// 중복 제거를 위해 Set 사용
+			Set<String> uniqueCityNames = new HashSet<>();
 			cachedWeatherData = cities.stream()
+				.filter(city -> uniqueCityNames.add((String) city[1])) // 영어 도시 이름 기준 중복 제거
 				.map(city -> fetchWeatherData(restTemplate, (String) city[0], (String) city[1]))
 				.filter(data -> data != null)
 				.collect(Collectors.toList());
