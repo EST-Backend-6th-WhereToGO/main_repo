@@ -1,89 +1,167 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from 'react-router-dom';
-import { useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import Header from "./Header";
 import "./Post.css";
 
 function Post() {
-    const { postId } = useParams();
+    const {postId} = useParams();
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [error, setError] = useState(null);
-    const isFetched = useRef(false);
+    const [userId, setUserId] = useState(null); // 세션에서 가져온 사용자 ID
+    const [liked, setLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
     const navigate = useNavigate();
-    const [liked, setLiked] = useState(false); // 좋아요 상태
-    const [likeCount, setLikeCount] = useState(0); // 좋아요 수
-    const handleWriteClick = () => {
-        navigate('/post/write'); // 새 글쓰기 페이지로 이동
+
+    const handleWriteClick = () => navigate("/post/write");
+    // 1. 사용자 세션 정보 가져오기
+    const fetchSessionUser = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/auth/status", {
+                credentials: "include",
+            });
+            const data = await response.json();
+
+            if (data.status === "LoggedIn") {
+                setUserId(data.userId);
+            } else {
+                setUserId(null);
+            }
+        } catch (error) {
+            console.error("Failed to fetch session user:", error);
+            setError("세션 정보를 불러오는데 실패했습니다.");
+        }
     };
 
-    useEffect(() => {
-        if (isFetched.current) return;
-        isFetched.current = true;
+    // 2. 게시글, 댓글, 좋아요 상태 가져오기
+    const fetchPostData = async (uid) => {
+        try {
+            const [postResponse, commentsResponse] = await Promise.all([
+                fetch(`http://localhost:8080/api/posts/${postId}`).then((res) => res.json()),
+                fetch(`http://localhost:8080/api/post/${postId}/comments`, {
+                    credentials: "include",
+                }).then((res) => res.json()),
+            ]);
 
-        // 게시글 데이터, 좋아요 상태, 댓글 불러오기
-        Promise.all([
-            fetch(`http://localhost:8080/api/posts/${postId}`)
-                .then((response) => response.json()),
-            fetch(`http://localhost:8080/api/posts/${postId}/like/status?userId=2`)
-                .then((response) => response.json()),
-            fetch(`http://localhost:8080/api/post/${postId}/comments`)
-                .then((response) => response.json())
-        ])
-            .then(([postData, likeStatusData, commentsData]) => {
-                setPost(postData);
-                setLikeCount(postData.likeCount); // 조회수, 좋아요 카운트 설정
-                setLiked(likeStatusData.liked);   // 좋아요 상태 설정
-                setComments(commentsData);        // 댓글 설정
+            setPost(postResponse);
+            setLikeCount(postResponse.likeCount);
+            setComments(commentsResponse);
+
+            // 좋아요 상태 확인
+            if (uid) {
+                const likeResponse = await fetch(
+                    `http://localhost:8080/api/posts/${postId}/like/status?userId=${uid}`,
+                    {credentials: "include"}
+                ).then((res) => res.json());
+                setLiked(likeResponse);
+            }
+        } catch (error) {
+            console.error("Error fetching post data:", error);
+            setError("데이터를 불러오는데 실패했습니다.");
+        }
+    };
+
+    // 3. 좋아요 클릭 처리
+    const handleLikeClick = () => {
+        if (!userId) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const url = `http://localhost:8080/api/posts/${postId}/like?userId=${userId}`;
+        const method = liked ? "DELETE" : "POST";
+
+        fetch(url, {method, credentials: "include"})
+            .then(() => {
+                setLiked((prev) => !prev);
+                setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
             })
             .catch((error) => setError(error.message));
-    }, [postId]);
+    };
 
+    // 4. 댓글 작성
     const handleCommentSubmit = () => {
-        if (newComment.trim() === "") return; // 빈 댓글 방지
+        if (!userId) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
 
-        const commentData = {
-            postId: postId,
-            userId: 2, // 임시로 하드코딩
-            content: newComment,
-        };
+        if (newComment.trim() === "") return;
+
+        const commentData = {postId, content: newComment, userId};
 
         fetch("http://localhost:8080/api/comments", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
             body: JSON.stringify(commentData),
         })
             .then((response) => response.json())
             .then((newComment) => {
-                setComments([...comments, newComment]); // 댓글 목록 갱신
-                setNewComment(""); // 입력 필드 초기화
+                setComments([...comments, newComment]);
+                setNewComment("");
             })
             .catch((error) => setError(error.message));
     };
 
-    const handleLikeClick = () => {
-        if (liked) {
-            // 좋아요 취소
-            fetch(`http://localhost:8080/api/posts/${postId}/like?userId=2`, {
-                method: "DELETE"
-            })
-                .then(() => {
-                    setLiked(false);
-                    setLikeCount((prev) => prev - 1);
-                })
-                .catch((error) => setError(error.message));
-        } else {
-            // 좋아요 등록
-            fetch(`http://localhost:8080/api/posts/${postId}/like?userId=2`, {
-                method: "POST"
-            })
-                .then(() => {
-                    setLiked(true);
-                    setLikeCount((prev) => prev + 1);
-                })
-                .catch((error) => setError(error.message));
+    // 5. 페이지 로드 시 사용자 정보 가져오기
+    useEffect(() => {
+        const loadData = async () => {
+            await fetchSessionUser();
+        };
+        loadData();
+    }, []);
+
+    // 6. userId 설정 후 데이터 가져오기
+    useEffect(() => {
+        if (userId !== null) {
+            fetchPostData(userId);
         }
+    }, [userId, postId]);
+
+    const handleDeleteComment = (commentId) => {
+        if (!window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) return;
+
+        fetch(`http://localhost:8080/api/comments/${commentId}`, {
+            method: "DELETE",
+            credentials: "include",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    // 댓글 목록에서 삭제된 댓글 제거
+                    setComments((prevComments) =>
+                        prevComments.filter((comment) => comment.commentId !== commentId)
+                    );
+                } else {
+                    alert("댓글 삭제 권한이 없거나 오류가 발생했습니다.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error deleting comment:", error);
+                alert("댓글 삭제 중 오류가 발생했습니다.");
+            });
+    };
+
+    const handleDeletePost = () => {
+        if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+
+        fetch(`http://localhost:8080/api/posts/${postId}`, {
+            method: "DELETE",
+            credentials: "include",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert("게시글이 삭제되었습니다.");
+                    navigate("/"); // 삭제 후 메인 페이지로 이동
+                } else {
+                    alert("게시글 삭제 권한이 없거나 오류가 발생했습니다.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error deleting post:", error);
+                alert("게시글 삭제 중 오류가 발생했습니다.");
+            });
     };
 
     if (error) return <div>에러 발생: {error}</div>;
@@ -91,18 +169,23 @@ function Post() {
 
     return (
         <div className="post-page">
-            <Header />
+            <Header/>
             <div className="post-container">
-                {/* Title */}
+                {userId === post.userId && (
+                    <div className="edit-delete-buttons">
+                        <button className="edit-button">수정</button>
+                        <button className="delete-button" onClick={handleDeletePost}>삭제</button>
+                    </div>
+                )}
+
+                {/* 제목 */}
                 <div className="post-title">
                     <h1>{post.title}</h1>
                 </div>
 
-                {/* MetaData */}
+                {/* 메타 정보 */}
                 <div className="post-meta">
-                    <div className="meta-left">
-                        {post.nickname}
-                    </div>
+                    <div className="meta-left">{post.nickname}</div>
                     <div className="meta-center">
                         {post.updatedAt && post.updatedAt !== post.createdAt
                             ? `${new Date(post.updatedAt).toLocaleString()} (수정)`
@@ -110,16 +193,16 @@ function Post() {
                     </div>
                     <div className="meta-right">
                         <span>조회수: {post.viewCount}</span>
-                        <span>좋아요: {post.likeCount}</span>
+                        <span>좋아요: {likeCount}</span>
                     </div>
-
                 </div>
 
-                {/* Content */}
+                {/* 내용 */}
                 <div className="post-content">
                     <p>{post.content}</p>
                 </div>
 
+                {/* 좋아요 버튼 */}
                 <button
                     className={`like-button ${liked ? "liked" : ""}`}
                     onClick={handleLikeClick}
@@ -127,51 +210,40 @@ function Post() {
                     {liked ? "좋아요 취소" : "좋아요"} ({likeCount})
                 </button>
 
-                {/* Comments Section */}
+                {/* 댓글 섹션 */}
                 <div className="comments-section">
                     <h3>댓글 {comments.length}</h3>
                     <div className="comment-input">
-                    <textarea
-                        placeholder="댓글을 입력하세요..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                    />
+                        <textarea
+                            placeholder="댓글을 입력하세요..."
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                        />
                         <button onClick={handleCommentSubmit}>댓글 작성</button>
                     </div>
-                    {comments.length > 0 ? (
-                        comments.map((comment) => (
-                            <div key={comment.commentId} className="comment-item">
-                                <div className="comment-header">
-                                    <span className="comment-nickname">
-                                        {comment.nickname}
-                                    </span>
-                                    <span className="comment-time">
-                                        {comment.updatedAt &&
-                                        comment.updatedAt !== comment.createdAt
-                                            ? `${new Date(
-                                                comment.updatedAt
-                                            ).toLocaleString()} (수정)`
-                                            : new Date(
-                                                comment.createdAt
-                                            ).toLocaleString()}
-                                    </span>
-                                </div>
-                                <div className="comment-content">
-                                    <p>{comment.content}</p>
-                                </div>
+                    {comments.map((comment, index) => (
+                        <div key={comment.commentId || index} className="comment-item">
+                            <div className="comment-header">
+                                <span>{comment.nickname}</span>
+                                <span>{new Date(comment.createdAt).toLocaleString()}</span>
                             </div>
-                        ))
-                    ) : (
-                        <p>댓글이 없습니다.</p>
-                    )}
+                            <div className="comment-sub">
+                                <div className="comment-content">{comment.content}</div>
+                                {userId === comment.userId && (
+                                    <button
+                                        className="delete-comment-button"
+                                        onClick={() => handleDeleteComment(comment.commentId)}
+                                    >
+                                        X
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="button-section">
-                    <button
-                        /*className="action-button"
-                        onClick={() => (window.location.href = "http://localhost:3030/post")}*/>
-                        목록
-                    </button>
+                    <button onClick={() => navigate("/")}>목록</button>
                     <button className="action-button" onClick={handleWriteClick}>
                         글쓰기
                     </button>
