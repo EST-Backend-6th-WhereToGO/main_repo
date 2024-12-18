@@ -9,52 +9,93 @@ const Board = () => {
         { label: '여행 일정 공유', value: 'TRIP' },
     ];
 
-    const [activeCategory, setActiveCategory] = useState(categories[0]); // 전체글 기본 선택
+    const [activeCategory, setActiveCategory] = useState({ label: '전체 게시글', value: null }); // 전체글 기본 선택
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [activeSort, setActiveSort] = useState('default'); // 정렬 상태 ('default', 'views', 'likes')
 
-    const fetchPosts = async (url) => {
+    const fetchPosts = async (url, params = {}) => {
         try {
-            const response = await fetch(url);
+            // URLSearchParams를 사용하여 파라미터를 동적으로 추가
+            const queryParams = new URLSearchParams(params).toString();
+            const fullUrl = `${url}?${queryParams}`;
+
+            const response = await fetch(fullUrl);
             if (!response.ok) {
                 throw new Error('Failed to fetch posts');
             }
             const data = await response.json();
-            setPosts(data.content || data); // `content`가 있는 경우와 없는 경우 모두 처리
+
+            setPosts(data.content || []); // 게시글 목록
+            setTotalPages(data.totalPages || 1); // 전체 페이지 수 설정
         } catch (error) {
             console.error('Error fetching posts:', error);
             setPosts([]);
         }
     };
 
+    useEffect(() => {
+        const params = { page: 1 };
+        fetchPosts('http://localhost:8080/api/posts', params);
+    }, []);
+
     const handleCategoryChange = (category) => {
         setActiveCategory(category);
-        if (!category.value) {
-            // 전체글
-            fetchPosts('http://localhost:8080/api/posts');
+        setCurrentPage(1);
+
+        const params = { page: 1 };
+        if (category.value) {
+            params.header = category.value;
+            fetchPosts('http://localhost:8080/api/posts/by-header', params);
         } else {
-            // 특정 카테고리
-            fetchPosts(`http://localhost:8080/api/posts/by-header?header=${category.value}`);
+            fetchPosts('http://localhost:8080/api/posts', params);
         }
     };
 
     const handleSortChange = (sortType) => {
+        setActiveSort(sortType);
+        setCurrentPage(1);
+
+        const params = { page: 1 };
         let url = '';
+
         if (sortType === 'views') {
             url = 'http://localhost:8080/api/posts/by-views';
         } else if (sortType === 'likes') {
             url = 'http://localhost:8080/api/posts/by-likes';
+        } else {
+            url = 'http://localhost:8080/api/posts';
         }
-        fetchPosts(url);
+        fetchPosts(url, params);
     };
 
-    useEffect(() => {
-        fetchPosts('http://localhost:8080/api/posts');
-    }, []);
+    const handlePageChange = (page) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
+
+        const params = { page };
+        let url = '';
+
+        if (activeSort === 'views') {
+            url = 'http://localhost:8080/api/posts/by-views';
+        } else if (activeSort === 'likes') {
+            url = 'http://localhost:8080/api/posts/by-likes';
+        } else if (activeCategory.value !== null) { // header 추가 조건 확인
+            params.header = activeCategory.value;
+            url = 'http://localhost:8080/api/posts/by-header';
+        } else {
+            url = 'http://localhost:8080/api/posts';
+        }
+        fetchPosts(url, params);
+    };
+
+
 
     return (
         <div style={styles.container}>
-            <Header />
+            <Header/>
 
             {/* 네비게이션 */}
             <nav style={styles.nav}>
@@ -97,6 +138,17 @@ const Board = () => {
                 >
                     글쓰기
                 </button>
+                <button
+                    style={{...styles.writeButton, backgroundColor: '#17a2b8'}}
+                    onClick={() => {
+                        setActiveCategory({label: '전체 게시글', value: null}); // 카테고리 초기화
+                        setActiveSort('default');
+                        setCurrentPage(1);
+                        fetchPosts('http://localhost:8080/api/posts', {page: 1}); // 전체 조회 요청
+                    }}
+                >
+                    전체 게시글 보기
+                </button>
             </div>
 
             {/* 게시글 목록 */}
@@ -105,7 +157,11 @@ const Board = () => {
                 {posts.length > 0 ? (
                     <ul style={styles.postList}>
                         {posts.map((post) => (
-                            <li key={post.id} style={styles.postItem}>
+                            <li
+                                key={post.postId}
+                                style={styles.postItem}
+                                onClick={() => navigate(`/post/${post.postId}`)} // 클릭 시 상세 페이지로 이동
+                            >
                                 <h3>{post.title}</h3>
                                 <p>{post.content}</p>
                                 <small>조회수: {post.viewCount} | 좋아요: {post.likeCount}</small>
@@ -116,14 +172,45 @@ const Board = () => {
                     <p>해당 카테고리에 게시글이 없습니다.</p>
                 )}
             </div>
+            <div style={styles.paginationContainer}>
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    style={styles.pageButton}
+                >
+                    이전
+                </button>
+
+                {[...Array(totalPages)].map((_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        style={{
+                            ...styles.pageButton,
+                            backgroundColor: currentPage === index + 1 ? '#007bff' : '#e0e0e0',
+                            color: currentPage === index + 1 ? '#fff' : '#000',
+                        }}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    style={styles.pageButton}
+                >
+                    다음
+                </button>
+            </div>
         </div>
     );
 };
 
 // 간단한 스타일 객체
 const styles = {
-    container: { maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center' },
-    nav: { display: 'flex', justifyContent: 'center', marginBottom: '20px' },
+    container: {maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center'},
+    nav: {display: 'flex', justifyContent: 'center', marginBottom: '20px'},
     button: {
         padding: '10px 20px',
         margin: '0 5px',
@@ -132,7 +219,7 @@ const styles = {
         cursor: 'pointer',
         fontSize: '16px',
     },
-    sortButtonContainer: { display: 'flex', justifyContent: 'center', marginBottom: '20px' },
+    sortButtonContainer: {display: 'flex', justifyContent: 'center', marginBottom: '20px'},
     sortButton: {
         padding: '10px 20px',
         margin: '0 5px',
@@ -143,7 +230,7 @@ const styles = {
         backgroundColor: '#ffc107',
         color: '#000',
     },
-    writeButtonContainer: { textAlign: 'right', marginBottom: '20px' },
+    writeButtonContainer: {textAlign: 'right', marginBottom: '20px'},
     writeButton: {
         padding: '10px 20px',
         border: 'none',
@@ -156,6 +243,15 @@ const styles = {
     postsContainer: { textAlign: 'left' },
     postList: { listStyle: 'none', padding: 0 },
     postItem: { borderBottom: '1px solid #ddd', padding: '10px 0' },
+    paginationContainer: { display: 'flex', justifyContent: 'center', marginTop: '20px' },
+    pageButton: {
+        padding: '8px 12px',
+        margin: '0 5px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '14px',
+    },
 };
 
 export default Board;

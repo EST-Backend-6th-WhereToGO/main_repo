@@ -1,46 +1,47 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const CreatePost = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [header, setHeader] = useState('TIP'); // 기본 카테고리 Enum 값
-    const [userId, setUserId] = useState(null); // 세션에서 로그인된 사용자 ID
-    const [error, setError] = useState(null); // 오류 상태 추가
+    const location = useLocation();
     const navigate = useNavigate();
 
-    // 사용자 친화적인 이름과 Enum 값 매핑
+    // 전달된 게시글 데이터 확인 (수정 모드 여부 판단)
+    const { state } = location || {};
+    const [postId, setPostId] = useState(state?.postId || null);
+    const [title, setTitle] = useState(state?.title || '');
+    const [content, setContent] = useState(state?.content || '');
+    const [header, setHeader] = useState(state?.header || 'TIP'); // 기본값
+    const [userId, setUserId] = useState(null);
+
     const categories = [
         { label: '여행 TIP', value: 'TIP' },
         { label: '여행 일정 공유', value: 'TRIP' },
     ];
 
-    // 세션 사용자 ID 가져오기
+    // 사용자 세션 가져오기
     const fetchSessionUser = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:8080/api/auth/status', {
-                credentials: 'include', // 세션 쿠키 포함
+                credentials: 'include',
             });
             const data = await response.json();
 
             if (data.status === 'LoggedIn') {
-                setUserId(data.userId); // 사용자 ID 설정
+                setUserId(data.userId);
             } else {
                 alert('로그인이 필요합니다.');
-                navigate('/login'); // 로그인 페이지로 이동
+                navigate('/login');
             }
         } catch (error) {
             console.error('Failed to fetch session user:', error);
-            setError('세션 정보를 불러오는데 실패했습니다.');
         }
     }, [navigate]);
 
-    // 컴포넌트 로드 시 사용자 정보 가져오기
     useEffect(() => {
         fetchSessionUser();
     }, [fetchSessionUser]);
 
-    // 게시글 제출
+    // 게시글 제출 (POST 또는 PUT)
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -52,39 +53,42 @@ const CreatePost = () => {
         const postData = { title, content, header, userId };
 
         try {
-            const response = await fetch('http://localhost:8080/api/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            let url = 'http://localhost:8080/api/posts';
+            let method = 'POST';
+
+            if (postId) {
+                // 수정 모드인 경우 PUT 요청
+                url = `http://localhost:8080/api/posts/${postId}`;
+                method = 'PUT';
+            }
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify(postData),
             });
 
             if (response.ok) {
-                alert('게시글이 성공적으로 작성되었습니다!');
-                navigate('/board'); // 게시판 페이지로 이동
+                const result = await response.json();
+                const newPostId = result.postId;
+                alert(postId ? '게시글이 수정되었습니다!' : '게시글이 작성되었습니다!');
+                navigate(`/post/${newPostId}`);
             } else {
                 const errorMessage = await response.text();
-                console.error('Error creating post:', errorMessage);
-                alert('게시글 작성 중 오류가 발생했습니다.');
+                console.error('Error submitting post:', errorMessage);
+                alert('게시글 저장 중 오류가 발생했습니다.');
             }
         } catch (error) {
-            console.error('게시글 작성 실패:', error);
-            alert('게시글 작성 중 오류가 발생했습니다.');
+            console.error('Failed to submit post:', error);
+            alert('게시글 저장 중 오류가 발생했습니다.');
         }
     };
 
-    // 에러 발생 시 처리
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     return (
         <div style={styles.container}>
-            <h2>게시글 작성</h2>
+            <h2>{postId ? '게시글 수정' : '게시글 작성'}</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
-                {/* 제목 입력 */}
                 <div style={styles.formGroup}>
                     <label style={styles.label}>제목</label>
                     <input
@@ -96,7 +100,6 @@ const CreatePost = () => {
                     />
                 </div>
 
-                {/* 카테고리 선택 */}
                 <div style={styles.formGroup}>
                     <label style={styles.label}>카테고리</label>
                     <select
@@ -112,7 +115,6 @@ const CreatePost = () => {
                     </select>
                 </div>
 
-                {/* 내용 입력 */}
                 <div style={styles.formGroup}>
                     <label style={styles.label}>내용</label>
                     <textarea
@@ -121,19 +123,17 @@ const CreatePost = () => {
                         style={styles.textarea}
                         rows="5"
                         required
-                    ></textarea>
+                    />
                 </div>
 
-                {/* 제출 버튼 */}
                 <button type="submit" style={styles.submitButton}>
-                    글 등록하기
+                    {postId ? '수정 완료' : '글 등록하기'}
                 </button>
             </form>
         </div>
     );
 };
 
-// 스타일 객체
 const styles = {
     container: { maxWidth: '600px', margin: '0 auto', padding: '20px', textAlign: 'center' },
     form: { display: 'flex', flexDirection: 'column', gap: '15px' },

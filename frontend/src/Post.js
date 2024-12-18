@@ -16,7 +16,7 @@ function Post() {
     const [editCommentId, setEditCommentId] = useState(null);
     const [editContent, setEditContent] = useState("");
 
-    const handleWriteClick = () => navigate("/post/write");
+    const handleWriteClick = () => navigate("/create-post");
     // 1. 사용자 세션 정보 가져오기
     const fetchSessionUser = async () => {
         try {
@@ -196,6 +196,19 @@ function Post() {
             });
     };
 
+    const handleEditPost = () => {
+        // 게시글 수정 페이지로 이동하면서 데이터 전달
+        navigate("/create-post", {
+            state: {
+                postId: postId,       // 수정할 게시글 ID
+                title: post.title,    // 기존 제목
+                content: post.content, // 기존 내용
+                header: post.header,  // 기존 카테고리 (Enum 값)
+            },
+        });
+    };
+
+
 
     if (error) return <div>에러 발생: {error}</div>;
     if (!post) return <div>로딩 중...</div>;
@@ -206,7 +219,7 @@ function Post() {
             <div className="post-container">
                 {userId === post.userId && (
                     <div className="edit-delete-buttons">
-                        <button className="edit-button">수정</button>
+                        <button className="edit-button" onClick={handleEditPost}>수정</button>
                         <button className="delete-button" onClick={handleDeletePost}>삭제</button>
                     </div>
                 )}
@@ -319,7 +332,7 @@ function Post() {
                 </div>
 
                 <div className="button-section">
-                    <button onClick={() => navigate("/")}>목록</button>
+                    <button onClick={() => navigate("/board")}>목록</button>
                     <button className="action-button" onClick={handleWriteClick}>
                         글쓰기
                     </button>
