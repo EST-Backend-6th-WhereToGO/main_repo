@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [header, setHeader] = useState('TIP'); // 기본 카테고리 Enum 값
+    const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
 
     // 사용자 친화적인 이름과 Enum 값 매핑
@@ -13,15 +14,54 @@ const CreatePost = () => {
         { label: '여행 일정 공유', value: 'TRIP' },
     ];
 
+    // 세션 사용자 ID 가져오기
+    const fetchSessionUser = useCallback(async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/status', {
+                credentials: 'include', // 세션 쿠키 포함
+            });
+            const data = await response.json();
+
+            if (data.status === 'LoggedIn') {
+                setUserId(data.userId); // 사용자 ID 설정
+            } else {
+                alert('로그인이 필요합니다.');
+                navigate('/login'); // 로그인 페이지로 이동
+            }
+        } catch (error) {
+            console.error('Failed to fetch session user:', error);
+            alert('세션 정보를 불러오는데 실패했습니다.');
+        }
+    }, [navigate]); // navigate를 종속성 배열에 추가
+
+    // 컴포넌트 로드 시 사용자 정보 가져오기
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchSessionUser();
+                console.log('Session user fetched successfully');
+            } catch (error) {
+                console.error('Error fetching session user:', error);
+            }
+        };
+        fetchData();
+    }, [fetchSessionUser]);
+
+    // 게시글 제출
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!userId) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
 
         // 데이터 서버로 전송
         fetch('http://localhost:8080/api/posts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'userId': '1', // 테스트용 userId 헤더 추가
+                'userId': userId, // 세션 사용자 ID 추가
             },
             body: JSON.stringify({ title, content, header }),
         })
