@@ -1,6 +1,6 @@
 package com.howmuch.backend.entity.plan;
 
-import com.howmuch.backend.entity.DTO.MyTripOrder;
+import com.howmuch.backend.entity.dto.MyTripOrder;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

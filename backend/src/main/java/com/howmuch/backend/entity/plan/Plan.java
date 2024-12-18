@@ -1,7 +1,7 @@
 package com.howmuch.backend.entity.plan;
 
 import com.howmuch.backend.entity.city_info.City;
-import com.howmuch.backend.entity.DTO.MyPlanDTO;
+import com.howmuch.backend.entity.dto.MyPlanDTO;
 import com.howmuch.backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ public class CommentService {
                 .map(comment -> new CommentResponseDTO(
                         comment.getCommentId(),
                         comment.getPost().getPostId(),
+                        comment.getUser().getUserId(),
                         comment.getUser().getNickname(), // 유저 닉네임 가져오기
                         comment.getContent(),
                         comment.getCreatedAt(),
@@ -47,6 +49,7 @@ public class CommentService {
                 .map(comment -> new CommentResponseDTO(
                         comment.getCommentId(),
                         comment.getPost().getPostId(),
+                        comment.getUser().getUserId(),
                         comment.getUser().getNickname(),
                         comment.getContent(),
                         comment.getCreatedAt(),
@@ -71,6 +74,7 @@ public class CommentService {
         return new CommentResponseDTO(
                 createdComment.getCommentId(),
                 createdComment.getPost().getPostId(),
+                createdComment.getUser().getUserId(),
                 createdComment.getUser().getNickname(), // 유저 닉네임 가져오기
                 createdComment.getContent(),
                 createdComment.getCreatedAt(),
@@ -79,16 +83,35 @@ public class CommentService {
     }
 
     @Transactional
-    public Optional<PostComment> updateComment(Long commentId, PostComment updatedComment) {
+    public Optional<CommentResponseDTO> updateComment(Long commentId, PostComment updatedComment, Long userId) {
         return commentRepository.findById(commentId)
+                .filter(comment -> comment.getUser().getUserId().equals(userId)) // 작성자 검증
                 .map(comment -> {
                     comment.setContent(updatedComment.getContent());
-                    return commentRepository.save(comment);
+                    comment.setUpdatedAt(LocalDateTime.now()); // 수정 시간 업데이트
+                    PostComment savedComment = commentRepository.save(comment);
+
+
+                    return new CommentResponseDTO(
+                            savedComment.getCommentId(),
+                            savedComment.getPost().getPostId(),
+                            savedComment.getUser().getUserId(),
+                            savedComment.getUser().getNickname(),
+                            savedComment.getContent(),
+                            savedComment.getCreatedAt(),
+                            savedComment.getUpdatedAt()
+                    );
                 });
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Long sessionUserId) {
+        PostComment comment = commentRepository.findById(commentId)
+                        .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다"));
+
+        if(!comment.getUser().getUserId().equals(sessionUserId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다");
+        }
         commentRepository.deleteById(commentId);
     }
 
