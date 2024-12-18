@@ -1,8 +1,10 @@
 package com.howmuch.backend.service;
 
+import com.howmuch.backend.entity.DTO.AddPostRequest;
 import com.howmuch.backend.entity.city_info.City;
 import com.howmuch.backend.entity.DTO.MyPlanDTO;
 import com.howmuch.backend.entity.DTO.MyTripOrder;
+import com.howmuch.backend.entity.community.PostHeader;
 import com.howmuch.backend.entity.plan.DetailPlan;
 import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.user.User;
@@ -22,6 +24,7 @@ public class MyPlanService {
     DetailPlanRepository detailPlanRepository;
     UserRepository userRepository;
     CityRepository cityRepository;
+    PostService postService;
 
     public MyPlanService(PlanRepository planRepository
             , DetailPlanRepository detailPlanRepository
@@ -37,7 +40,17 @@ public class MyPlanService {
         User user = userRepository.findById(myPlanDTO.getUserId()).orElseThrow(IllegalArgumentException::new);
         City city = cityRepository.findById(myPlanDTO.getCityId()).orElseThrow(IllegalArgumentException::new);
 
-        return planRepository.save(new Plan(myPlanDTO, user, city));
+
+        Plan plan =  planRepository.save(new Plan(myPlanDTO, user, city));
+
+        AddPostRequest addPostRequest = new AddPostRequest();
+        addPostRequest.setHeader(PostHeader.TRIP);
+        addPostRequest.setTitle(city.getCityName() + " 여행");
+        addPostRequest.setContent("여행 일정");
+        addPostRequest.setPlanId(plan.getPlanId());
+
+        postService.createPost(addPostRequest, user.getUserId());
+        return plan;
     }
 
     public void saveDetailPlan(Plan plan, List<MyTripOrder> myTripOrderList) {

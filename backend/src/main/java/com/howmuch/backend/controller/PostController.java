@@ -96,16 +96,17 @@ public class PostController {
 
     // 좋아요 순 인기게시물 조회
     @GetMapping("/by-likes")
-    public ResponseEntity<List<Post>> getAllPostsByLikeCount() {
-        List<Post> popularPosts = postService.getAllPostsByLikeCount();
+    public ResponseEntity<Page<PostResponse>> getAllPostsByLikeCount(
+            @RequestParam(defaultValue = "1") int page) {
+        Page<PostResponse> popularPosts = postService.getAllPostsByLikeCount(page -1);
         return ResponseEntity.ok(popularPosts);
     }
 
     // 조회수 인기게시물 조회
     @GetMapping("/by-views")
-
-    public ResponseEntity<List<Post>> getAllPostsByViewCount() {
-        List<Post> popularPosts = postService.getAllPostsByViewCount();
+    public ResponseEntity<Page<PostResponse>> getAllPostsByViewCount(
+            @RequestParam(defaultValue = "1") int page) {
+        Page<PostResponse> popularPosts = postService.getAllPostsByViewCount(page -1);
         return ResponseEntity.ok(popularPosts);
     }
 

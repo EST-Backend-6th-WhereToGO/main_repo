@@ -37,9 +37,21 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findTripPosts(Pageable pageable);
 
     // 게시물 조회 순 정렬 조회
-    List<Post> findAllByOrderByViewCountDesc();
+    @Query("""
+    SELECT p FROM Post p
+    LEFT JOIN p.plan pl
+    WHERE pl IS NULL OR pl.isPublic = TRUE
+    ORDER BY p.viewCount DESC
+""")
+    Page<Post> findAllByOrderByViewCountDesc(Pageable pageable);
 
     // 게시물 좋아요 순 정렬 조회
-    List<Post> findAllByOrderByLikeCountDesc();
+    @Query("""
+    SELECT p FROM Post p
+    LEFT JOIN p.plan pl
+    WHERE pl IS NULL OR pl.isPublic = TRUE
+    ORDER BY p.likeCount DESC
+""")
+    Page<Post> findAllByOrderByLikeCountDesc(Pageable pageable);
 
 }

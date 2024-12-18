@@ -74,9 +74,9 @@ public class PostService {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
         Page<Post> posts;
 
-        if(header.equals(PostHeader.TIP.name())) {
+        if (header.toUpperCase().equals(PostHeader.TIP.name())) {
             posts = postRepository.findTipPosts(pageable);
-        } else if(header.equals(PostHeader.TRIP.name())) {
+        } else if (header.toUpperCase().equals(PostHeader.TRIP.name())) {
             posts = postRepository.findTripPosts(pageable);
         } else {
             throw new IllegalArgumentException("유효하지 않은 헤더입니다");
@@ -181,8 +181,18 @@ public class PostService {
 
     // 게시물 좋아요 순 조회
     @Transactional(readOnly = true)
-    public List<Post> getAllPostsByLikeCount() {
-        return postRepository.findAllByOrderByLikeCountDesc();
+    public Page<PostResponse> getAllPostsByLikeCount(int page) {
+        Pageable pageable = PageRequest.of(page,PAGE_SIZE);
+        Page<Post> posts = postRepository.findAllByOrderByLikeCountDesc(pageable);
+        return posts.map(this::toPostResponse);
+    }
+
+    // 게시물 조회수 순 조회
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getAllPostsByViewCount(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Post> posts =  postRepository.findAllByOrderByViewCountDesc(pageable);
+        return posts.map(this::toPostResponse);
     }
 
     // 게시물 조회수 증가
@@ -191,12 +201,6 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         post.setViewCount(post.getViewCount() + 1);
-    }
-
-    // 게시물 조회수 순 조회
-    @Transactional(readOnly = true)
-    public List<Post> getAllPostsByViewCount() {
-        return postRepository.findAllByOrderByViewCountDesc();
     }
 
     public boolean isPostLikedByUser(Long postId, Long userId) {
