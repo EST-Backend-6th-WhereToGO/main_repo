@@ -5,15 +5,21 @@ import com.howmuch.backend.entity.community.PostComment;
 import com.howmuch.backend.entity.DTO.CommentRequestDTO;
 import com.howmuch.backend.entity.DTO.CommentResponseDTO;
 import com.howmuch.backend.service.CommentService;
+import com.howmuch.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class CommentController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private CommentService commentService;
@@ -47,8 +53,12 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
+                                              OAuth2AuthenticationToken authentication) {
+        String email = authentication.getPrincipal().getAttribute("email");
+        Long sessionUserId = userService.getUserIdByEmail(email);
+
+        commentService.deleteComment(commentId, sessionUserId);
         return ResponseEntity.noContent().build();
 
     }
