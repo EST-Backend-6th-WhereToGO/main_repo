@@ -7,6 +7,7 @@ import com.howmuch.backend.entity.DTO.CommentResponseDTO;
 import com.howmuch.backend.service.CommentService;
 import com.howmuch.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -45,11 +46,18 @@ public class CommentController {
     }
 
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<PostComment> updateComment(@PathVariable Long commentId, @RequestBody PostComment updatedComment) {
-        Optional<PostComment> comment = commentService.updateComment(commentId, updatedComment);
-        return comment.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<CommentResponseDTO> updateComment(@PathVariable Long commentId,
+                                                            @RequestBody PostComment updatedComment,
+                                                            OAuth2AuthenticationToken authentication) {
+        // 로그인된 사용자 확인
+        String email = authentication.getPrincipal().getAttribute("email");
+        Long sessionUserId = userService.getUserIdByEmail(email);
 
+        // 댓글 수정 서비스 호출
+        Optional<CommentResponseDTO> comment = commentService.updateComment(commentId, updatedComment, sessionUserId);
+
+        return comment.map(ResponseEntity::ok) // 성공: 수정된 댓글 반환
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.FORBIDDEN).build()); // 실패: 403
     }
 
     @DeleteMapping("/comments/{commentId}")

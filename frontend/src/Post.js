@@ -13,6 +13,8 @@ function Post() {
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const navigate = useNavigate();
+    const [editCommentId, setEditCommentId] = useState(null);
+    const [editContent, setEditContent] = useState("");
 
     const handleWriteClick = () => navigate("/post/write");
     // 1. 사용자 세션 정보 가져오기
@@ -163,6 +165,37 @@ function Post() {
                 alert("게시글 삭제 중 오류가 발생했습니다.");
             });
     };
+    const handleEditClick = (comment) => {
+        setEditCommentId(comment.commentId); // 수정할 댓글 ID 설정
+        setEditContent(comment.content);     // 기존 댓글 내용 가져오기
+    };
+
+    const handleEditSubmit = (commentId) => {
+        if (editContent.trim() === "") return;
+
+        fetch(`http://localhost:8080/api/comments/${commentId}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({content: editContent}) // 수정된 댓글 내용 전송
+        })
+            .then((response) => response.json())
+            .then((updatedComment) => {
+                // 수정된 댓글로 상태 업데이트
+                setComments((prevComments) =>
+                    prevComments.map((comment) =>
+                        comment.commentId === commentId ? updatedComment : comment
+                    )
+                );
+                setEditCommentId(null); // 수정 모드 해제
+                setEditContent("");     // 입력 필드 초기화
+            })
+            .catch((error) => {
+                console.error("Error updating comment:", error);
+                alert("댓글 수정 중 오류가 발생했습니다.");
+            });
+    };
+
 
     if (error) return <div>에러 발생: {error}</div>;
     if (!post) return <div>로딩 중...</div>;
@@ -221,21 +254,64 @@ function Post() {
                         />
                         <button onClick={handleCommentSubmit}>댓글 작성</button>
                     </div>
-                    {comments.map((comment, index) => (
-                        <div key={comment.commentId || index} className="comment-item">
+                    {comments.map((comment) => (
+                        <div key={comment.commentId} className="comment-item">
                             <div className="comment-header">
                                 <span>{comment.nickname}</span>
-                                <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                                <span>
+                                    {comment.updatedAt && comment.updatedAt !== comment.createdAt
+                                        ? `${new Date(comment.updatedAt).toLocaleString()} (수정됨)`
+                                        : new Date(comment.createdAt).toLocaleString()}
+                                </span>
                             </div>
                             <div className="comment-sub">
-                                <div className="comment-content">{comment.content}</div>
-                                {userId === comment.userId && (
-                                    <button
-                                        className="delete-comment-button"
-                                        onClick={() => handleDeleteComment(comment.commentId)}
-                                    >
-                                        X
-                                    </button>
+                                {/* 수정 모드인지 확인 */}
+                                {editCommentId === comment.commentId ? (
+                                    <>
+                                        {/* 수정 중인 경우 textarea 표시 */}
+                                        <textarea className="edit-comment-textarea"
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
+                                        />
+                                        <div className="comment-sub-button">
+                                            <button
+                                                className="save-comment-button"
+                                                onClick={() => handleEditSubmit(comment.commentId)}
+                                            >
+                                                저장
+                                            </button>
+                                            <button
+                                                className="cancel-comment-button"
+                                                onClick={() => {
+                                                    setEditCommentId(null);
+                                                    setEditContent("");
+                                                }}
+                                            >
+                                                취소
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* 일반 모드: 댓글 내용 표시 */}
+                                        <div className="comment-content">{comment.content}</div>
+                                        {userId === comment.userId && (
+                                            <div className="comment-sub-button">
+                                                <button
+                                                    className="edit-comment-button"
+                                                    onClick={() => handleEditClick(comment)} // 수정 버튼 클릭
+                                                >
+                                                    수정
+                                                </button>
+                                                <button
+                                                    className="delete-comment-button"
+                                                    onClick={() => handleDeleteComment(comment.commentId)}
+                                                >
+                                                    삭제
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>

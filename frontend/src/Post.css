@@ -184,6 +184,8 @@
     text-align: left;
     font-size: 14px;
     line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 /* 버튼 섹션 */
@@ -210,23 +212,31 @@
 .button-section button:hover {
     background-color: #e0e0e0;
 }
+.comment-sub-button {
+    display: flex;
+    gap: 10px;
+}
+.edit-comment-textarea {
+    resize: none;
+    width: 80%;
+    padding: 8px;
+}
 
-.delete-comment-button {
+.delete-comment-button, .edit-comment-button, .save-comment-button, .cancel-comment-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 24px;
+    width: 60px;
     height: 24px;
     background-color: #f0f0f0;
     color: #333;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 9px;
     transition: background-color 0.2s ease;
 }
 
-.delete-comment-button:hover {
+.delete-comment-button:hover, .edit-comment-button:hover, .save-comment-button, .cancel-comment-button {
     background-color: #e0e0e0;
 }
 

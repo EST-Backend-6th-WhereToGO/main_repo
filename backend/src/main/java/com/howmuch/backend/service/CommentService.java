@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,11 +83,24 @@ public class CommentService {
     }
 
     @Transactional
-    public Optional<PostComment> updateComment(Long commentId, PostComment updatedComment) {
+    public Optional<CommentResponseDTO> updateComment(Long commentId, PostComment updatedComment, Long userId) {
         return commentRepository.findById(commentId)
+                .filter(comment -> comment.getUser().getUserId().equals(userId)) // 작성자 검증
                 .map(comment -> {
                     comment.setContent(updatedComment.getContent());
-                    return commentRepository.save(comment);
+                    comment.setUpdatedAt(LocalDateTime.now()); // 수정 시간 업데이트
+                    PostComment savedComment = commentRepository.save(comment);
+
+
+                    return new CommentResponseDTO(
+                            savedComment.getCommentId(),
+                            savedComment.getPost().getPostId(),
+                            savedComment.getUser().getUserId(),
+                            savedComment.getUser().getNickname(),
+                            savedComment.getContent(),
+                            savedComment.getCreatedAt(),
+                            savedComment.getUpdatedAt()
+                    );
                 });
     }
 
