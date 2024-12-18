@@ -1,0 +1,28 @@
+.trip-planner {
+    padding: 20px;
+}
+
+#trip-order {
+    margin-bottom: 20px;
+}
+
+.planOrder {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+.controls button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#map {
+    margin-top: 20px;
+}

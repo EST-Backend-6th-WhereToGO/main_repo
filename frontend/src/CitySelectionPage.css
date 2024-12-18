@@ -1,0 +1,89 @@
+.city-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    margin: auto;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.pagination-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 15px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.grid-item {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grid-item:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.05);
+}
+
+.grid-item.selected {
+    background-color: #87cefa;
+    color: #fff;
+    border: 1px solid #4682b4;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4682b4;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #315f7d;
+}
+
+button:disabled,
+.disabled-button {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background-color: #ff6347;
+}
+
+.close-button:hover {
+    background-color: #d8493b;
+}

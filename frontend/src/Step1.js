@@ -102,13 +102,16 @@ function Step1({ updateProgress }) {
   const handleNext = async () => {
     if (nickname && age && gender && selectedRegion && selectedCity) {
       try {
+        // 선택된 region 코드에 해당하는 이름 찾기
+        const regionName = regions.find(region => region.cd === selectedRegion)?.addr_name;
+
         const payload = {
           email,
           nickname,
           age,
           gender,
           mbti,
-          region: selectedRegion,
+          region: regionName, // 지역 이름 저장
           city: selectedCity,
           token, // sub 값을 token으로 저장
         };
@@ -126,6 +129,7 @@ function Step1({ updateProgress }) {
       alert('모든 필드를 입력해주세요.');
     }
   };
+
 
   return (
       <div className="form-container">
