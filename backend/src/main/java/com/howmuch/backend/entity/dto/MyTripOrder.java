@@ -1,4 +1,4 @@
-package com.howmuch.backend.entity.DTO;
+package com.howmuch.backend.entity.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

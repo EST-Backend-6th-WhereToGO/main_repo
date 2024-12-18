@@ -1,4 +1,4 @@
-package com.howmuch.backend.entity.DTO;
+package com.howmuch.backend.entity.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class MyPlanDTO {
     private List<MyTripOrder> myTripOrderList;
     private String cityName;
 
-    public MyPlanDTO(PlanRequest planRequest, Long cityId, Long userId) {
+    public MyPlanDTO(com.howmuch.backend.entity.DTO.PlanRequest planRequest, Long cityId, Long userId) {
         this.userId = userId;
         this.cityId = cityId;
         this.startedAt = planRequest.getStartedAt().format(formatter);
