@@ -5,6 +5,7 @@ import com.howmuch.backend.entity.plan.Plan;
 import com.howmuch.backend.entity.community.Post;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Data
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

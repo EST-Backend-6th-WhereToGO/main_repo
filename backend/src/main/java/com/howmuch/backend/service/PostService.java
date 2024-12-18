@@ -93,11 +93,12 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         if (post.getHeader() == PostHeader.TRIP && (post.getPlan() == null || !post.getPlan().isPublic())) {
             throw new IllegalArgumentException("공개 게시글이 아닙니다.");
         }
+
         return toPostResponse(post);
     }
 
@@ -105,20 +106,23 @@ public class PostService {
         Post post = postRepository.findById(postId)
                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
-//        if(!post.getUser().getUserId().equals(sessionUserId)) {    // 로그인아이디 != 세션아이디 일시 삭제 권한X
-//            throw new IllegalArgumentException("삭제 권한이 없습니다"); // IllegalArgumentException이 맞는지
-//        }
+        if(!post.getUser().getUserId().equals(sessionUserId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다");
+        }
 
         postRepository.deleteById(postId);
     }
 
-    public PostResponse updatePost(Long postId, Long sessionUserId, UpdatePostRequest updatePostRequest) {
+    public PostResponse updatePost(Long postId, String email, UpdatePostRequest updatePostRequest) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("유효하지 않은 이메일입니다"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
-//        if(!post.getUser().getUserId().equals(sessionUserId)) {
-//            throw new IllegalArgumentException("수정 권한이 없습니다");
-//        }
+        if(!post.getUser().getUserId().equals(user.getUserId())) {
+            throw new IllegalArgumentException("수정 권한이 없습니다");
+        }
         post.setTitle(updatePostRequest.getTitle());
         post.setContent(updatePostRequest.getContent());
 
@@ -130,6 +134,7 @@ public class PostService {
     private PostResponse toPostResponse(Post post) {
         PostResponse response = new PostResponse();
         response.setPostId(post.getPostId());
+        response.setUserId(post.getUser().getUserId());
         response.setTitle(post.getTitle());
         response.setContent(post.getContent());
         response.setNickname(post.getUser().getNickname());
@@ -184,14 +189,17 @@ public class PostService {
     @Transactional
     public void incrementViewCount(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         post.setViewCount(post.getViewCount() + 1);
-        postRepository.save(post);
     }
 
     // 게시물 조회수 순 조회
     @Transactional(readOnly = true)
     public List<Post> getAllPostsByViewCount() {
         return postRepository.findAllByOrderByViewCountDesc();
+    }
+
+    public boolean isPostLikedByUser(Long postId, Long userId) {
+        return postLikeRepository.findByPost_PostIdAndUserId(postId, userId).isPresent();
     }
 }
