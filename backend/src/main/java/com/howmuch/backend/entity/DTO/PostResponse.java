@@ -11,6 +11,7 @@ public class PostResponse {
 
     private Long postId;
     private Long userId;
+    private Long planId;
     private String title;
     private String header;
     private String content;

@@ -70,7 +70,6 @@ const Board = () => {
         fetchPosts(url, params);
     };
 
-
     const handleSortChange = (sortType) => {
         setActiveSort(sortType); // 현재 정렬 기준 업데이트
         setCurrentPage(1); // 정렬 변경 시 첫 페이지로 초기화
@@ -97,9 +96,6 @@ const Board = () => {
         // API 호출
         fetchPosts(url, params);
     };
-
-
-
 
     const handlePageChange = (page) => {
         if (page < 1 || page > totalPages) return;
@@ -129,9 +125,6 @@ const Board = () => {
         // API 호출
         fetchPosts(url, params);
     };
-
-
-
 
     return (
         <div style={styles.container}>

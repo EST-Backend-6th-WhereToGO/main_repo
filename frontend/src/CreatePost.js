@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Header from "./Header";
 
 const CreatePost = () => {
     const location = useLocation();
@@ -87,6 +88,7 @@ const CreatePost = () => {
 
     return (
         <div style={styles.container}>
+            <Header/>
             <h2>{postId ? '게시글 수정' : '게시글 작성'}</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
                 <div style={styles.formGroup}>
@@ -141,7 +143,7 @@ const styles = {
     label: { fontWeight: 'bold', marginBottom: '5px' },
     input: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
     select: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
-    textarea: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
+    textarea: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px', resize: 'none'},
     submitButton: {
         padding: '10px 20px',
         fontSize: '16px',

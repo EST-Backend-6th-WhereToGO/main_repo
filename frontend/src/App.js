@@ -13,6 +13,7 @@ import CreatePost from "./CreatePost";
 import './App.css';
 import TripPlanner from "./TripPlanner";
 import MyPage from './MyPage';
+import MyPostDetail from "./MyPostDetail";
 
 function App() {
   const [progress, setProgress] = useState(0); // 진행 상태 (0~100)
@@ -37,6 +38,7 @@ function App() {
           <Route path="/board" element={<Board />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/post/:postId" element={<MyPostDetail />} />
         </Routes>
       </div>
     </Router>

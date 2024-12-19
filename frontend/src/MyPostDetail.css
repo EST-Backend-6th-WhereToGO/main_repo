@@ -1,0 +1,80 @@
+/* 기본 컨테이너 스타일 */
+.post-detail-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* 게시글 정보 스타일 */
+.post-info {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+}
+
+.post-info h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.post-info p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Detail Plan 컨테이너 스타일 */
+.detail-plan-container {
+    margin-top: 20px;
+}
+
+.detail-plan-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Detail Plan 리스트 스타일 */
+.detail-plan-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.detail-item {
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item h3 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.detail-item p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* 방문 시간 강조 스타일 */
+.detail-item strong {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* 에러 메시지 스타일 */
+p {
+    color: #e74c3c;
+    font-weight: bold;
+    text-align: center;
+}
