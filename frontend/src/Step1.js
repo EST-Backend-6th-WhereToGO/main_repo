@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Step1.css';
+import MBTIPopup from './MBTIPopup';
 import axios from 'axios';
 
 function Step1({ updateProgress }) {
@@ -16,6 +17,7 @@ function Step1({ updateProgress }) {
   const [token, setToken] = useState(''); // sub 값을 token으로 저장
   const navigate = useNavigate();
   const location = useLocation();
+  const [showMBTIPopup, setShowMBTIPopup] = useState(false);
 
   // URL 파라미터에서 값 추출
   const queryParams = new URLSearchParams(location.search);
@@ -130,7 +132,6 @@ function Step1({ updateProgress }) {
     }
   };
 
-
   return (
       <div className="form-container">
         <h2>회원가입 정보 입력</h2>
@@ -145,11 +146,17 @@ function Step1({ updateProgress }) {
         </label>
         <label>
           성별:
-          <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} />
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">성별 선택</option>
+            <option value="남성">남성</option>
+            <option value="여성">여성</option>
+          </select>
         </label>
         <label>
           MBTI:
-          <input type="text" value={mbti} onChange={(e) => setMbti(e.target.value)} />
+          <button onClick={() => setShowMBTIPopup(true)}>
+            {mbti || "MBTI 선택"}
+          </button>
         </label>
         <label>
           거주지 선택:
@@ -176,6 +183,15 @@ function Step1({ updateProgress }) {
             </label>
         )}
         <button onClick={handleNext}>회원가입 완료</button>
+        {showMBTIPopup && (
+            <MBTIPopup
+                onClose={() => setShowMBTIPopup(false)}
+                onSelect={(selectedMBTI) => {
+                  setMbti(selectedMBTI);
+                  setShowMBTIPopup(false);
+                }}
+            />
+        )}
       </div>
   );
 }
