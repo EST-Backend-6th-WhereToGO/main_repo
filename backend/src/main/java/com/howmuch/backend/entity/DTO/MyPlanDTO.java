@@ -12,6 +12,7 @@ import static com.howmuch.backend.util.DateFormatUtil.formatter;
 @Getter
 @Setter
 public class MyPlanDTO {
+    private long planId;
     private Long userId;
     private Long cityId;
     private String startedAt;

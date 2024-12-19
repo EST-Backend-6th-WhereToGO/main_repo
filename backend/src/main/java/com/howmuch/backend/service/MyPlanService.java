@@ -11,6 +11,9 @@ import com.howmuch.backend.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +56,35 @@ public class MyPlanService {
 
         postService.createPost(addPostRequest, user.getUserId());
         return plan;
+    }
+
+    @Transactional
+    public Plan updatePlanAndDetails(MyPlanDTO myPlanDTO) {
+        // 기존 Plan 가져오기
+        Plan existingPlan = planRepository.findById(myPlanDTO.getPlanId())
+            .orElseThrow(() -> new IllegalArgumentException("Plan을 찾을 수 없습니다."));
+
+        // City 정보 가져오기
+        City city = cityRepository.findById(myPlanDTO.getCityId())
+            .orElseThrow(() -> new IllegalArgumentException("도시를 찾을 수 없습니다."));
+
+        // String -> LocalDateTime 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        LocalDateTime startAt = LocalDate.parse(myPlanDTO.getStartedAt(), formatter).atStartOfDay();
+        LocalDateTime endAt = LocalDate.parse(myPlanDTO.getEndedAt(), formatter).atStartOfDay();
+
+        // Plan 업데이트
+        existingPlan.setCity(city);
+        existingPlan.setStartAt(startAt);
+        existingPlan.setEndAt(endAt);
+
+        // DetailPlan 삭제
+        detailPlanRepository.deleteByPlan(existingPlan);
+
+        // 새 DetailPlan 저장
+        saveDetailPlan(existingPlan, myPlanDTO.getMyTripOrderList());
+
+        return planRepository.save(existingPlan);
     }
 
     public void saveDetailPlan(Plan plan, List<MyTripOrder> myTripOrderList) {

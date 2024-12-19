@@ -28,10 +28,10 @@ public class ExchangeRateService {
 
 	@Scheduled(fixedRate = 600000) // 10분마다 실행
 	public void updateExchangeRates() {
-		int daysBack = 0;
+		int maxDaysBack = 7; // 최대 7일까지만 검색
 		List<Map<String, Object>> rates = null;
 
-		while (true) {
+		for (int daysBack = 0; daysBack < maxDaysBack; daysBack++) {
 			String date = LocalDate.now().minusDays(daysBack).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			System.out.println("Attempting to fetch exchange rates for date: " + date);
 			rates = fetchExchangeRates(date);
@@ -40,14 +40,14 @@ public class ExchangeRateService {
 				System.out.println("Successfully fetched exchange rates for date: " + date);
 				break; // 데이터가 있으면 루프 종료
 			}
-
-			daysBack++;
 		}
 
-		if (rates != null) {
+		if (rates != null && !rates.isEmpty()) {
 			cachedRates = rates.stream()
-					.filter(rate -> !"KRW".equals(rate.get("cur_unit"))) // `KRW` 제외
-					.toList();
+				.filter(rate -> !"KRW".equals(rate.get("cur_unit"))) // `KRW` 제외
+				.toList();
+		} else {
+			System.out.println("No valid exchange rates found in the past 7 days. Will retry on next schedule.");
 		}
 	}
 

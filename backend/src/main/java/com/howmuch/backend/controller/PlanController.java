@@ -1,83 +1,42 @@
 package com.howmuch.backend.controller;
 
-import com.howmuch.backend.entity.DTO.CategoryDTO;
-import com.howmuch.backend.entity.city_info.City;
-import com.howmuch.backend.entity.DTO.PlanRequest;
-import com.howmuch.backend.entity.DTO.MyPlanDTO;
-import com.howmuch.backend.service.CategoryService;
-import com.howmuch.backend.service.CityService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Map;
 
-import java.util.List;
+import com.howmuch.backend.entity.plan.Plan;
+import com.howmuch.backend.service.PlanService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/plan")
 public class PlanController {
 
-    private final CategoryService categoryService;
-    private final CityService cityService;
+    private final PlanService planService;
 
-    public PlanController(CategoryService categoryService, CityService cityService) {
-        this.categoryService = categoryService;
-        this.cityService = cityService;
+    public PlanController(PlanService planService) {
+        this.planService = planService;
     }
 
-    @GetMapping("/plan/form")
-    public String showPlanForm(Model model) {
-        List<CategoryDTO> categories = categoryService.getAllCategories();
-        model.addAttribute("categories", categories);
-        return "plan-form";
-    }
+    @GetMapping("/{planId}")
+    public ResponseEntity<?> getPlanById(@PathVariable Long planId) {
+        try {
+            Plan plan = planService.getPlanById(planId);
 
-    @PostMapping("/plan/form")
-    public String showCities(@RequestParam("purpose") String purpose,
-                             @RequestParam("period") String period,
-                             Model model) {
-
-        List<City> cities = cityService.getCitiesByCategory(categoryService.findCategoryIdByName(purpose));
-
-        model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("purpose", purpose);
-        model.addAttribute("period", period);
-        model.addAttribute("cities", cities);
-
-        return "plan-form";
-    }
-
-    @PostMapping("/plan/submit") // 객체에 저장
-    public String submitPlan(@RequestParam("purpose") String purpose,
-                             @RequestParam("period") String period,
-                             @RequestParam("city") Long cityId,
-                             Model model) {
-
-        PlanRequest planRequest = new PlanRequest();
-        planRequest.setPurpose(purpose);
-        planRequest.setPeriod(period);
-
-        City selectedCity = cityService.getCityById(cityId);
-        planRequest.setCity(selectedCity.getCityName());
-
-        Long userId = 1L;
-
-        MyPlanDTO myPlanDTO = new MyPlanDTO(planRequest, cityId, userId);
-
-
-        String aiRequest = String.format(
-                "%s 목적으로 %s 동안 %s 여행 계획을 만들어 줘",
-                planRequest.getPurpose(),
-                planRequest.getDays(),
-                planRequest.getCity()
-        );
-
-        // 필요시 모델에 PlanRequest 추가
-        model.addAttribute("aiRequest", aiRequest);
-        model.addAttribute("myPlanDTO", myPlanDTO);
-
-
-        // 결과 페이지로 이동 -> 추후에 연결된페이지
-        return "/mytrip/mytrip_view";
+            // 필요한 데이터만 추출하여 클라이언트에 반환
+            return ResponseEntity.ok(
+                Map.of(
+                    "planId", plan.getPlanId(),
+                    "userId", plan.getUser().getUserId(),
+                    "city", Map.of(
+                        "id", plan.getCity().getCityId(),
+                        "name", plan.getCity().getCityName()
+                    ),
+                    "startDate", plan.getStartAt().toLocalDate(),
+                    "endDate", plan.getEndAt().toLocalDate()
+                )
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
