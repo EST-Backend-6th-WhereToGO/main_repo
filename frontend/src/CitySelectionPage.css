@@ -87,3 +87,23 @@ button:disabled,
 .close-button:hover {
     background-color: #d8493b;
 }
+
+/* CitySelectionPage.css */
+
+.city-selection-container {
+    /* Your existing styles */
+}
+
+.grid-item.selected {
+    background-color: #1976d2; /* 선택된 도시의 배경 색 */
+    color: white; /* 글자 색을 흰색으로 */
+}
+
+button.selected {
+    background-color: #1976d2 !important; /* 선택된 버튼의 배경색 */
+    color: white !important; /* 선택된 버튼의 글자 색 */
+}
+
+button.selected:hover {
+    background-color: #1565c0; /* 선택된 버튼의 hover 색상 */
+}

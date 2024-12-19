@@ -1,3 +1,155 @@
+/* 전체 레이아웃 */
+.App {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    box-sizing: border-box;
+    margin-top: 120px; /* 헤더 아래로 공간 확보 */
+}
+
+/* 첫 번째 묶음: 카테고리, 날짜, 검색 (가로 배치) */
+.first-row-container {
+    display: flex;
+    justify-content: center;  /* 가로 중앙 정렬 */
+    align-items: center;  /* 세로 중앙 정렬 */
+    max-width: 1200px;  /* 가로 최대 길이 제한 */
+    margin-bottom: 40px;
+    gap: 15px;  /* 간격 좁히기 */
+    width: 100%; /* 전체 가로 길이 */
+    margin-top: 100px;
+}
+
+/* 카테고리 선택 */
+.first-row-container label {
+    flex-grow: 2;  /* 카테고리 선택 박스를 더 넓게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;  /* 동일한 높이 */
+    width: 300px;  /* 원하는 너비 설정 */
+}
+
+/* 날짜 선택 */
+.first-row-container .date-picker-container {
+    flex-grow: 3;  /* 날짜 선택 박스 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 300px; /* 원하는 너비 설정 */
+}
+
+.first-row-container label select {
+    height: 100%;  /* select의 높이를 label과 동일하게 */
+    width: 100%;  /* select의 너비를 label에 맞춤 */
+    font-size: 16px;  /* 글자 크기 설정 */
+    border: 1px solid #ccc;  /* 경계선 추가 */
+    border-radius: 5px;  /* 테두리 둥글게 */
+    padding: 5px;  /* 패딩을 추가하여 가운데 정렬 */
+    text-align: center;  /* 텍스트 중앙 정렬 */
+    margin-top: 20px;
+}
+
+/* 검색 버튼 */
+.search-button {
+    flex-grow: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 120px; /* 고정 크기 */
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 두 번째 묶음: 환율, 날씨 (가로 배치) */
+.second-row-container {
+    display: flex;
+    justify-content: space-between;  /* 두 카드를 가로로 배치 */
+    gap: 20px;  /* 두 카드 사이의 간격 */
+    width: 100%;  /* 전체 가로 길이 */
+    max-width: 1200px;  /* 최대 가로 길이 */
+}
+
+/* 환율 정보 박스 (세로 배치 유지) */
+.exchange-rate-container {
+    display: flex;
+    flex-direction: column;  /* 환율 정보는 세로배치 */
+    gap: 10px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 500px; /* 고정된 가로 길이 */
+    text-align: center;
+    height: 150px; /* 고정 높이 */
+    flex-shrink: 0; /* 내용물이 커져도 크기 변경 방지 */
+    align-self: center;
+}
+
+/* 날씨 정보 박스 (가로 배치) */
+.weather-container {
+    display: flex;
+    justify-content: space-between;  /* 아이콘과 텍스트 간 간격 유지 */
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    gap: 15px;
+    width: 500px;  /* 고정된 가로 길이 */
+    height: 150px; /* 고정 높이 */
+    flex-shrink: 0; /* 내용물이 커져도 크기 변경 방지 */
+}
+
+.weather-container img {
+    width: 100px;
+    height: 100px;
+    align-self: center;
+}
+
+.weather-container .weather-info {
+    display: flex;
+    flex-direction: column;  /* 도시명과 온도를 세로로 정렬 */
+    justify-content: center;
+    text-align: center;  /* 텍스트 가운데 정렬 */
+    align-items: center;
+    margin-right: 150px;
+}
+
+.weather-container h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.weather-container p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.weather-container .temperature {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 카드에 대한 흐림 효과 및 화면 전환 */
+.home-container {
+    position: relative;
+    transition: filter 0.3s ease; /* 화면 흐림 효과를 부드럽게 */
+}
+
+.home-blurred {
+    filter: blur(3px); /* 팝업이 열릴 때 흐림 효과 */
+}
+
+/* 모달 관련 스타일 */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -19,11 +171,56 @@
     z-index: 1001; /* 팝업 내용이 항상 위에 보이도록 */
 }
 
-.home-container {
-    position: relative;
-    transition: filter 0.3s ease; /* 화면 흐림 효과를 부드럽게 */
+/* 검색 버튼 */
+.search-button {
+    flex-grow: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 120px; /* 고정 크기 */
+    background-color: #60a3d9;  /* 청량한 하늘색 배경 */
+    color: white;  /* 글자 색상 흰색 */
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 부드러운 애니메이션 */
 }
 
-.home-blurred {
-    filter: blur(3px); /* 팝업이 열릴 때 흐림 효과 */
+/* 검색 버튼 호버 효과 */
+.search-button:hover {
+    background-color: #3a88c1;  /* 호버 시 더 진한 청량한 색상 */
+    transform: translateY(-2px);  /* 버튼이 살짝 올라가는 효과 */
+}
+
+/* 검색 버튼 클릭 효과 */
+.search-button:active {
+    background-color: #2a5c8f;  /* 클릭 시 색상 변경 */
+    transform: translateY(2px);  /* 버튼이 눌리는 효과 */
+}
+
+/* 날짜 선택 버튼 스타일 */
+.custom-input {
+    width: 500px !important; /* 버튼이 부모 컨테이너의 너비를 차지 */
+    height: 60px !important;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    text-align: center;  /* 날짜를 가운데 정렬 */
+    cursor: pointer;
+    box-sizing: border-box;  /* padding을 포함한 너비 계산 */
+    background-color: #b8d8f7;  /* 밝고 청량한 하늘색 배경 */
+    color: black;  /* 텍스트 색상 어두운 색 */
+}
+
+/* 날짜 선택 버튼 포커스 효과 */
+.custom-input:focus {
+    border-color: #3a88c1;  /* 포커스 시 경계선 색상 변경 */
+    outline: none;  /* 기본 포커스 테두리 제거 */
+}
+
+.custom-input:hover {
+    background-color: #3a88c1;  /* 호버 시 더 진한 청량한 색상 */
+    transform: translateY(-2px);  /* 버튼이 살짝 올라가는 효과 */
 }

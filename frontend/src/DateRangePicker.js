@@ -2,6 +2,7 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
+import "./DateRangePicker.css"
 
 const DateRangePicker = ({ startDate, setStartDate, endDate, setEndDate }) => {
     const CustomInput = React.forwardRef(({ value, onClick }, ref) => (

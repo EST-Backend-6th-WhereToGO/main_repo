@@ -1,0 +1,46 @@
+/* 검색 입력 및 버튼 컨테이너 */
+.search-container {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
+    gap: 10px;               /* 입력 필드와 버튼 간의 간격 */
+    width: 100%;             /* 전체 가로 길이 */
+}
+
+/* 검색 입력 스타일 */
+.search-input {
+    width: 500px;  /* 너비 설정 */
+    height: 60px;   /* 높이 설정 */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    text-align: center;  /* 텍스트 중앙 정렬 */
+    margin-top: 15px;
+}
+
+/* 검색 버튼 스타일 */
+.search-button {
+    height: 60px; /* 버튼 높이 동일 */
+    width: 120px; /* 버튼 너비 설정 */
+    color: black;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #b8d8f7;  /* 청량한 하늘색 */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* 검색 버튼 호버 효과 */
+.search-button:hover {
+    background-color: #3a88c1;  /* 호버 시 청량한 파란색 배경 */
+    transform: translateY(-2px);  /* 버튼이 살짝 올라가는 효과 */
+}
+
+/* 검색 버튼 클릭 효과 */
+.search-button:active {
+    background-color: #357ab7;  /* 클릭 시 색상 변경 */
+    transform: translateY(2px);  /* 버튼이 눌리는 효과 */
+}
