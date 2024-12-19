@@ -186,12 +186,33 @@ const Board = () => {
                     <Grid container spacing={2}>
                         {posts.map((post) => (
                             <Grid item xs={12} key={post.postId}>
-                                <Card sx={{ cursor: 'pointer' }} onClick={() => navigate(`/post/${post.postId}`)}>
+                                <Card
+                                    sx={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        if (post.header === 'TIP') {
+                                            navigate(`/post/${post.postId}`); // TIP 경로
+                                        } else if (post.header === 'TRIP') {
+                                            navigate(`/plan/${post.postId}`, {
+                                                state: {
+                                                    postId: post.postId,
+                                                    title: post.title,
+                                                    content: post.content,
+                                                    createdAt: post.createdAt,
+                                                    viewCount: post.viewCount,
+                                                    likeCount: post.likeCount,
+                                                    header: post.header,
+                                                },
+                                            });
+                                        }
+                                    }}
+                                >
                                     <CardContent>
                                         <Typography variant="h6" component="div" noWrap>
                                             {post.title}
                                         </Typography>
-                                        <Typography variant="body2" color="textSecondary" noWrap>{post.content}</Typography>
+                                        <Typography variant="body2" color="textSecondary" noWrap>
+                                            {post.content}
+                                        </Typography>
                                         <Typography variant="body2" color="textSecondary" marginTop={1}>
                                             조회수: {post.viewCount} | 좋아요: {post.likeCount}
                                         </Typography>
