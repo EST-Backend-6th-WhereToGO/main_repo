@@ -1,133 +1,114 @@
 import React, { useState, useEffect } from "react";
-import "./MyPage.css";
+import { useNavigate } from "react-router-dom"; // useNavigate 훅 추가
+import axios from "axios";
+import './MyPage.css';
 
-function MyPage() {
-    const [userData, setUserData] = useState(null);
-    const [editMode, setEditMode] = useState(false);
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        bio: "",
-    });
+const MyPage = () => {
+    const [posts, setPosts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // useNavigate 훅 초기화
 
     useEffect(() => {
-        // 사용자 데이터 가져오기 (예: API 호출)
-        const fetchUserData = async () => {
+        const fetchMyPosts = async () => {
             try {
-                const response = await fetch("/api/user/mypage");
-                const result = await response.json();
-                setUserData(result);
-                setFormData({
-                    name: result.name,
-                    email: result.email,
-                    bio: result.bio,
+                setLoading(true);
+                const response = await axios.get("/mypage", {
+                    params: { page: currentPage },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                    },
                 });
+                console.log("Fetched posts:", response.data.content);
+                setPosts(response.data.content);
+                setLoading(false);
             } catch (error) {
-                console.error("Failed to fetch user data:", error);
+                console.error("Failed to fetch posts:", error);
+                setLoading(false);
             }
         };
-        fetchUserData();
-    }, []);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+        fetchMyPosts();
+    }, [currentPage]);
 
-    const handleSave = async () => {
-        try {
-            // 사용자 정보 수정 API 호출
-            const response = await fetch("/api/user/mypage", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                const updatedData = await response.json();
-                setUserData(updatedData);
-                setEditMode(false);
-            } else {
-                console.error("Failed to update user data");
-            }
-        } catch (error) {
-            console.error("Error updating user data:", error);
-        }
-    };
+    // TIP과 TRIP 게시물 분리
+    const tipPosts = posts.filter(post => post.header === "TIP");
+    const tripPosts = posts.filter(post => post.header === "TRIP");
 
     return (
         <div className="mypage-container">
-            <h1>My Page</h1>
+            <div className="mypage-header">
+                <h1>내 게시물 조회</h1>
+            </div>
 
-            {userData ? (
-                <div className="profile-section">
-                    <img
-                        src={userData.profilePicture || "/default-profile.png"}
-                        alt="Profile"
-                        className="profile-picture"
-                    />
-
-                    {editMode ? (
-                        <div className="edit-form">
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                placeholder="Name"
-                            />
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                placeholder="Email"
-                            />
-                            <textarea
-                                name="bio"
-                                value={formData.bio}
-                                onChange={handleInputChange}
-                                placeholder="Bio"
-                            ></textarea>
-                            <button onClick={handleSave}>Save</button>
-                            <button onClick={() => setEditMode(false)}>Cancel</button>
-                        </div>
-                    ) : (
-                        <div className="profile-info">
-                            <h2>{userData.name}</h2>
-                            <p>Email: {userData.email}</p>
-                            <p>Bio: {userData.bio}</p>
-                            <button onClick={() => setEditMode(true)}>Edit Profile</button>
-                        </div>
-                    )}
-                </div>
-            ) : (
+            {loading ? (
                 <p>Loading...</p>
+            ) : (
+                <div className="mypage-content">
+                    {/* TIP 게시물 */}
+                    <div className="mypage-section">
+                        <h2 className="section-title">TIP Posts</h2>
+                        {tipPosts.length > 0 ? (
+                            <ul className="post-list">
+                                {tipPosts.map((post) => (
+                                    <li
+                                        key={post.postId}
+                                        className="post-item"
+                                        onClick={() => navigate(`/post/${post.postId}`)} // 클릭 시 postId로 이동
+                                    >
+                                        <h3 className="post-title">{post.title}</h3>
+                                        <p className="post-content">{post.content}</p>
+                                        <p className="post-date">작성일: {new Date(post.createdAt).toLocaleDateString()}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No TIP posts available.</p>
+                        )}
+                    </div>
+
+                    {/* TRIP 게시물 */}
+                    <div className="mypage-section">
+                        <h2 className="section-title">TRIP Posts</h2>
+                        {tripPosts.length > 0 ? (
+                            <ul className="post-list">
+                                {tripPosts.map((post) => (
+                                    <li
+                                        key={post.postId}
+                                        className="post-item"
+                                        onClick={() => navigate(`/post/${post.postId}`)} // 클릭 시 postId로 이동
+                                    >
+                                        <h3 className="post-title">{post.title}</h3>
+                                        <p className="post-content">{post.content}</p>
+                                        <p className="post-date">작성일: {new Date(post.createdAt).toLocaleDateString()}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No TRIP posts available.</p>
+                        )}
+                    </div>
+                </div>
             )}
 
-            <div className="travel-history">
-                <h2>Travel History</h2>
-                {userData && userData.travelHistory && userData.travelHistory.length > 0 ? (
-                    <ul>
-                        {userData.travelHistory.map((trip, index) => (
-                            <li key={index}>
-                                <h3>{trip.destination}</h3>
-                                <p>Date: {trip.date}</p>
-                                <p>Notes: {trip.notes}</p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No travel history available.</p>
-                )}
+            {/* 페이지 네비게이션 */}
+            <div className="pagination">
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+                    disabled={currentPage === 0}
+                    className="pagination-button"
+                >
+                    이전
+                </button>
+                <button
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    className="pagination-button"
+                >
+                    다음
+                </button>
             </div>
         </div>
     );
-}
+};
 
 export default MyPage;

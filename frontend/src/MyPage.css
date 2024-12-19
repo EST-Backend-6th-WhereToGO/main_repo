@@ -1,9 +1,109 @@
+
+/* MyPage 전체 컨테이너 */
 .mypage-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
 }
+
+/* 헤더 스타일 */
+.mypage-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.mypage-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+/* 게시물 섹션 */
+.mypage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mypage-section {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.section-title {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* 게시물 리스트 */
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.post-item:last-child {
+    border-bottom: none;
+}
+
+.post-title {
+    font-size: 18px;
+    color: #007bff;
+    margin: 0;
+    cursor: pointer;
+}
+
+.post-title:hover {
+    text-decoration: underline;
+}
+
+.post-content {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 페이지 네비게이션 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
 
 .profile-section {
     text-align: center;

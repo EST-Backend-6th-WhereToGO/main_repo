@@ -13,6 +13,7 @@ import MyPage from "./MyPage";
 
 import './App.css';
 import TripPlanner from "./TripPlanner";
+import MyPage from './MyPage';
 
 function App() {
   const [progress, setProgress] = useState(0); // 진행 상태 (0~100)

@@ -46,8 +46,8 @@ public class ExchangeRateService {
 
 		if (rates != null) {
 			cachedRates = rates.stream()
-				.filter(rate -> !"KRW".equals(rate.get("cur_unit"))) // `KRW` 제외
-				.toList();
+					.filter(rate -> !"KRW".equals(rate.get("cur_unit"))) // `KRW` 제외
+					.toList();
 		}
 	}
 
