@@ -1,0 +1,104 @@
+/* Popup.css */
+
+/* 배경 흐림 효과 */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 팝업이 다른 콘텐츠 위에 나타나도록 설정 */
+}
+
+/* 팝업 컨테이너 스타일 */
+.popup-content {
+    background-color: #ffffff; /* 흰색 배경 */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    width: 300px;
+    text-align: center;
+    animation: popup-fade-in 0.3s ease-out; /* 팝업 등장 애니메이션 */
+}
+
+/* 텍스트 스타일 */
+.popup-content h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.popup-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0 20px;
+}
+
+/* 버튼 스타일 */
+.popup-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.popup-actions button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.popup-actions button:hover {
+    background-color: #f0f0f0; /* 호버 시 연한 회색 */
+}
+
+.popup-actions button:first-child {
+    background-color: #4caf50; /* 공유 버튼 - 녹색 */
+    color: white;
+}
+
+.popup-actions button:first-child:hover {
+    background-color: #45a049; /* 호버 시 더 어두운 녹색 */
+}
+
+.popup-actions button:last-child {
+    background-color: #f44336; /* 공유 안함 버튼 - 빨강 */
+    color: white;
+}
+
+.popup-actions button:last-child:hover {
+    background-color: #d32f2f; /* 호버 시 더 어두운 빨강 */
+}
+
+/* 닫기 버튼 스타일 */
+.popup-close {
+    margin-top: 20px;
+    background-color: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.popup-close:hover {
+    color: #000;
+}
+
+/* 팝업 애니메이션 */
+@keyframes popup-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

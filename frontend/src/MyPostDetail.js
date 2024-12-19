@@ -13,6 +13,20 @@ const MyPostDetail = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(false); // 에러 상태
     const containerRef = useRef(null); // 스크롤 컨테이너 참조
+    const [isSharePopupOpen, setIsSharePopupOpen] = useState(false); // 팝업 상태 관리
+    const [selectedPost, setSelectedPost] = useState(null); // 선택된 게시물
+
+    const openSharePopup = (post) => {
+        setSelectedPost(post);
+        setIsSharePopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setSelectedPost(null);
+        setIsSharePopupOpen(false);
+    };
+
+
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
     const [userId, setUserId] = useState(null);
@@ -192,6 +206,7 @@ const MyPostDetail = () => {
         }
     };
 
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Failed to load data. Please try again later.</p>;
 
@@ -208,6 +223,17 @@ const MyPostDetail = () => {
                 <p>{post.content}</p>
                 <p>작성일: {new Date(post.createdAt).toLocaleDateString()}</p>
             </div>
+
+
+            {/* 공유 버튼 추가 */}
+            <div className="share-button-container">
+                <button onClick={() => setIsSharePopupOpen(true)}>
+                    일정 공유 여부 설정
+                </button>
+            </div>
+
+            {/* Detail Plan 정보 */}
+
             <div className="detail-plan-container">
                 <h2>Detail Plans</h2>
                 <div className="navigation-buttons">
