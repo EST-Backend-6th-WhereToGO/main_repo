@@ -115,9 +115,8 @@ const MyPage = () => {
                                 key={post.postId}
                                 className="post-item"
                                 onClick={() =>
-                                    navigate(`/create-post`, {
+                                    navigate(`/post/${post.postId}`, {
                                         state: {
-                                            postId:post.postId,
                                             title: post.title,
                                             content: post.content,
                                             header: post.header,

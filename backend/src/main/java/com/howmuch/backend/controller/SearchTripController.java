@@ -48,8 +48,7 @@ public class SearchTripController {
 
     @PostMapping("/savePlan")
     public ResponseEntity<Void> savePlan(@RequestBody MyPlanDTO myPlan) {
-        System.out.println("Received plan: " + myPlan); // 요청 데이터 디버깅
-        System.out.println("City ID: " + myPlan.getCityId());
+        System.out.println("Received plan: " + myPlan);
 
         if (myPlan.getUserId() == null) {
             throw new IllegalArgumentException("User ID must not be null");
@@ -58,15 +57,16 @@ public class SearchTripController {
         if (myPlan.getCityId() == null) {
             throw new IllegalArgumentException("City ID must not be null");
         }
-        myPlan.getMyTripOrderList()
-                .forEach(x->System.out.println(x.getTime() + " " + x.getPlace() + " " + x.getOrder()));
 
-        // 일정 저장
-        Plan plan = myPlanService.savePlan(myPlan);
-
-        // 세부 일정 저장
-        myPlanService.saveDetailPlan(plan, myPlan.getMyTripOrderList());
+        Plan plan;
+        if (myPlan.getPlanId() != 0) { // Plan ID가 0이 아니면 수정
+            plan = myPlanService.updatePlanAndDetails(myPlan);
+        } else { // Plan ID가 0이면 새로 생성
+            plan = myPlanService.savePlan(myPlan);
+            myPlanService.saveDetailPlan(plan, myPlan.getMyTripOrderList());
+        }
 
         return ResponseEntity.ok().build();
     }
+
 }
