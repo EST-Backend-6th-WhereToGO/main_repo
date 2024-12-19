@@ -20,8 +20,8 @@ function Header() {
                 setShowLogoutPopup(true); // 팝업 표시
                 setTimeout(() => {
                     setShowLogoutPopup(false);
-                    navigate("/");
-                }, 3000); // 3초 후 팝업 닫고 홈으로 이동
+                    navigate("/"); // 3초 후 홈으로 이동
+                }, 3000);
             }
         } catch (error) {
             console.error("Error during logout:", error);
@@ -62,11 +62,12 @@ function Header() {
                 )}
             </div>
             <div className="header-right">
-                <button className="login-button" onClick={loginStatus === "Not Logged In" ? handleLogin : handleLogout}>
+                <span className="login-text" onClick={loginStatus === "Not Logged In" ? handleLogin : handleLogout}>
                     {loginStatus === "Not Logged In" ? "구글 로그인" : "로그아웃"}
-                </button>
+                </span>
             </div>
-            {showLogoutPopup && <LogoutPopup onClose={() => setShowLogoutPopup(false)} />}
+            {/* 팝업에 open prop 전달 */}
+            <LogoutPopup open={showLogoutPopup} onClose={() => setShowLogoutPopup(false)} />
         </header>
     );
 }

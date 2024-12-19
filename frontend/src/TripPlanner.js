@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { RotatingLines } from 'react-loader-spinner';
 import './TripPlanner.css';
 import Header from "./Header";
 
@@ -221,7 +222,17 @@ function TripPlanner() {
     };
 
 
-    if (loading) return <div><Header/> <p>로딩 중...</p></div>;
+    if (loading) {
+        return (
+            <div className="loading-overlay">
+                <Header />
+                <div className="loader-container">
+                    <RotatingLines height="100" width="100" color="#fff" ariaLabel="loading" />
+                    <p className="loader-message">로딩 중...</p>
+                </div>
+            </div>
+        );
+    }
     if (error) return <p>에러 발생: {error}</p>;
     if (!Array.isArray(tripPlan) || tripPlan.length === 0) {
         return <p>여행 계획 데이터를 불러올 수 없습니다.</p>;

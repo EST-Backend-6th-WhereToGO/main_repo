@@ -1,29 +1,30 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Button, TextField, Box, Typography, FormControl, InputLabel, Select, MenuItem, CircularProgress, Paper } from '@mui/material';
+import Header from './Header';
 
 const CreatePost = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // 전달된 게시글 데이터 확인 (수정 모드 여부 판단)
+    // State variables for post creation
     const { state } = location || {};
     const [postId, setPostId] = useState(state?.postId || null);
     const [title, setTitle] = useState(state?.title || '');
     const [content, setContent] = useState(state?.content || '');
-    const [header, setHeader] = useState(state?.header || 'TIP'); // 기본값
+    const [header, setHeader] = useState(state?.header || 'TIP'); // Default category
     const [userId, setUserId] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     const categories = [
-        { label: '여행 TIP', value: 'TIP' },
-        { label: '여행 일정 공유', value: 'TRIP' },
+        { label: '여행 TIP', value: 'TIP' }
     ];
 
-    // 사용자 세션 가져오기
+    // Fetch user session status
     const fetchSessionUser = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/auth/status', {
-                credentials: 'include',
-            });
+            const response = await fetch('http://localhost:8080/api/auth/status', { credentials: 'include' });
             const data = await response.json();
 
             if (data.status === 'LoggedIn') {
@@ -41,7 +42,7 @@ const CreatePost = () => {
         fetchSessionUser();
     }, [fetchSessionUser]);
 
-    // 게시글 제출 (POST 또는 PUT)
+    // Handle submit (POST or PUT)
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -53,11 +54,12 @@ const CreatePost = () => {
         const postData = { title, content, header, userId };
 
         try {
+            setLoading(true);
             let url = 'http://localhost:8080/api/posts';
             let method = 'POST';
 
             if (postId) {
-                // 수정 모드인 경우 PUT 요청
+                // Update post if in edit mode
                 url = `http://localhost:8080/api/posts/${postId}`;
                 method = 'PUT';
             }
@@ -82,75 +84,91 @@ const CreatePost = () => {
         } catch (error) {
             console.error('Failed to submit post:', error);
             alert('게시글 저장 중 오류가 발생했습니다.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div style={styles.container}>
-            <h2>{postId ? '게시글 수정' : '게시글 작성'}</h2>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>제목</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                </div>
+        <div style={{ paddingTop: '100px', maxWidth: '1000px', margin: '0 auto' }}>
+            <Header /> {/* Header included */}
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>카테고리</label>
-                    <select
-                        value={header}
-                        onChange={(e) => setHeader(e.target.value)}
-                        style={styles.select}
-                    >
-                        {categories.map((category) => (
-                            <option key={category.value} value={category.value}>
-                                {category.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+            <Paper sx={{ padding: '30px', borderRadius: '8px', boxShadow: 3 }}>
+                <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
+                    <Typography variant="h4">{postId ? '게시글 수정' : '게시글 작성'}</Typography>
 
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>내용</label>
-                    <textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        style={styles.textarea}
-                        rows="5"
-                        required
-                    />
-                </div>
+                    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                        {/* Title Input */}
+                        <TextField
+                            label="제목"
+                            variant="outlined"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            fullWidth
+                            required
+                            margin="normal"
+                            sx={{
+                                '& .MuiInputLabel-root': {
+                                    fontSize: '1rem', // 라벨 크기 조정
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '8px', // 라운드 모서리 적용
+                                    height: '50px', // 입력창 전체 높이 설정
+                                },
+                                '& .MuiOutlinedInput-input': {
+                                    fontSize: '1rem', // 입력 텍스트 크기 조정
+                                    padding: '24px', // 내부 여백 조정 (높이를 맞추기 위해)
+                                    marginTop: '15px',
+                                    borderRadius: '8px'
+                                },
+                            }}
+                        />
 
-                <button type="submit" style={styles.submitButton}>
-                    {postId ? '수정 완료' : '글 등록하기'}
-                </button>
-            </form>
+
+                        {/* Category Selection */}
+                        <FormControl fullWidth margin="normal" required>
+                            <InputLabel>카테고리</InputLabel>
+                            <Select
+                                value={header}
+                                onChange={(e) => setHeader(e.target.value)}
+                                label="카테고리"
+                            >
+                                {categories.map((category) => (
+                                    <MenuItem key={category.value} value={category.value}>
+                                        {category.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        {/* Content TextArea */}
+                        <TextField
+                            label="내용"
+                            variant="outlined"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            fullWidth
+                            required
+                            margin="normal"
+                            multiline
+                            rows={5}
+                        />
+
+                        {/* Submit Button */}
+                        <Box display="flex" justifyContent="center" marginTop={2}>
+                            {loading ? (
+                                <CircularProgress size={24} />
+                            ) : (
+                                <Button variant="contained" color="primary" type="submit">
+                                    {postId ? '수정 완료' : '글 등록하기'}
+                                </Button>
+                            )}
+                        </Box>
+                    </form>
+                </Box>
+            </Paper>
         </div>
     );
-};
-
-const styles = {
-    container: { maxWidth: '600px', margin: '0 auto', padding: '20px', textAlign: 'center' },
-    form: { display: 'flex', flexDirection: 'column', gap: '15px' },
-    formGroup: { display: 'flex', flexDirection: 'column', textAlign: 'left' },
-    label: { fontWeight: 'bold', marginBottom: '5px' },
-    input: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
-    select: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
-    textarea: { padding: '10px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '5px' },
-    submitButton: {
-        padding: '10px 20px',
-        fontSize: '16px',
-        border: 'none',
-        borderRadius: '5px',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        cursor: 'pointer',
-    },
 };
 
 export default CreatePost;

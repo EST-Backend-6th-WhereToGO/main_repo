@@ -1,12 +1,13 @@
 .trip-planner-container {
-    max-width: 100%;
-    margin: 0 auto;
+    max-width: 1800px;
+    margin: 20px auto;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
     overflow: hidden;
+    margin-top: 100px;
 }
 
 .trip-planner-container h1 {
@@ -183,5 +184,32 @@
 
 .re-recommend-button:hover:not(:disabled) {
     background-color: #d39e00;
+}
+
+/* 로딩 팝업 스타일 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 배경을 반투명하게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 화면 가장 위에 위치하도록 */
+}
+
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader-message {
+    color: #fff;
+    font-size: 18px;
+    margin-top: 10px;
 }
 

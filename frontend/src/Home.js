@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useNavigate } from 'react-router-dom';
 import DateRangePicker from './DateRangePicker';
 import SearchPage from './SearchPage';
 import CitySelectionPage from './CitySelectionPage';
@@ -22,7 +22,8 @@ function Home() {
     const [showCityModal, setShowCityModal] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [error, setError] = useState(null);
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null); // 로그인 상태와 유저 정보 추가
+    const [loginStatus, setLoginStatus] = useState('Checking...'); // 로그인 상태를 체크하는 상태
 
     const navigate = useNavigate(); // 페이지 이동을 위한 navigate 추가
 
@@ -36,8 +37,10 @@ function Home() {
 
             if (data.status === "LoggedIn") {
                 setUserId(data.userId);
+                setLoginStatus('Logged In');
             } else {
                 setUserId(null);
+                setLoginStatus('Not Logged In');
                 setError("로그인이 필요합니다.");
             }
         } catch (error) {
@@ -95,7 +98,7 @@ function Home() {
                 if (response.ok) {
                     const data = await response.json();
                     setExchangeRates(data);
-                    setCurrentRate(data[0]);
+                    setCurrentRate(data[0]); // 초기 환율 설정
                 }
             } catch (error) {
                 console.error('Error fetching exchange rates:', error);
@@ -161,44 +164,53 @@ function Home() {
     return (
         <div className="App">
             <Header />
+            <div className="select-container">
+                {/* 첫 번째 묶음: 카테고리, 날짜, 검색 */}
+                <div className="first-row-container">
+                    <label>
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => {
+                                const selectedOption = categories.find(
+                                    (category) => category.name === e.target.value
+                                );
+                                setSelectedCategory(e.target.value);
+                                setSelectedCategoryId(selectedOption ? selectedOption.id : null);
+                            }}
+                        >
+                            <option value="">카테고리</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}> {/* category.id를 사용 */}
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
 
-            <>
-                <label>
-                    <select
-                        value={selectedCategory}
-                        onChange={(e) => {
-                            const selectedOption = categories.find(
-                                (category) => category.name === e.target.value
-                            );
-                            setSelectedCategory(e.target.value);
-                            setSelectedCategoryId(selectedOption ? selectedOption.id : null);
-                        }}
+                    </label>
+
+                    <div className="date-picker-container">
+                        <DateRangePicker
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
+                        />
+                    </div>
+
+                    <button
+                        className="search-button"
+                        onClick={handleSearchClick}
+                        disabled={loginStatus === "Not Logged In"} // 로그인되지 않으면 비활성화
                     >
-                        <option value="">카테고리</option>
-                        {categories.map((category) => (
-                            <option key={category.id} value={category.name}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
-                <div className="date-picker-container">
-                    <DateRangePicker
-                        startDate={startDate}
-                        setStartDate={setStartDate}
-                        endDate={endDate}
-                        setEndDate={setEndDate}
-                    />
+                        검색
+                    </button>
                 </div>
-
-                <button onClick={handleSearchClick}>검색</button>
 
                 {showCityModal && (
                     <div className="modal-overlay">
                         <div className="modal-content">
                             <CitySelectionPage
-                                categoryId={selectedCategoryId}
+                                categoryId={selectedCategory}
                                 onClose={closeCityModal}
                                 onCitySelect={handleCitySelection}
                             />
@@ -206,37 +218,42 @@ function Home() {
                     </div>
                 )}
 
-                <div className="exchange-rate-container">
-                    <h2>환율 정보</h2>
-                    {currentRate ? (
-                        <div>
-                            <p>통화: {currentRate.cur_unit}</p>
-                            <p>기준 환율: {currentRate.deal_bas_r}</p>
-                            <p>통화명: {currentRate.cur_nm}</p>
+                {/* 두 번째 묶음: 환율 정보와 날씨 정보 */}
+                <div className="second-row-container">
+                    {/* 환율 정보 카드 */}
+                    <div className="exchange-rate-container">
+                        {currentRate ? (
+                            <div>
+                                <h2>{currentRate.cur_nm}</h2>
+                                <h1>{currentRate.deal_bas_r}</h1>
+                                <p>{currentRate.cur_unit}</p>
+                            </div>
+                        ) : (
+                            <p>환율 정보를 불러오는 중...</p>
+                        )}
+                    </div>
+
+                    {/* 날씨 정보 카드 */}
+                    <div className="weather-container">
+                        <img
+                            src={currentWeather ? currentWeather.weather.current.condition.icon : ''}
+                            alt="Weather Icon"
+                        />
+                        <div className="weather-info">
+                            <h2>{currentWeather ? currentWeather.cityName : 'Loading...'}</h2>
+                            {currentWeather ? (
+                                <div>
+                                    <h1>{currentWeather.weather.current.temp_c}°C</h1>
+                                </div>
+                            ) : (
+                                <p>날씨 정보를 불러오지 못했습니다.</p>
+                            )}
                         </div>
-                    ) : (
-                        <p>환율 정보를 불러오는 중...</p>
-                    )}
+                    </div>
                 </div>
 
-                <div>
-                    <h2>날씨 정보</h2>
-                    {isLoadingWeather ? (
-                        <p>Loading weather data...</p>
-                    ) : currentWeather ? (
-                        <div>
-                            <h2>{currentWeather.cityName}</h2>
-                            <p>Temperature: {currentWeather.weather.current.temp_c}°C</p>
-                            <p>Condition: {currentWeather.weather.current.condition.text}</p>
-                            <img src={currentWeather.weather.current.condition.icon} alt="Weather Icon"/>
-                        </div>
-                    ) : (
-                        <p>날씨 정보를 불러오지 못했습니다.</p>
-                    )}
-                </div>
-
-                <SearchPage/>
-            </>
+                <SearchPage />
+            </div>
         </div>
     );
 }
