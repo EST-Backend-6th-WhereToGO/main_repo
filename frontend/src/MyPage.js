@@ -1,25 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate 훅 추가
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import './MyPage.css';
 import Header from "./Header";
+import { Card, CardContent, Typography, Avatar, Box, CircularProgress } from "@mui/material";
+import "./MyPage.css";
 
 const MyPage = () => {
-    const [tipPosts, setTipPosts] = useState([]); // TIP 게시물 상태
-    const [tripPosts, setTripPosts] = useState([]); // TRIP 게시물 상태
-    const [showAllTipPosts, setShowAllTipPosts] = useState(false); // TIP 더보기 상태
-    const [showAllTripPosts, setShowAllTripPosts] = useState(false); // TRIP 더보기 상태
-    const [loadingTip, setLoadingTip] = useState(true); // TIP 로딩 상태
-    const [loadingTrip, setLoadingTrip] = useState(true); // TRIP 로딩 상태
-    const navigate = useNavigate(); // useNavigate 훅 초기화
+    const [userInfo, setUserInfo] = useState(null); // 회원 정보 상태
+    const [loadingUser, setLoadingUser] = useState(true); // 회원 정보 로딩 상태
+    const [tipPosts, setTipPosts] = useState([]);
+    const [tripPosts, setTripPosts] = useState([]);
+    const [loadingTip, setLoadingTip] = useState(true);
+    const [loadingTrip, setLoadingTrip] = useState(true);
+    const navigate = useNavigate();
 
+    // 회원 정보 가져오기
     useEffect(() => {
-        // TIP 게시물 가져오기
+        const fetchUserInfo = async () => {
+            try {
+                const response = await axios.get("/api/users/me", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                    },
+                });
+                setUserInfo(response.data);
+                setLoadingUser(false);
+            } catch (error) {
+                console.error("Failed to fetch user info:", error);
+                setLoadingUser(false);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
+    // TIP 게시물 가져오기
+    useEffect(() => {
         const fetchTipPosts = async () => {
             try {
-                setLoadingTip(true);
                 const response = await axios.get("/mypage/tip", {
-                    params: { page: 0 }, // 첫 페이지만 가져오기
+                    params: { page: 0 },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
                     },
@@ -35,13 +55,12 @@ const MyPage = () => {
         fetchTipPosts();
     }, []);
 
+    // TRIP 게시물 가져오기
     useEffect(() => {
-        // TRIP 게시물 가져오기
         const fetchTripPosts = async () => {
             try {
-                setLoadingTrip(true);
                 const response = await axios.get("/mypage/trip", {
-                    params: { page: 0 }, // 첫 페이지만 가져오기
+                    params: { page: 0 },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
                     },
@@ -57,51 +76,68 @@ const MyPage = () => {
         fetchTripPosts();
     }, []);
 
-    const fetchAllTipPosts = async () => {
-        try {
-            setLoadingTip(true);
-            const response = await axios.get("/mypage/tip", {
-                params: { page: 0, size: 100 }, // 전체 게시물 가져오기
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-                },
-            });
-            setTipPosts(response.data.content);
-            setShowAllTipPosts(true); // 더보기 상태 업데이트
-            setLoadingTip(false);
-        } catch (error) {
-            console.error("Failed to fetch all TIP posts:", error);
-            setLoadingTip(false);
-        }
-    };
-
-    const fetchAllTripPosts = async () => {
-        try {
-            setLoadingTrip(true);
-            const response = await axios.get("/mypage/trip", {
-                params: { page: 0, size: 100 }, // 전체 게시물 가져오기
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-                },
-            });
-            setTripPosts(response.data.content);
-            setShowAllTripPosts(true); // 더보기 상태 업데이트
-            setLoadingTrip(false);
-        } catch (error) {
-            console.error("Failed to fetch all TRIP posts:", error);
-            setLoadingTrip(false);
-        }
-    };
-    useEffect(() => {
-        console.log("TIP Posts:", tipPosts); // TIP 게시물 데이터 확인
-    }, [tipPosts]);
-
     return (
         <div className="mypage-container">
-            <Header/>
-            <div className="mypage-header">
-                <h1>내 게시물 조회</h1>
+            <Header />
+
+            {/* 회원 정보 섹션 */}
+            <div className="profile-section">
+                {loadingUser ? (
+                    <CircularProgress />
+                ) : userInfo ? (
+                    <Card
+                        sx={{
+                            maxWidth: 600,
+                            margin: "20px auto",
+                            padding: "20px",
+                            textAlign: "center", // 텍스트 중앙 정렬
+                        }}
+                    >
+                        {/* 닉네임 */}
+                        <Typography
+                            variant="h5"
+                            fontWeight="bold"
+                            sx={{ marginBottom: 2 }}
+                        >
+                            {userInfo.nickname}
+                        </Typography>
+
+                        {/* 다른 정보들 */}
+                        <CardContent>
+                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                <strong>나이:</strong> {userInfo.age}세
+                            </Typography>
+                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                <strong>성별:</strong> {userInfo.gender}
+                            </Typography>
+                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                <strong>MBTI:</strong> {userInfo.mbti || "미입력"}
+                            </Typography>
+                            <Typography variant="body1" sx={{ marginBottom: 2 }}>
+                                <strong>지역:</strong> {userInfo.region}, {userInfo.city}
+                            </Typography>
+                            {/* 수정 버튼 */}
+                            {/* 수정 버튼 */}
+                            <button
+                                style={{
+                                    padding: "10px 20px",
+                                    backgroundColor: "#007bff",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate('/edit-profile')} // 수정 페이지로 이동
+                            >
+                                수정
+                            </button>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <p>회원 정보를 불러올 수 없습니다.</p>
+                )}
             </div>
+
 
             {/* TIP 게시물 */}
             <div className="mypage-section">
@@ -110,17 +146,13 @@ const MyPage = () => {
                     <p>Loading TIP posts...</p>
                 ) : tipPosts.length > 0 ? (
                     <ul className="post-list">
-                        {(showAllTipPosts ? tipPosts : tipPosts.slice(0, 5)).map((post) => (
+                        {tipPosts.slice(0, 5).map((post) => (
                             <li
                                 key={post.postId}
                                 className="post-item"
                                 onClick={() =>
                                     navigate(`/post/${post.postId}`, {
-                                        state: {
-                                            title: post.title,
-                                            content: post.content,
-                                            header: post.header,
-                                        },
+                                        state: { title: post.title, content: post.content },
                                     })
                                 }
                             >
@@ -132,11 +164,6 @@ const MyPage = () => {
                 ) : (
                     <p>No TIP posts available.</p>
                 )}
-                {!showAllTipPosts && tipPosts.length > 5 && (
-                    <button onClick={fetchAllTipPosts} className="more-button">
-                        더보기
-                    </button>
-                )}
             </div>
 
             {/* TRIP 게시물 */}
@@ -146,7 +173,7 @@ const MyPage = () => {
                     <p>Loading TRIP posts...</p>
                 ) : tripPosts.length > 0 ? (
                     <ul className="post-list">
-                        {(showAllTripPosts ? tripPosts : tripPosts.slice(0, 5)).map((post) => (
+                        {tripPosts.slice(0, 5).map((post) => (
                             <li
                                 key={post.postId}
                                 className="post-item"
@@ -159,11 +186,6 @@ const MyPage = () => {
                     </ul>
                 ) : (
                     <p>No TRIP posts available.</p>
-                )}
-                {!showAllTripPosts && tripPosts.length > 5 && (
-                    <button onClick={fetchAllTripPosts} className="more-button">
-                        더보기
-                    </button>
                 )}
             </div>
         </div>

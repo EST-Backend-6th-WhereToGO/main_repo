@@ -17,7 +17,7 @@ public class ExchangeRateService {
 
 	private static final String BASE_URL = "https://www.koreaexim.go.kr";
 	private static final String API_PATH = "/site/program/financial/exchangeJSON";
-	private static final String API_KEY = "4vD8hGN0N8fLk1UAMmYkfiA6W3Atm15K";
+	private static final String API_KEY = "qgdBiWPBY7vkU6y8RGDdXu5Gwf3JScw3";
 
 	private final RestTemplate restTemplate;
 	private List<Map<String, Object>> cachedRates;

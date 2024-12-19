@@ -6,7 +6,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
-    overflow: hidden;
+    overflow: visible;
     margin-top: 100px;
 }
 
@@ -198,7 +198,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* 화면 가장 위에 위치하도록 */
+    z-index: 999; /* 뒤 화면 위에 위치하되, 너무 높은 값은 피함 */
+    pointer-events: none; /* 클릭 이벤트가 배경으로 전달되도록 설정 */
 }
 
 .loader-container {

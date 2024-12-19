@@ -27,6 +27,8 @@ public class SecurityConfig {
 		http
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/api/users/me").authenticated()
+				.requestMatchers("/api/users/update").authenticated()
 				.anyRequest().permitAll()
 			)
 			.oauth2Login(oauth2 -> oauth2
@@ -47,7 +49,7 @@ public class SecurityConfig {
 
 			if (userExists) {
 				// 이미 회원가입된 사용자 → Step3로 리다이렉트
-				response.sendRedirect("http://localhost:3000/step3");
+				response.sendRedirect("http://localhost:3000");
 			} else {
 				// 신규 사용자 → Step1로 리다이렉트
 				response.sendRedirect("http://localhost:3000/step1?name="

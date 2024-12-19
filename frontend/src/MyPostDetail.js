@@ -1,9 +1,9 @@
-
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./MyPostDetail.css";
 import Header from "./Header";
+import SharePopup from "./SharePopup";
 import {Box, Button, TextField, Typography} from "@mui/material";
 import { ThumbUp, ThumbDown, Edit, Delete } from '@mui/icons-material';
 
@@ -15,23 +15,12 @@ const MyPostDetail = () => {
     const [error, setError] = useState(false); // 에러 상태
     const containerRef = useRef(null); // 스크롤 컨테이너 참조
     const [isSharePopupOpen, setIsSharePopupOpen] = useState(false); // 팝업 상태 관리
-    const [selectedPost, setSelectedPost] = useState(null); // 선택된 게시물
-
-    const openSharePopup = (post) => {
-        setSelectedPost(post);
-        setIsSharePopupOpen(true);
-    };
-
-    const closePopup = () => {
-        setSelectedPost(null);
-        setIsSharePopupOpen(false);
-    };
-
 
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
+
     const [liked, setLiked] = useState(false); // 좋아요 상태
     const [likeCount, setLikeCount] = useState(0);
 
@@ -53,23 +42,50 @@ const MyPostDetail = () => {
         fetchSessionUser();
     }, [fetchSessionUser]);
 
+    const updatePlanPublicStatus = async (isShared) => {
+        if (!post?.planId) {
+            alert("유효한 계획 ID가 없습니다.");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "/api/plan/update-public",
+                {
+                    planId: post.planId,
+                    isPublic: isShared ? 1 : 0, // 1 for 공유, 0 for 공유 안함
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                alert(isShared ? "공유 설정이 완료되었습니다!" : "공유 설정이 취소되었습니다!");
+            }
+        } catch (error) {
+            console.error("Failed to update public status:", error);
+            alert("공유 상태 업데이트에 실패했습니다.");
+        }
+    };
+
+    const handleShareConfirm = (isShared) => {
+        updatePlanPublicStatus(isShared);
+        setIsSharePopupOpen(false);
+    };
+
     const handleCommentSubmit = async () => {
         if (!newComment.trim()) {
             alert("댓글을 입력하세요.");
             return;
         }
 
-        console.log("userId: " + userId)
-        console.log("postId: " + postId)
-        if (!userId) {
-            alert("로그인 정보가 없습니다.");
-            return;
-        }
-        console.log("userId: " + userId)
-        console.log("postId: " + postId)
         try {
             const response = await axios.post(
-                `/api/comments`, // Spring Boot의 경로와 일치하도록 수정
+                `/api/comments`,
                 {
                     postId, // postId를 포함하여 전송
                     userId, // userId 추가
@@ -91,8 +107,6 @@ const MyPostDetail = () => {
         }
     };
 
-    // 게시글 정보 가져오기
-
     useEffect(() => {
         const fetchPost = async () => {
             try {
@@ -101,7 +115,6 @@ const MyPostDetail = () => {
                         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
                     },
                 });
-                console.log("Post data fetched:", postResponse.data);
                 setPost(postResponse.data);
 
                 const planId = postResponse.data.planId;
@@ -113,16 +126,14 @@ const MyPostDetail = () => {
                     });
 
                     const planData = planResponse.data;
-                    console.log("Plan data fetched:", planData);
 
-                    // Plan 데이터를 post 객체에 추가 (cityId, cityName 변환)
                     setPost((prevPost) => ({
                         ...prevPost,
                         startDate: planData.startDate,
                         endDate: planData.endDate,
                         city: {
-                            cityId: planData.city.id, // 백엔드의 `id`를 `cityId`로 설정
-                            cityName: planData.city.name, // 백엔드의 `name`을 `cityName`으로 설정
+                            cityId: planData.city.id,
+                            cityName: planData.city.name,
                         },
                         category: planData.category,
                     }));
@@ -132,7 +143,6 @@ const MyPostDetail = () => {
                             Authorization: `Bearer ${localStorage.getItem("jwt")}`,
                         },
                     });
-                    console.log("Detail Plans fetched:", detailResponse.data);
                     setDetailPlans(detailResponse.data);
                 }
             } catch (err) {
@@ -211,7 +221,7 @@ const MyPostDetail = () => {
         }
 
         const navigateState = {
-            planId: post.planId, // Plan ID를 추가
+            planId: post.planId,
             startDate: post.startDate,
             endDate: post.endDate,
             selectedCity: {
@@ -222,8 +232,6 @@ const MyPostDetail = () => {
             userId: post.userId,
             detailPlans,
         };
-
-        console.log("Navigating to /tripplan with state:", navigateState);
 
         navigate("/tripplan", {
             state: navigateState,
@@ -251,7 +259,6 @@ const MyPostDetail = () => {
         }
     };
 
-
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Failed to load data. Please try again later.</p>;
 
@@ -259,25 +266,24 @@ const MyPostDetail = () => {
 
     return (
         <div className="post-detail-container">
-
-            {/* 게시글 정보 */}
-            <Header/>
+            <Header />
 
             <div className="post-info">
-                <h1>{post.title}</h1>
-                <p>{post.content}</p>
-                <p>작성일: {new Date(post.createdAt).toLocaleDateString()}</p>
+                <h1>{post?.title}</h1>
+                <p>{post?.content}</p>
+                <p>작성일: {new Date(post?.createdAt).toLocaleDateString()}</p>
             </div>
 
-
-            {/* 공유 버튼 추가 */}
             <div className="share-button-container">
                 <button onClick={() => setIsSharePopupOpen(true)}>
                     일정 공유 여부 설정
                 </button>
             </div>
-
-            {/* Detail Plan 정보 */}
+            <SharePopup
+                isOpen={isSharePopupOpen}
+                onClose={() => setIsSharePopupOpen(false)}
+                onConfirm={handleShareConfirm}
+            />
 
             <div className="detail-plan-container">
                 <h2>Detail Plans</h2>
@@ -341,12 +347,11 @@ const MyPostDetail = () => {
                 )}
             </div>
 
-            {post.userId === userId && (
+            {post?.userId === userId && (
                 <button onClick={handleEdit} className="edit-button">
                     수정
                 </button>
             )}
-
         </div>
     );
 };

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import "./TripPlanner.css";
 import Header from "./Header";
+import SavePopup from "./SavePopup";
 
 function TripPlanner() {
     const location = useLocation();
@@ -42,6 +43,8 @@ function TripPlanner() {
     const [error, setError] = useState(null);
     const [saveMessage, setSaveMessage] = useState("");
     const containerRef = useRef(null);
+    const [showPopup, setShowPopup] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!detailPlans) {
@@ -111,6 +114,7 @@ function TripPlanner() {
     const handleSavePlan = async () => {
         if (deletedActivities.length > 0) {
             setSaveMessage("삭제된 일정이 있는 경우 저장할 수 없습니다.");
+            setShowPopup(true);
             return;
         }
 
@@ -155,6 +159,8 @@ function TripPlanner() {
         } catch (error) {
             console.error("Error saving trip plan:", error);
             setSaveMessage("여행 계획 저장에 실패했습니다.");
+        }finally {
+            setShowPopup(true); // 저장 성공/실패 후 팝업 표시
         }
     };
 
@@ -189,8 +195,20 @@ function TripPlanner() {
     };
 
     const handleReRecommend = async () => {
+        if (!startDate || !endDate || !selectedCity) {
+            console.error("도시 또는 기간 정보가 부족합니다.");
+            return;
+        }
+
         const activityPlaces = deletedActivities.map((a) => a.장소).join(", ");
-        const aiRequest = `${activityPlaces} 일정만 다른 일정으로 바꿔서 다시 추천해주세요.`;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+        const daysDescription = `${nights}박 ${nights + 1}일`;
+
+        const aiRequest = `${selectedCity.cityName}에서 ${daysDescription} 동안의 일정 중 ${activityPlaces}를 대체할 새로운 일정을 추천해주세요.`;
+
+        setLoading(true); // 로딩 상태 시작
 
         try {
             const response = await fetch("/api/searchTrip", {
@@ -214,12 +232,21 @@ function TripPlanner() {
             if (data.content) {
                 const parsedContent = JSON.parse(data.content);
                 setTripPlan(parsedContent);
-                setDeletedActivities([]);
+                setDeletedActivities([]); // 삭제된 일정 초기화
             }
         } catch (error) {
             console.error("Error re-recommending plan:", error);
+        } finally {
+            setLoading(false); // 로딩 상태 종료
         }
     };
+
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+        navigate("/"); // 확인 버튼 클릭 시 "/"로 이동
+    };
+
 
     useEffect(() => {
         console.log("Received location state:", {
@@ -240,25 +267,27 @@ function TripPlanner() {
 
     if (loading) {
         return (
-            <div className="loading-overlay">
-                <Header />
-                <div className="loader-container">
-                    <RotatingLines height="100" width="100" color="#fff" ariaLabel="loading" />
-                    <p className="loader-message">로딩 중...</p>
+            <>
+                <div className="loading-overlay">
+                    <Header/>
+                    <div className="loader-container">
+                        <RotatingLines height="100" width="100" color="#fff" ariaLabel="loading"/>
+                        <p className="loader-message">로딩 중...</p>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     const scrollLeft = () => {
         if (containerRef.current) {
-            containerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+            containerRef.current.scrollBy({left: -300, behavior: "smooth"});
         }
     };
 
     const scrollRight = () => {
         if (containerRef.current) {
-            containerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+            containerRef.current.scrollBy({left: 300, behavior: "smooth" });
         }
     };
 
@@ -327,7 +356,9 @@ function TripPlanner() {
             >
                 저장
             </button>
-            {saveMessage && <p className="save-message">{saveMessage}</p>}
+            {saveMessage && showPopup && (
+                <SavePopup message={saveMessage} onClose={handleClosePopup} />
+            )}
         </div>
     );
 }

@@ -62,4 +62,19 @@ public class PlanService {
 
 		detailPlanRepository.saveAll(detailPlans);
 	}
+
+	public boolean updatePublicStatus(Long planId, Integer isPublic) {
+		Optional<Plan> planOptional = planRepository.findById(planId);
+
+		if (planOptional.isPresent()) {
+			Plan plan = planOptional.get();
+			// Integer를 boolean으로 변환
+			boolean isPublicBoolean = (isPublic != null && isPublic == 1); // 1이면 true, 아니면 false
+			plan.setPublic(isPublicBoolean);
+			planRepository.save(plan);
+			return true;
+		}
+
+		return false;
+	}
 }

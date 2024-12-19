@@ -4,40 +4,51 @@ import './Step1.css';
 import MBTIPopup from './MBTIPopup';
 import axios from 'axios';
 
-function Step1({ updateProgress }) {
+function Step1({ updateProgress, mode = "signup" }) {
   const [nickname, setNickname] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
   const [mbti, setMbti] = useState('');
   const [accessToken, setAccessToken] = useState('');
-  const [regions, setRegions] = useState([]); // 첫 번째 드롭다운 데이터
+  const [regions, setRegions] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState('');
-  const [cities, setCities] = useState([]); // 두 번째 드롭다운 데이터
+  const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
-  const [token, setToken] = useState(''); // sub 값을 token으로 저장
+  const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [showMBTIPopup, setShowMBTIPopup] = useState(false);
 
-  // URL 파라미터에서 값 추출
-  const queryParams = new URLSearchParams(location.search);
-  const email = queryParams.get('email');
-  const name = queryParams.get('name');
-  const sub = queryParams.get('sub');
-
-  // 초기값 설정 (name → 닉네임, sub → token)
-  useEffect(() => {
-    if (name) setNickname(name); // name 값이 있으면 닉네임 초기화
-    if (sub) setToken(sub); // sub 값을 token에 저장
-  }, [name, sub]);
-
   const AUTH_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json';
   const REGION_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json';
-
   const CONSUMER_KEY = 'b51e6fd37233422cb0a3';
   const CONSUMER_SECRET = '2992fa547d6a46ca8c2c';
 
-  // 1. Access Token 가져오기
+  // 회원정보 수정 모드에서 사용자 데이터 로드
+  useEffect(() => {
+    if (mode === "edit") {
+      setLoading(true);
+      axios.get('/api/users/me', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+      })
+          .then((response) => {
+            const userData = response.data;
+            setNickname(userData.nickname || '');
+            setAge(userData.age || '');
+            setGender(userData.gender || '');
+            setMbti(userData.mbti || '');
+            setSelectedRegion(userData.region || '');
+            setSelectedCity(userData.city || '');
+          })
+          .catch((error) => {
+            console.error("Failed to fetch user data:", error);
+          })
+          .finally(() => setLoading(false));
+    }
+  }, [mode]);
+
+  // Access Token 가져오기
   useEffect(() => {
     const fetchAccessToken = async () => {
       try {
@@ -100,42 +111,47 @@ function Step1({ updateProgress }) {
     setSelectedCity(e.target.value);
   };
 
-  // 데이터 전송
-  const handleNext = async () => {
+  const handleSubmit = async () => {
     if (nickname && age && gender && selectedRegion && selectedCity) {
       try {
-        // 선택된 region 코드에 해당하는 이름 찾기
         const regionName = regions.find(region => region.cd === selectedRegion)?.addr_name;
-
         const payload = {
-          email,
           nickname,
           age,
           gender,
           mbti,
-          region: regionName, // 지역 이름 저장
+          region: regionName,
           city: selectedCity,
-          token, // sub 값을 token으로 저장
         };
-        console.log("Payload:", payload);
 
-        await axios.post('/api/users/save', payload);
-
-        updateProgress(100);
-        alert('회원가입이 완료되었습니다!');
-        navigate('/step3');
+        if (mode === "signup") {
+          // 회원가입 요청
+          await axios.post('/api/users/save', payload);
+          updateProgress(100);
+          alert('회원가입이 완료되었습니다!');
+          navigate('/step3');
+        } else if (mode === "edit") {
+          // 회원정보 수정 요청
+          await axios.put('/api/users/update', payload, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+          });
+          alert('회원정보가 성공적으로 수정되었습니다!');
+          navigate('/mypage');
+        }
       } catch (error) {
-        console.error('회원가입 데이터 저장 실패:', error);
+        console.error('데이터 저장 실패:', error);
+        alert('저장 중 문제가 발생했습니다.');
       }
     } else {
       alert('모든 필드를 입력해주세요.');
     }
   };
 
+  if (loading) return <p>Loading...</p>;
+
   return (
       <div className="form-container">
-        <h2>회원가입 정보 입력</h2>
-        {email && <p>로그인된 이메일: {email}</p>}
+        <h2>{mode === "signup" ? "회원가입 정보 입력" : "회원정보 수정"}</h2>
         <label>
           닉네임:
           <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
@@ -182,7 +198,9 @@ function Step1({ updateProgress }) {
               </select>
             </label>
         )}
-        <button onClick={handleNext}>회원가입 완료</button>
+        <button onClick={handleSubmit}>
+          {mode === "signup" ? "회원가입 완료" : "회원정보 수정 완료"}
+        </button>
         {showMBTIPopup && (
             <MBTIPopup
                 onClose={() => setShowMBTIPopup(false)}
