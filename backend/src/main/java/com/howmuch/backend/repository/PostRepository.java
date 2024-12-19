@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -55,5 +56,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByOrderByLikeCountDesc(Pageable pageable);
 
     Page<Post> findAllByUser_UserId(Long userId, Pageable pageable);
+
+    // TIP 게시글 조회 (현재 사용자만)
+    @Query("""
+    SELECT p FROM Post p
+    WHERE p.header = 'TIP' AND p.user.userId = :userId
+""")
+    Page<Post> findTipPostsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    // TRIP 게시글 조회 (현재 사용자만)
+    @Query("""
+    SELECT p FROM Post p
+    JOIN p.plan pl
+    WHERE p.header = 'TRIP' AND p.user.userId = :userId
+""")
+    Page<Post> findTripPostsByUserId(@Param("userId") Long userId, Pageable pageable);
 
 }

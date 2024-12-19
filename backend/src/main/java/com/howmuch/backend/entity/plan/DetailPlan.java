@@ -2,10 +2,12 @@ package com.howmuch.backend.entity.plan;
 
 import com.howmuch.backend.entity.DTO.MyTripOrder;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Entity
+@Getter
 @Table(name="detail_plan")
 public class DetailPlan {
     @Id

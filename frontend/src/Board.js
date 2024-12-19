@@ -71,6 +71,7 @@ const Board = () => {
         fetchPosts(url, params);
     };
 
+
     const handleSortChange = (event) => {
         const sortType = event.target.value;
         setActiveSort(sortType);

@@ -1,6 +1,7 @@
 package com.howmuch.backend.service;
 
 
+import com.howmuch.backend.entity.DTO.PlanResponse;
 import com.howmuch.backend.entity.community.Post;
 import com.howmuch.backend.entity.community.PostLike;
 import com.howmuch.backend.entity.community.PostHeader;
@@ -91,12 +92,6 @@ public class PostService {
         return posts.map(this::toPostResponse);
     }
 
-    public Page<PostResponse> getUserPosts(Long userId, int page) {
-        Pageable pageable = PageRequest.of(page, MY_PAGE_SIZE, Sort.by("createdAt").descending());
-        Page<Post> posts = postRepository.findAllByUser_UserId(userId, pageable);
-        return posts.map(this::toPostResponse);
-    }
-
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long postId) {
         Post post = postRepository.findById(postId)
@@ -150,6 +145,7 @@ public class PostService {
         response.setViewCount(post.getViewCount());
         response.setCreatedAt(post.getCreatedAt());
         response.setUpdatedAt(post.getUpdatedAt());
+        response.setPlanId(post.getPlan() != null ? post.getPlan().getPlanId() : null);
 
         return response;
     }
@@ -245,6 +241,72 @@ public class PostService {
     public boolean isPostLikedByUser(Long postId, Long userId) {
         return postLikeRepository.findByPost_PostIdAndUserId(postId, userId).isPresent();
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getTipPostsByUser(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findTipPostsByUserId(userId, pageable);
+        return posts.map(this::toPostResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getTripPostsByUser(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findTripPostsByUserId(userId, pageable);
+        return posts.map(this::toPostResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public PostResponse getEditablePost(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 게시물만 수정 가능합니다.");
+        }
+
+        return toPostResponse(post);
+    }
+
+    @Transactional
+    public void updateMyPost(Long postId, Long userId, UpdatePostRequest updateRequest) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 게시물만 수정 가능합니다.");
+        }
+
+        post.setTitle(updateRequest.getTitle());
+        post.setContent(updateRequest.getContent());
+        postRepository.save(post);
+    }
+    @Transactional(readOnly = true)
+    public PlanResponse getPlanByPostId(Long postId, Long userId) {
+        // Post 엔티티 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        // 게시물이 사용자의 게시물이 아닌 경우 예외 처리
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 게시물만 조회할 수 있습니다.");
+        }
+
+        Plan plan = post.getPlan();
+        if (plan == null) {
+            throw new IllegalArgumentException("해당 게시물에 연결된 Plan이 없습니다.");
+        }
+
+        return new PlanResponse(
+                plan.getPlanId(),
+                plan.getCity().getCityName(),
+                plan.getStartAt(),
+                plan.getEndAt(),
+                plan.isPublic()
+        );
+    }
+
+
 
 
 }
