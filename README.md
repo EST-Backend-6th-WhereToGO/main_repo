@@ -42,7 +42,7 @@
 - **프레임워크:** Spring Boot 3.4.0
 - **데이터베이스:** MySQL 8.0.39
 - **ORM:** JPA
-- **빌드 도구:** Gradle
+- **빌드 도구:** Gradle 
 
 ## 🌐 Frontend
 - **프레임워크:** React 18.3.1
