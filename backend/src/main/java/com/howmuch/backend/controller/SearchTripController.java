@@ -48,6 +48,16 @@ public class SearchTripController {
 
     @PostMapping("/savePlan")
     public ResponseEntity<Void> savePlan(@RequestBody MyPlanDTO myPlan) {
+        System.out.println("Received plan: " + myPlan); // 요청 데이터 디버깅
+        System.out.println("City ID: " + myPlan.getCityId());
+
+        if (myPlan.getUserId() == null) {
+            throw new IllegalArgumentException("User ID must not be null");
+        }
+
+        if (myPlan.getCityId() == null) {
+            throw new IllegalArgumentException("City ID must not be null");
+        }
         myPlan.getMyTripOrderList()
                 .forEach(x->System.out.println(x.getTime() + " " + x.getPlace() + " " + x.getOrder()));
 

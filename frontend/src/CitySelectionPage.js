@@ -4,7 +4,7 @@ import './CitySelectionPage.css';
 function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
     const [cities, setCities] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [selectedCity, setSelectedCity] = useState('');
+    const [selectedCity, setSelectedCity] = useState(null); // city 객체로 선택
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const itemsPerPage = 9;
@@ -24,7 +24,8 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
                 return response.json();
             })
             .then((data) => {
-                setCities(data);
+                console.log('Fetched cities:', data); // cityId와 cityName 확인
+                setCities(data); // 데이터를 상태에 저장
                 setLoading(false);
             })
             .catch((error) => {
@@ -33,13 +34,17 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
             });
     }, [categoryId]);
 
+
     const handleCitySelection = (city) => {
-        setSelectedCity(city);
+        console.log('Selected city:', city); // 도시 객체 전체 출력
+        console.log('City ID:', city.cityId, 'City Name:', city.cityName); // 명시적으로 출력
+        setSelectedCity(city); // 도시 객체 선택
     };
+
 
     const handleConfirm = () => {
         if (selectedCity) {
-            onCitySelect(selectedCity);
+            onCitySelect(selectedCity); // 도시 객체 전달
         } else {
             alert('도시를 선택해주세요!');
         }
@@ -69,16 +74,10 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
             <h1>도시 선택</h1>
 
             <div className="pagination-buttons">
-                <button
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 0}
-                >
+                <button onClick={handlePrevPage} disabled={currentPage === 0}>
                     이전
                 </button>
-                <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages - 1 || totalPages === 0}
-                >
+                <button onClick={handleNextPage} disabled={currentPage === totalPages - 1 || totalPages === 0}>
                     다음
                 </button>
             </div>
@@ -87,8 +86,8 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
                 {getPaginatedCities().map((city, index) => (
                     <div
                         key={index}
-                        className={`grid-item ${selectedCity === city ? 'selected' : ''}`}
-                        onClick={() => handleCitySelection(city)}
+                        className={`grid-item ${selectedCity?.cityId === city.cityId ? 'selected' : ''}`}
+                        onClick={() => handleCitySelection(city)} // 도시 객체 선택
                     >
                         {city.cityName}
                     </div>

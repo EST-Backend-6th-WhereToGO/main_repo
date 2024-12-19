@@ -1,135 +1,170 @@
-import React, { useState, useEffect } from "react";
-import MapComponent from "./MapComponent";
-import Itinerary from "./Itinerary";
-import "./TripPlanner.css";
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import './TripPlanner.css';
+import Header from "./Header";
 
-const TripPlanner = ({ startDate, endDate, selectedCity }) => {
-    const [timeAndPlaces, setTimeAndPlaces] = useState([]);
-    const [sendRemoveList, setSendRemoveList] = useState([]);
-    const [aiRequest, setAiRequest] = useState("");
-    const [loading, setLoading] = useState(false); // 로딩 상태 추가
-    const [myPlanDTO, setMyPlanDTO] = useState({
-        startedAt: startDate,
-        endedAt: endDate,
-        userId: 1, // 예제 사용자 ID, 필요하면 수정
-        cityId: selectedCity?.id || 0,
-        cityName: selectedCity?.name || "",
-    });
+function TripPlanner() {
+    const location = useLocation();
+    const { startDate, endDate, selectedCity, selectedCategory, userId } = location.state || {};
+    const [tripPlan, setTripPlan] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [saveMessage, setSaveMessage] = useState('');
+    const containerRef = useRef(null); // 스크롤 컨테이너 참조
 
     useEffect(() => {
-        if (startDate && endDate && selectedCity) {
-            const aiQuery = `${selectedCity.name}에서 ${startDate}부터 ${endDate}까지 여행 계획을 만들어 줘`;
-            setAiRequest(aiQuery);
-            fetchTripData();
-        }
-    }, [startDate, endDate, selectedCity]);
+        console.log("Selected City: ", selectedCity);
+        console.log("User ID: ", userId);
+    }, [selectedCity, userId]);
 
-    const fetchTripData = async () => {
-        setLoading(true); // 로딩 시작
-        try {
-            const response = await fetch("http://localhost:8080/api/searchTrip", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    aiRequest,
-                    ...myPlanDTO,
-                }),
+    useEffect(() => {
+        if (!startDate || !endDate || !selectedCity || !selectedCategory || !userId) {
+            console.error('Invalid travel information:', {
+                startDate, endDate, selectedCity, selectedCategory, userId,
             });
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch trip data");
-            }
-
-            const data = await response.json();
-            const obj = JSON.parse(data.content);
-            processTripData(obj);
-        } catch (error) {
-            console.error("Error fetching trip data:", error);
-        } finally {
-            setLoading(false); // 로딩 종료
+            setError('여행 정보가 올바르지 않습니다.');
+            setLoading(false);
+            return;
         }
-    };
 
-    const processTripData = (obj) => {
-        const newTimeAndPlaces = [];
-        let dayCount = 0;
-        let order = 1;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+        const daysDescription = `${nights}박 ${nights + 1}일`;
 
-        Object.keys(obj).forEach((day) => {
-            dayCount += 1;
-            obj[day].Day.forEach((item) => {
-                if (!item["장소"].includes("호텔")) {
-                    newTimeAndPlaces.push({
-                        time: item["시간"],
-                        place: item["장소"],
-                        day: dayCount,
-                        order: order++,
-                    });
+        const aiRequest = `${selectedCategory} 목적으로 ${daysDescription} 동안 ${selectedCity.cityName} 여행 계획을 만들어 줘`;
+
+        const fetchTripPlan = async () => {
+            try {
+                const response = await fetch('/api/searchTrip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        aiRequest,
+                        startedAt: startDate,
+                        endedAt: endDate,
+                        cityId: selectedCity.cityId,
+                        cityName: selectedCity.cityName,
+                        userId,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching trip plan: ${response.status}`);
                 }
-            });
-        });
 
-        setTimeAndPlaces(newTimeAndPlaces);
-    };
+                const data = await response.json();
+                console.log('Fetched tripPlan data:', data);
 
-    const handleReSearch = async () => {
-        const places = sendRemoveList
-            .map((item) => item.place)
-            .join(", ") + " 일정만 다른 일정으로 바꿔서 다시 추천해주세요.";
+                if (data.content) {
+                    const parsedContent = JSON.parse(data.content);
+                    setTripPlan(parsedContent);
+                } else {
+                    setTripPlan([]);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching trip plan:', error);
+                setError(error.message);
+                setLoading(false);
+            }
+        };
 
-        setAiRequest(places);
-        fetchTripData();
-    };
+        fetchTripPlan();
+    }, [startDate, endDate, selectedCity, selectedCategory, userId]);
 
-    const handleSave = async () => {
+    const handleSavePlan = async () => {
+        const formatDateToLocalDate = (date) => {
+            if (date instanceof Date) {
+                return date.toISOString().slice(0, 10);
+            }
+            return date;
+        };
+
+        const payload = {
+            userId,
+            startedAt: formatDateToLocalDate(startDate),
+            endedAt: formatDateToLocalDate(endDate),
+            cityId: selectedCity.cityId,
+            cityName: selectedCity.cityName,
+            myTripOrderList: tripPlan.flatMap((dayPlan, dayIndex) =>
+                dayPlan.Day.map((activity, activityIndex) => ({
+                    time: activity.시간,
+                    place: activity.장소,
+                    day: (dayIndex + 1).toString(),
+                    order: (activityIndex + 1).toString(),
+                }))
+            ),
+        };
+
+        console.log("Saving payload:", payload);
+
         try {
-            const response = await fetch("http://localhost:8080/api/savePlan", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    myTripOrderList: timeAndPlaces,
-                    ...myPlanDTO,
-                }),
+            const response = await fetch('/api/savePlan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
-                throw new Error("Failed to save trip plan");
+                throw new Error(`Error saving trip plan: ${response.status}`);
             }
 
-            alert("일정이 저장되었습니다.");
+            setSaveMessage('여행 계획이 성공적으로 저장되었습니다!');
         } catch (error) {
-            console.error("Error saving trip plan:", error);
+            console.error('Error saving trip plan:', error);
+            setSaveMessage('여행 계획 저장에 실패했습니다.');
         }
     };
+
+    const scrollLeft = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+        }
+    };
+
+    const scrollRight = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+    };
+
+    if (loading) return <div><Header/> <p>로딩 중...</p></div>;
+    if (error) return <p>에러 발생: {error}</p>;
+    if (!Array.isArray(tripPlan) || tripPlan.length === 0) {
+        return <p>여행 계획 데이터를 불러올 수 없습니다.</p>;
+    }
 
     return (
-        <div className="trip-planner">
-            <header>
-                <h3>여행 일정</h3>
-            </header>
 
-            {/* 로딩 중 메시지 */}
-            {loading ? (
-                <p className="loading-message">잠시만 기다려주세요...</p>
-            ) : (
-                <>
-                    <Itinerary
-                        timeAndPlaces={timeAndPlaces}
-                        setSendRemoveList={setSendRemoveList}
-                    />
-                    <div className="controls">
-                        <button onClick={handleReSearch}>다시 검색</button>
-                        <button onClick={handleSave}>저장</button>
+        <div className="trip-planner-container">
+            <Header/>
+            <h1>여행 계획</h1>
+            <div className="navigation-buttons">
+                <button onClick={scrollLeft} className="navigation-button">&lt;</button>
+                <button onClick={scrollRight} className="navigation-button">&gt;</button>
+            </div>
+            <div className="day-plan-container" ref={containerRef}>
+                {tripPlan.map((dayPlan, dayIndex) => (
+                    <div key={dayIndex} className="day-plan">
+                        <h2>{`Day ${dayIndex + 1}`}</h2>
+                        {Array.isArray(dayPlan.Day) && dayPlan.Day.length > 0 ? (
+                            dayPlan.Day.map((activity, activityIndex) => (
+                                <div key={activityIndex} className="activity">
+                                    <p>{activity.시간}</p>
+                                    <p>{activity.장소}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>일정이 없습니다.</p>
+                        )}
                     </div>
-                    <MapComponent timeAndPlaces={timeAndPlaces} />
-                </>
-            )}
+                ))}
+            </div>
+            <button onClick={handleSavePlan} className="save-button">저장</button>
+            {saveMessage && <p className="save-message">{saveMessage}</p>}
         </div>
     );
-};
+}
 
 export default TripPlanner;

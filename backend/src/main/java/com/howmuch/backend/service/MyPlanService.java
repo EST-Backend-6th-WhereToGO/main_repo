@@ -20,20 +20,22 @@ import java.util.List;
 @Service
 public class MyPlanService {
 
-    PlanRepository planRepository;
-    DetailPlanRepository detailPlanRepository;
-    UserRepository userRepository;
-    CityRepository cityRepository;
-    PostService postService;
+    private final PlanRepository planRepository;
+    private final DetailPlanRepository detailPlanRepository;
+    private final UserRepository userRepository;
+    private final CityRepository cityRepository;
+    private final PostService postService;
 
     public MyPlanService(PlanRepository planRepository
             , DetailPlanRepository detailPlanRepository
             , UserRepository userRepository
-            , CityRepository cityRepository) {
+            , CityRepository cityRepository
+            , PostService postService) {
         this.planRepository = planRepository;
         this.detailPlanRepository = detailPlanRepository;
         this.userRepository = userRepository;
         this.cityRepository=cityRepository;
+        this.postService=postService;
     }
 
     public Plan savePlan(MyPlanDTO myPlanDTO) {

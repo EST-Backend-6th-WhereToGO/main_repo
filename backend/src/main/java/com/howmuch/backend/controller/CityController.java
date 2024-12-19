@@ -35,9 +35,9 @@ public class CityController {
     public ResponseEntity<List<CityResponse>> getCitiesByCategory(@PathVariable Long categoryId) {
         List<City> cities = cityService.getCitiesByCategory(categoryId);
 
-        List<CityResponse> response = cities.stream()
-                .map(city -> new CityResponse(city.getCityName()))
-                .toList();
+		List<CityResponse> response = cities.stream()
+			.map(city -> new CityResponse(city.getCityId(), city.getCityName())) // cityId 포함
+			.toList();
 
         return ResponseEntity.ok(response);
     }
