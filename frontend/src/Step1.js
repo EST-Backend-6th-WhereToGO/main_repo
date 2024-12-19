@@ -1,236 +1,216 @@
-import React, { useState, useEffect } from "react";
-import {
-  TextField,
-  Select,
-  MenuItem,
-  Button,
-  Box,
-  Typography,
-  Grid,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import './Step1.css';
+import MBTIPopup from './MBTIPopup';
+import axios from 'axios';
 
 function Step1({ updateProgress, mode = "signup" }) {
-  const [nickname, setNickname] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [mbti, setMbti] = useState("");
+  const [nickname, setNickname] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [mbti, setMbti] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   const [regions, setRegions] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState('');
   const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState('');
+  const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showMBTIPopup, setShowMBTIPopup] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showMBTIPopup, setShowMBTIPopup] = useState(false);
 
-  const AUTH_API_URL = "https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json";
-  const REGION_API_URL = "https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json";
-  const CONSUMER_KEY = "b51e6fd37233422cb0a3";
-  const CONSUMER_SECRET = "2992fa547d6a46ca8c2c";
+  const AUTH_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json';
+  const REGION_API_URL = 'https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json';
+  const CONSUMER_KEY = 'b51e6fd37233422cb0a3';
+  const CONSUMER_SECRET = '2992fa547d6a46ca8c2c';
 
+  // 회원정보 수정 모드에서 사용자 데이터 로드
   useEffect(() => {
     if (mode === "edit") {
       setLoading(true);
-      axios
-          .get("/api/users/me", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
-          })
+      axios.get('/api/users/me', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+      })
           .then((response) => {
             const userData = response.data;
-            setNickname(userData.nickname || "");
-            setAge(userData.age || "");
-            setGender(userData.gender || "");
-            setMbti(userData.mbti || "");
-            setSelectedRegion(userData.region || "");
-            setSelectedCity(userData.city || "");
+            setNickname(userData.nickname || '');
+            setAge(userData.age || '');
+            setGender(userData.gender || '');
+            setMbti(userData.mbti || '');
+            setSelectedRegion(userData.region || '');
+            setSelectedCity(userData.city || '');
           })
-          .catch((error) => console.error("Failed to fetch user data:", error))
+          .catch((error) => {
+            console.error("Failed to fetch user data:", error);
+          })
           .finally(() => setLoading(false));
     }
   }, [mode]);
 
-  const handleRegionChange = (event) => {
-    setSelectedRegion(event.target.value);
-    setSelectedCity("");
-  };
-
-  const handleCityChange = (event) => {
-    setSelectedCity(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (!nickname || !age || !gender || !selectedRegion || !selectedCity) {
-      alert("모든 필드를 입력해주세요.");
-      return;
-    }
-
-    const payload = {
-      nickname,
-      age,
-      gender,
-      mbti,
-      region: selectedRegion,
-      city: selectedCity,
+  // Access Token 가져오기
+  useEffect(() => {
+    const fetchAccessToken = async () => {
+      try {
+        const response = await axios.get(AUTH_API_URL, {
+          params: {
+            consumer_key: CONSUMER_KEY,
+            consumer_secret: CONSUMER_SECRET,
+          },
+        });
+        if (response.data.result?.accessToken) {
+          setAccessToken(response.data.result.accessToken);
+        } else {
+          console.error('Access Token을 가져오는 데 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('Access Token API 호출 실패:', error);
+      }
     };
+    fetchAccessToken();
+  }, []);
 
-    if (mode === "signup") {
-      axios
-          .post("/api/users/save", payload)
-          .then(() => {
-            alert("회원가입이 완료되었습니다!");
-            navigate("/step3");
-          })
-          .catch((error) => {
-            console.error("Error during signup:", error);
-            alert("회원가입에 실패했습니다.");
+  // 첫 번째 드롭다운 데이터 로드
+  useEffect(() => {
+    const fetchRegions = async () => {
+      if (!accessToken) return;
+      try {
+        const response = await axios.get(REGION_API_URL, {
+          params: { accessToken },
+        });
+        if (response.data.result) setRegions(response.data.result);
+      } catch (error) {
+        console.error('첫 번째 드롭다운 데이터 로드 실패:', error);
+      }
+    };
+    fetchRegions();
+  }, [accessToken]);
+
+  // 두 번째 드롭다운 데이터 로드
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (!accessToken || !selectedRegion) return;
+      try {
+        const response = await axios.get(REGION_API_URL, {
+          params: { accessToken, cd: selectedRegion },
+        });
+        if (response.data.result) setCities(response.data.result);
+      } catch (error) {
+        console.error('두 번째 드롭다운 데이터 로드 실패:', error);
+      }
+    };
+    fetchCities();
+  }, [accessToken, selectedRegion]);
+
+  const handleRegionChange = (e) => {
+    setSelectedRegion(e.target.value);
+    setSelectedCity('');
+  };
+
+  const handleCityChange = (e) => {
+    setSelectedCity(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (nickname && age && gender && selectedRegion && selectedCity) {
+      try {
+        const regionName = regions.find(region => region.cd === selectedRegion)?.addr_name;
+        const payload = {
+          nickname,
+          age,
+          gender,
+          mbti,
+          region: regionName,
+          city: selectedCity,
+        };
+
+        if (mode === "signup") {
+          // 회원가입 요청
+          await axios.post('/api/users/save', payload);
+          updateProgress(100);
+          alert('회원가입이 완료되었습니다!');
+          navigate('/step3');
+        } else if (mode === "edit") {
+          // 회원정보 수정 요청
+          await axios.put('/api/users/update', payload, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
           });
+          alert('회원정보가 성공적으로 수정되었습니다!');
+          navigate('/mypage');
+        }
+      } catch (error) {
+        console.error('데이터 저장 실패:', error);
+        alert('저장 중 문제가 발생했습니다.');
+      }
     } else {
-      axios
-          .put("/api/users/update", payload, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
-          })
-          .then(() => {
-            alert("회원정보가 성공적으로 수정되었습니다!");
-            navigate("/mypage");
-          })
-          .catch((error) => {
-            console.error("Error during update:", error);
-            alert("회원정보 수정에 실패했습니다.");
-          });
+      alert('모든 필드를 입력해주세요.');
     }
   };
 
-  if (loading) {
-    return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-          <CircularProgress />
-        </Box>
-    );
-  }
+  if (loading) return <p>Loading...</p>;
 
   return (
-      <Box
-          sx={{
-            maxWidth: 600,
-            mx: "auto",
-            mt: 4,
-            p: 3,
-            borderRadius: 2,
-            boxShadow: 3,
-            bgcolor: "background.paper",
-          }}
-      >
-        <Typography variant="h5" sx={{ mb: 3, textAlign: "center" }}>
-          {mode === "signup" ? "회원가입 정보 입력" : "회원정보 수정"}
-        </Typography>
-
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-                fullWidth
-                label="닉네임"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                variant="outlined"
+      <div className="form-container">
+        <h2>{mode === "signup" ? "회원가입 정보 입력" : "회원정보 수정"}</h2>
+        <label>
+          닉네임:
+          <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+        </label>
+        <label>
+          나이:
+          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+        </label>
+        <label>
+          성별:
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">성별 선택</option>
+            <option value="남성">남성</option>
+            <option value="여성">여성</option>
+          </select>
+        </label>
+        <label>
+          MBTI:
+          <button onClick={() => setShowMBTIPopup(true)}>
+            {mbti || "MBTI 선택"}
+          </button>
+        </label>
+        <label>
+          거주지 선택:
+          <select value={selectedRegion} onChange={handleRegionChange}>
+            <option value="">지역 선택</option>
+            {regions.map((region) => (
+                <option key={region.cd} value={region.cd}>
+                  {region.addr_name}
+                </option>
+            ))}
+          </select>
+        </label>
+        {selectedRegion && (
+            <label>
+              세부 지역 선택:
+              <select value={selectedCity} onChange={handleCityChange}>
+                <option value="">세부 지역 선택</option>
+                {cities.map((city) => (
+                    <option key={city.cd} value={city.addr_name}>
+                      {city.addr_name}
+                    </option>
+                ))}
+              </select>
+            </label>
+        )}
+        <button onClick={handleSubmit}>
+          {mode === "signup" ? "회원가입 완료" : "회원정보 수정 완료"}
+        </button>
+        {showMBTIPopup && (
+            <MBTIPopup
+                onClose={() => setShowMBTIPopup(false)}
+                onSelect={(selectedMBTI) => {
+                  setMbti(selectedMBTI);
+                  setShowMBTIPopup(false);
+                }}
             />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-                fullWidth
-                type="number"
-                label="나이"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                variant="outlined"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Select
-                fullWidth
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                displayEmpty
-                variant="outlined"
-            >
-              <MenuItem value="">
-                <em>성별 선택</em>
-              </MenuItem>
-              <MenuItem value="남성">남성</MenuItem>
-              <MenuItem value="여성">여성</MenuItem>
-            </Select>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Button variant="outlined" fullWidth onClick={() => setShowMBTIPopup(true)}>
-              {mbti || "MBTI 선택"}
-            </Button>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Select
-                fullWidth
-                value={selectedRegion}
-                onChange={handleRegionChange}
-                displayEmpty
-                variant="outlined"
-            >
-              <MenuItem value="">
-                <em>지역 선택</em>
-              </MenuItem>
-              {regions.map((region) => (
-                  <MenuItem key={region.cd} value={region.addr_name}>
-                    {region.addr_name}
-                  </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-
-          {selectedRegion && (
-              <Grid item xs={12}>
-                <Select
-                    fullWidth
-                    value={selectedCity}
-                    onChange={handleCityChange}
-                    displayEmpty
-                    variant="outlined"
-                >
-                  <MenuItem value="">
-                    <em>세부 지역 선택</em>
-                  </MenuItem>
-                  {cities.map((city) => (
-                      <MenuItem key={city.cd} value={city.addr_name}>
-                        {city.addr_name}
-                      </MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-          )}
-
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
-              {mode === "signup" ? "회원가입 완료" : "회원정보 수정 완료"}
-            </Button>
-          </Grid>
-        </Grid>
-
-        <Dialog open={showMBTIPopup} onClose={() => setShowMBTIPopup(false)}>
-          <DialogTitle>MBTI 선택</DialogTitle>
-          <DialogContent>
-            <Typography>MBTI 선택 팝업 내용</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowMBTIPopup(false)}>닫기</Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
+        )}
+      </div>
   );
 }
 
