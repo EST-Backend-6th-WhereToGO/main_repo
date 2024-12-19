@@ -184,7 +184,6 @@
 
 # 🏛 프로젝트 구조
 
-## 백엔드
 ```
 📦backend
  ┣ 📂src
@@ -194,148 +193,26 @@
  ┃ ┃ ┃ ┃ ┗ 📂howmuch
  ┃ ┃ ┃ ┃ ┃ ┗ 📂backend
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AppConfig.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SecurityConfig.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WebConfig.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AuthController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BlogApiController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CityController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ExchangeRateController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyPageController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PlanController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SearchTripController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜WeatherController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WikipediaController.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
  ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂city_info
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Category.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜City.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂community
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Post.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostComment.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostHeader.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PostLike.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜AddPostRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryDTO.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CityDTO.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CityResponse.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentRequestDTO.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentResponseDTO.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyPlanDTO.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyTripOrder.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PlanRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostResponse.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UpdatePostRequest.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂plan
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜DetailPlan.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜Plan.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂user
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜User.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CityRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜DetailPlanRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PlanRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostLikeRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜UserRepository.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BlogApiService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CategoryService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CityService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CommentService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ExchangeRateService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MyPlanService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PostService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜UserService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜WeatherService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜WikipediaService.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂util
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜DateFormatUtil.java
  ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂youtube
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜YoutubeController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜YoutubeService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BackendApplication.java
  ┃ ┃ ┗ 📂resources
  ┃ ┃ ┃ ┣ 📂static
- ┃ ┃ ┃ ┃ ┣ 📜mytrip_view.js
- ┃ ┃ ┃ ┃ ┗ 📜style.css
  ┃ ┃ ┃ ┣ 📂templates
  ┃ ┃ ┃ ┃ ┣ 📂mytrip
- ┃ ┃ ┃ ┃ ┃ ┗ 📜mytrip_view.html
- ┃ ┃ ┃ ┃ ┣ 📜plan-form.html
- ┃ ┃ ┃ ┃ ┗ 📜yttest.html
- ┃ ┃ ┃ ┣ 📜application.properties
- ┃ ┃ ┃ ┗ 📜application.yml
  ┃ ┗ 📂test
- ┃ ┃ ┗ 📂java
- ┃ ┃ ┃ ┗ 📂com
- ┃ ┃ ┃ ┃ ┗ 📂howmuch
- ┃ ┃ ┃ ┃ ┃ ┗ 📂backend
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜BackendApplicationTests.java
- ┣ 📜.gitattributes
- ┣ 📜.gitignore
- ┣ 📜build.gradle
- ┣ 📜gradlew
- ┣ 📜gradlew.bat
- ┗ 📜settings.gradle
+ 📦frontend
+ ┗ 📂src
 ```
-## 프론트엔드
-```
-📦frontend
- ┣ 📂src
- ┃ ┣ 📜About.js
- ┃ ┣ 📜App.css
- ┃ ┣ 📜App.js
- ┃ ┣ 📜App.test.js
- ┃ ┣ 📜Board.js
- ┃ ┣ 📜CitySelectionPage.css
- ┃ ┣ 📜CitySelectionPage.js
- ┃ ┣ 📜CityTest.js
- ┃ ┣ 📜CreatePost.js
- ┃ ┣ 📜DateRangePicker.js
- ┃ ┣ 📜Header.css
- ┃ ┣ 📜Header.js
- ┃ ┣ 📜Home.css
- ┃ ┣ 📜Home.js
- ┃ ┣ 📜index.css
- ┃ ┣ 📜index.js
- ┃ ┣ 📜Itinerary.js
- ┃ ┣ 📜logo.svg
- ┃ ┣ 📜LogoutPopup.css
- ┃ ┣ 📜LogoutPopup.js
- ┃ ┣ 📜MBTIPopup.css
- ┃ ┣ 📜MBTIPopup.js
- ┃ ┣ 📜MyPage.css
- ┃ ┣ 📜MyPage.js
- ┃ ┣ 📜Post.css
- ┃ ┣ 📜Post.js
- ┃ ┣ 📜reportWebVitals.js
- ┃ ┣ 📜ResultPage.js
- ┃ ┣ 📜SearchPage.js
- ┃ ┣ 📜setupTests.js
- ┃ ┣ 📜Step1.css
- ┃ ┣ 📜Step1.js
- ┃ ┣ 📜Step2.css
- ┃ ┣ 📜Step2.js
- ┃ ┣ 📜Step3.css
- ┃ ┣ 📜Step3.js
- ┃ ┣ 📜TripPlanner.css
- ┃ ┣ 📜TripPlanner.js
- ┃ ┗ 📜YouTubeEmbed.js
- ┣ 📜.env
- ┣ 📜.gitignore
- ┣ 📜package-lock.json
- ┣ 📜package.json
- ┗ 📜README.md
-```
+
 ---
 
 # 🎨 화면 설계서
