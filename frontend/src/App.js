@@ -38,7 +38,7 @@ function App() {
           <Route path="/board" element={<Board />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/mypage/post/:postId" element={<MyPostDetail />} />
+          <Route path="/plan/:postId" element={<MyPostDetail />} />
         </Routes>
       </div>
     </Router>

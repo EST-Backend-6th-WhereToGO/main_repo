@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./MyPostDetail.css";
@@ -10,6 +10,7 @@ const MyPostDetail = () => {
     const [detailPlans, setDetailPlans] = useState([]); // Detail Plan 데이터
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(false); // 에러 상태
+    const containerRef = useRef(null); // 스크롤 컨테이너 참조
 
     // 게시글 정보 가져오기
     useEffect(() => {
@@ -49,16 +50,41 @@ const MyPostDetail = () => {
         fetchPost();
     }, [postId]);
 
+    const groupByDay = (plans) => {
+        return plans.reduce((acc, plan) => {
+            const day = plan.day || "Unknown";
+            if (!acc[day]) {
+                acc[day] = [];
+            }
+            acc[day].push(plan);
+            return acc;
+        }, {});
+    };
+
+    const scrollLeft = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+        }
+    };
+
+    const scrollRight = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+        }
+    };
+
     // 로딩 중
     if (loading) return <p>Loading...</p>;
 
     // 에러 발생
     if (error) return <p>Failed to load data. Please try again later.</p>;
 
+    const groupedPlans = groupByDay(detailPlans);
+
     return (
         <div className="post-detail-container">
             {/* 게시글 정보 */}
-            <Header/>
+            <Header />
             <div className="post-info">
                 <h1>{post.title}</h1>
                 <p>{post.content}</p>
@@ -68,22 +94,23 @@ const MyPostDetail = () => {
             {/* Detail Plan 정보 */}
             <div className="detail-plan-container">
                 <h2>Detail Plans</h2>
-                {detailPlans.length > 0 ? (
-                    <ul className="detail-plan-list">
-                        {detailPlans.map((detail) => (
-                            <li key={detail.detailId} className="detail-item">
-                                <h3>{detail.day ? detail.day + " 일차" : "일차 정보 없음"}</h3>
-                                <p>{detail.placeName || "장소 이름 없음"}</p>
-                                <p>
-                                    일정시간:{" "}
-                                    <strong>{detail.startTime || "시간 정보 없음"}</strong>
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No detail plans available.</p>
-                )}
+                <div className="navigation-buttons">
+                    <button onClick={scrollLeft} className="navigation-button">&lt;</button>
+                    <button onClick={scrollRight} className="navigation-button">&gt;</button>
+                </div>
+                <div className="day-plan-container" ref={containerRef}>
+                    {Object.entries(groupedPlans).map(([day, plans]) => (
+                        <div key={day} className="day-plan">
+                            <h2>{`Day ${day}`}</h2>
+                            {plans.map((plan, index) => (
+                                <div key={index} className="activity">
+                                    <p>{plan.startTime || "시간 정보 없음"}</p>
+                                    <p>{plan.placeName || "장소 이름 없음"}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

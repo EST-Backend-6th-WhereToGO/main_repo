@@ -151,7 +151,7 @@ const MyPage = () => {
                             <li
                                 key={post.postId}
                                 className="post-item"
-                                onClick={() => navigate(`/mypage/post/${post.postId}`)}
+                                onClick={() => navigate(`/plan/${post.postId}`)}
                             >
                                 <h3 className="post-title">{post.title}</h3>
                                 <p className="post-date">작성일: {new Date(post.createdAt).toLocaleDateString()}</p>

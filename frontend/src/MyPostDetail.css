@@ -1,6 +1,5 @@
-/* 기본 컨테이너 스타일 */
 .post-detail-container {
-    max-width: 800px;
+    max-width: 1800px;
     margin: 20px auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -9,11 +8,10 @@
     font-family: Arial, sans-serif;
 }
 
-/* 게시글 정보 스타일 */
 .post-info {
     margin-bottom: 30px;
-    border-bottom: 2px solid #ddd;
     padding-bottom: 20px;
+    border-bottom: 2px solid #ddd;
 }
 
 .post-info h1 {
@@ -28,7 +26,6 @@
     margin: 5px 0;
 }
 
-/* Detail Plan 컨테이너 스타일 */
 .detail-plan-container {
     margin-top: 20px;
 }
@@ -39,42 +36,82 @@
     margin-bottom: 15px;
 }
 
-/* Detail Plan 리스트 스타일 */
-.detail-plan-list {
-    list-style-type: none;
-    padding: 0;
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
 }
 
-.detail-item {
+.navigation-button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.navigation-button:hover {
+    background-color: #0056b3;
+}
+
+.day-plan-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px;
+    padding: 10px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.day-plan {
+    flex: 0 0 calc(100% / 3 - 20px); /* 기본적으로 3개씩 화면에 표시 */
     background-color: #fff;
-    margin-bottom: 15px;
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.detail-item h3 {
-    font-size: 20px;
-    color: #2c3e50;
-    margin-bottom: 8px;
-}
-
-.detail-item p {
-    font-size: 16px;
-    color: #555;
-    margin: 5px 0;
-}
-
-/* 방문 시간 강조 스타일 */
-.detail-item strong {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-/* 에러 메시지 스타일 */
-p {
-    color: #e74c3c;
-    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    scroll-snap-align: start;
+}
+
+.activity {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.activity p {
+    font-size: 14px;
+    color: #333;
+}
+
+/* 반응형 추가 */
+@media (max-width: 1200px) {
+    .day-plan {
+        flex: 0 0 calc(100% / 2 - 20px); /* 화면이 좁으면 2개씩 */
+    }
+}
+
+@media (max-width: 768px) {
+    .day-plan {
+        flex: 0 0 calc(100% - 20px); /* 화면이 더 좁으면 1개씩 */
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation-button {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
 }

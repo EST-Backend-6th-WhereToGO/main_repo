@@ -46,8 +46,9 @@
     scroll-behavior: smooth;
     gap: 15px;
     padding: 10px;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
     align-items: stretch;
+    white-space: nowrap !important; /* 줄바꿈 방지 */
 }
 
 .day-plan {
