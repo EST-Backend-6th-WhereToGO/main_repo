@@ -261,26 +261,23 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
-        if (!post.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("본인의 게시물만 수정 가능합니다.");
-        }
 
         return toPostResponse(post);
     }
 
-    @Transactional
-    public void updateMyPost(Long postId, Long userId, UpdatePostRequest updateRequest) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
-
-        if (!post.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("본인의 게시물만 수정 가능합니다.");
-        }
-
-        post.setTitle(updateRequest.getTitle());
-        post.setContent(updateRequest.getContent());
-        postRepository.save(post);
-    }
+//    @Transactional
+//    public void updateMyPost(Long postId, Long userId, UpdatePostRequest updateRequest) {
+//        Post post = postRepository.findById(postId)
+//                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+//
+//        if (!post.getUser().getUserId().equals(userId)) {
+//            throw new IllegalArgumentException("본인의 게시물만 수정 가능합니다.");
+//        }
+//
+//        post.setTitle(updateRequest.getTitle());
+//        post.setContent(updateRequest.getContent());
+//        postRepository.save(post);
+//    }
     @Transactional(readOnly = true)
     public PlanResponse getPlanByPostId(Long postId, Long userId) {
         // Post 엔티티 조회
