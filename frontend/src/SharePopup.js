@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import "./SharePopup.css"; // 팝업 스타일링 파일
-import { Button, Typography, Box, Modal } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 const SharePopup = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;

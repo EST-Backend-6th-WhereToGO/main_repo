@@ -15,7 +15,7 @@ public class SearchTripController {
     // 진헌 id
     // private final String CLIENT_ID = "0ad2c726-07c9-40b1-ae02-32efa5048571";
     // 5조 id
-    private final String CLIENT_ID = "9b73eb26-fc09-4283-9267-e5afa5851e98";
+    private final String CLIENT_ID = "8bc1e7c2-e377-48ec-8476-1e66e9830533";
 
     MyPlanService myPlanService;
 

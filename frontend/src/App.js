@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { GoogleOAuthProvider } from '@react-oauth/google'; // Google OAuth Provider 추가
 import Home from './Home';
 import Step1 from './Step1';
 import Step2 from './Step2';
@@ -28,8 +27,8 @@ function App() {
         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/step1" element={<Step1 updateProgress={updateProgress} />} />
-          <Route path="/step2" element={<Step2 updateProgress={updateProgress} />} />
+          <Route path="/step1" element={<Step1 updateProgress={updateProgress} mode="signup"/>} />
+          <Route path="/edit-profile" element={<Step1 mode="edit" />} />
           <Route path="/step3" element={<Step3 updateProgress={updateProgress} />} />
           <Route path="/post" element={<Post updateProgress={updateProgress} />} />
           <Route path="/post/:postId" element={<Post />} /> {/* 동적 라우팅 */}
