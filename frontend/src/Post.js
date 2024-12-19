@@ -20,7 +20,7 @@ function Post() {
     // 사용자 세션 정보 가져오기
     const fetchSessionUser = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/auth/status', {
+            const response = await fetch('/api/auth/status', {
                 credentials: 'include',
             });
             const data = await response.json();
@@ -40,15 +40,15 @@ function Post() {
         const fetchPostData = async () => {
             try {
                 const [postRes, commentsRes] = await Promise.all([
-                    fetch(`http://localhost:8080/api/posts/${postId}`).then((res) => res.json()),
-                    fetch(`http://localhost:8080/api/post/${postId}/comments`, { credentials: 'include' }).then((res) => res.json()),
+                    fetch(`/api/posts/${postId}`).then((res) => res.json()),
+                    fetch(`/api/post/${postId}/comments`, { credentials: 'include' }).then((res) => res.json()),
                 ]);
                 setPost(postRes);
                 setLikeCount(postRes.likeCount);
                 setComments(commentsRes);
                 if (userId) {
                     const likeStatusRes = await fetch(
-                        `http://localhost:8080/api/posts/${postId}/like/status?userId=${userId}`,
+                        `/api/posts/${postId}/like/status?userId=${userId}`,
                         { credentials: 'include' }
                     ).then((res) => res.json());
                     setLiked(likeStatusRes);
@@ -69,7 +69,7 @@ function Post() {
             return;
         }
         const method = liked ? 'DELETE' : 'POST';
-        fetch(`http://localhost:8080/api/posts/${postId}/like?userId=${userId}`, { method, credentials: 'include' })
+        fetch(`/api/posts/${postId}/like?userId=${userId}`, { method, credentials: 'include' })
             .then(() => {
                 setLiked((prev) => !prev);
                 setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
@@ -85,7 +85,7 @@ function Post() {
             return;
         }
         const commentData = { postId, content: newComment, userId };
-        fetch('http://localhost:8080/api/comments', {
+        fetch('/api/comments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -102,7 +102,7 @@ function Post() {
     // 댓글 삭제
     const handleDeleteComment = (commentId) => {
         if (!window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
-        fetch(`http://localhost:8080/api/comments/${commentId}`, {
+        fetch(`/api/comments/${commentId}`, {
             method: 'DELETE',
             credentials: 'include',
         })
@@ -123,7 +123,7 @@ function Post() {
     // 댓글 수정 제출
     const handleEditSubmit = (commentId) => {
         if (!editContent.trim()) return;
-        fetch(`http://localhost:8080/api/comments/${commentId}`, {
+        fetch(`/api/comments/${commentId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -150,7 +150,7 @@ function Post() {
     // 게시글 삭제
     const handleDeletePost = () => {
         if (!window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
-        fetch(`http://localhost:8080/api/posts/${postId}`, {
+        fetch(`/api/posts/${postId}`, {
             method: 'DELETE',
             credentials: 'include',
         })

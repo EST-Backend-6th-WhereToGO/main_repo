@@ -42,7 +42,7 @@ const Board = () => {
 
     useEffect(() => {
         const params = { page: 1, size: 5 }; // 한 페이지에 5개 게시글
-        fetchPosts('http://localhost:8080/api/posts', params);
+        fetchPosts('/api/posts', params);
     }, []);
 
     const handleCategoryChange = (category) => {
@@ -53,18 +53,18 @@ const Board = () => {
         let url = '';
 
         if (category.value) {
-            url = 'http://localhost:8080/api/posts/by-header';
+            url = '/api/posts/by-header';
             params.header = category.value;
             if (activeSort !== 'default') {
                 params.sort = activeSort;
             }
         } else {
             if (activeSort === 'views') {
-                url = 'http://localhost:8080/api/posts/by-views';
+                url = '/api/posts/by-views';
             } else if (activeSort === 'likes') {
-                url = 'http://localhost:8080/api/posts/by-likes';
+                url = '/api/posts/by-likes';
             } else {
-                url = 'http://localhost:8080/api/posts';
+                url = '/api/posts';
             }
         }
 
@@ -81,16 +81,16 @@ const Board = () => {
         let url = '';
 
         if (activeCategory.value) {
-            url = 'http://localhost:8080/api/posts/by-header';
+            url = '/api/posts/by-header';
             params.header = activeCategory.value;
             params.sort = sortType;
         } else {
             if (sortType === 'views') {
-                url = 'http://localhost:8080/api/posts/by-views';
+                url = '/api/posts/by-views';
             } else if (sortType === 'likes') {
-                url = 'http://localhost:8080/api/posts/by-likes';
+                url = '/api/posts/by-likes';
             } else {
-                url = 'http://localhost:8080/api/posts';
+                url = '/api/posts';
             }
         }
 
@@ -105,18 +105,18 @@ const Board = () => {
         let url = '';
 
         if (activeCategory.value) {
-            url = 'http://localhost:8080/api/posts/by-header';
+            url = '/api/posts/by-header';
             params.header = activeCategory.value;
             if (activeSort !== 'default') {
                 params.sort = activeSort;
             }
         } else {
             if (activeSort === 'views') {
-                url = 'http://localhost:8080/api/posts/by-views';
+                url = '/api/posts/by-views';
             } else if (activeSort === 'likes') {
-                url = 'http://localhost:8080/api/posts/by-likes';
+                url = '/api/posts/by-likes';
             } else {
-                url = 'http://localhost:8080/api/posts';
+                url = '/api/posts';
             }
         }
 
