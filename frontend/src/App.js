@@ -9,7 +9,6 @@ import Post from './Post';
 import Result from './ResultPage';
 import Board from './Board';
 import CreatePost from "./CreatePost";
-import MyPage from "./MyPage";
 
 import './App.css';
 import TripPlanner from "./TripPlanner";

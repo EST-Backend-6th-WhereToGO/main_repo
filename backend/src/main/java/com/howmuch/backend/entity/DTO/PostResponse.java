@@ -12,6 +12,7 @@ public class PostResponse {
     private Long postId;
     private Long userId;
     private String title;
+    private String header;
     private String content;
     private String nickname;
     private Long likeCount;
