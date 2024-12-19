@@ -243,6 +243,7 @@
 
 # 🎬 시연 영상
 
+[![5조 시연영상](resources/thph.jpg)](https://youtu.be/Qo-a6fptvMM)
 
 ---
 
