@@ -187,19 +187,50 @@ public class PostService {
         postRepository.save(post);
     }
 
-    // 게시물 좋아요 순 조회
     @Transactional(readOnly = true)
-    public Page<PostResponse> getAllPostsByLikeCount(int page) {
-        Pageable pageable = PageRequest.of(page,PAGE_SIZE);
-        Page<Post> posts = postRepository.findAllByOrderByLikeCountDesc(pageable);
+    public Page<PostResponse> getPostsByHeaderAndViews(String header, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("viewCount").descending());
+        Page<Post> posts;
+
+        if ("TIP".equalsIgnoreCase(header)) {
+            posts = postRepository.findTipPosts(pageable);
+        } else if ("TRIP".equalsIgnoreCase(header)) {
+            posts = postRepository.findTripPosts(pageable);
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 헤더입니다");
+        }
+
         return posts.map(this::toPostResponse);
     }
 
-    // 게시물 조회수 순 조회
+    // 헤더별 게시글 조회 (좋아요순 정렬)
     @Transactional(readOnly = true)
-    public Page<PostResponse> getAllPostsByViewCount(int page) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<Post> posts =  postRepository.findAllByOrderByViewCountDesc(pageable);
+    public Page<PostResponse> getPostsByHeaderAndLikes(String header, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("likeCount").descending());
+        Page<Post> posts;
+
+        if ("TIP".equalsIgnoreCase(header)) {
+            posts = postRepository.findTipPosts(pageable);
+        } else if ("TRIP".equalsIgnoreCase(header)) {
+            posts = postRepository.findTripPosts(pageable);
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 헤더입니다");
+        }
+
+        return posts.map(this::toPostResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsByViews(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("viewCount").descending());
+        Page<Post> posts = postRepository.findAllByOrderByViewCountDesc(pageable);
+        return posts.map(this::toPostResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsByLikes(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("likeCount").descending());
+        Page<Post> posts = postRepository.findAllByOrderByLikeCountDesc(pageable);
         return posts.map(this::toPostResponse);
     }
 

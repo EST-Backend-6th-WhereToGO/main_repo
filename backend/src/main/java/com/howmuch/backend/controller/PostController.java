@@ -94,28 +94,24 @@ public class PostController {
         return ResponseEntity.ok("좋아요 취소 완료");
     }
 
-    // 좋아요 순 인기게시물 조회
-    @GetMapping("/by-likes")
-    public ResponseEntity<Page<PostResponse>> getAllPostsByLikeCount(
-            @RequestParam(defaultValue = "1") int page) {
-        Page<PostResponse> popularPosts = postService.getAllPostsByLikeCount(page -1);
-        return ResponseEntity.ok(popularPosts);
-    }
-
-    // 조회수 인기게시물 조회
-    @GetMapping("/by-views")
-    public ResponseEntity<Page<PostResponse>> getAllPostsByViewCount(
-            @RequestParam(defaultValue = "1") int page) {
-        Page<PostResponse> popularPosts = postService.getAllPostsByViewCount(page -1);
-        return ResponseEntity.ok(popularPosts);
-    }
 
     // 헤더별 게시글 조회
     @GetMapping("/by-header")
     public ResponseEntity<Page<PostResponse>> getPostsByHeader(
             @RequestParam String header,
-            @RequestParam(defaultValue = "1") int page) {
-        Page<PostResponse> posts = postService.getPostsByHeader(header, page -1);
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String sort) {
+        Page<PostResponse> posts;
+
+        // 정렬 기준에 따라 Service 호출
+        if ("views".equals(sort)) {
+            posts = postService.getPostsByHeaderAndViews(header, page - 1);
+        } else if ("likes".equals(sort)) {
+            posts = postService.getPostsByHeaderAndLikes(header, page - 1);
+        } else {
+            posts = postService.getPostsByHeader(header, page - 1);
+        }
+
         return ResponseEntity.ok(posts);
     }
 
@@ -125,5 +121,21 @@ public class PostController {
         boolean isLiked = postService.isPostLikedByUser(postId, userId);
         return ResponseEntity.ok(isLiked);
     }
+    // 전체 게시물 조회 - 조회수 순 정렬
+    @GetMapping("/by-views")
+    public ResponseEntity<Page<PostResponse>> getPostsByViews(
+            @RequestParam(defaultValue = "1") int page) {
+        Page<PostResponse> posts = postService.getPostsByViews(page - 1);
+        return ResponseEntity.ok(posts);
+    }
+
+    // 전체 게시물 조회 - 좋아요 순 정렬
+    @GetMapping("/by-likes")
+    public ResponseEntity<Page<PostResponse>> getPostsByLikes(
+            @RequestParam(defaultValue = "1") int page) {
+        Page<PostResponse> posts = postService.getPostsByLikes(page - 1);
+        return ResponseEntity.ok(posts);
+    }
+
 
 }

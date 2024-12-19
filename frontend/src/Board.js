@@ -46,50 +46,90 @@ const Board = () => {
         setCurrentPage(1);
 
         const params = { page: 1 };
-        if (category.value) {
-            params.header = category.value;
-            fetchPosts('http://localhost:8080/api/posts/by-header', params);
-        } else {
-            fetchPosts('http://localhost:8080/api/posts', params);
-        }
-    };
-
-    const handleSortChange = (sortType) => {
-        setActiveSort(sortType);
-        setCurrentPage(1);
-
-        const params = { page: 1 };
         let url = '';
 
-        if (sortType === 'views') {
-            url = 'http://localhost:8080/api/posts/by-views';
-        } else if (sortType === 'likes') {
-            url = 'http://localhost:8080/api/posts/by-likes';
+        if (category.value) {
+            // 특정 카테고리 선택 시
+            url = 'http://localhost:8080/api/posts/by-header';
+            params.header = category.value; // 카테고리 필터 추가
+            if (activeSort !== 'default') {
+                params.sort = activeSort; // 정렬 상태 유지
+            }
         } else {
-            url = 'http://localhost:8080/api/posts';
+            // 전체 게시물 보기일 경우
+            if (activeSort === 'views') {
+                url = 'http://localhost:8080/api/posts/by-views';
+            } else if (activeSort === 'likes') {
+                url = 'http://localhost:8080/api/posts/by-likes';
+            } else {
+                url = 'http://localhost:8080/api/posts';
+            }
         }
+
+        // API 호출
         fetchPosts(url, params);
     };
+
+
+    const handleSortChange = (sortType) => {
+        setActiveSort(sortType); // 현재 정렬 기준 업데이트
+        setCurrentPage(1); // 정렬 변경 시 첫 페이지로 초기화
+
+        const params = { page: 1 }; // 페이지 초기화
+        let url = '';
+
+        if (activeCategory.value) {
+            // 특정 카테고리(TIP, TRIP)가 선택된 경우
+            url = 'http://localhost:8080/api/posts/by-header';
+            params.header = activeCategory.value; // 카테고리 필터 추가
+            params.sort = sortType; // 정렬 기준 추가
+        } else {
+            // 전체 게시물 보기일 경우
+            if (sortType === 'views') {
+                url = 'http://localhost:8080/api/posts/by-views';
+            } else if (sortType === 'likes') {
+                url = 'http://localhost:8080/api/posts/by-likes';
+            } else {
+                url = 'http://localhost:8080/api/posts';
+            }
+        }
+
+        // API 호출
+        fetchPosts(url, params);
+    };
+
+
+
 
     const handlePageChange = (page) => {
         if (page < 1 || page > totalPages) return;
         setCurrentPage(page);
 
-        const params = { page };
+        const params = { page }; // 현재 페이지 번호 설정
         let url = '';
 
-        if (activeSort === 'views') {
-            url = 'http://localhost:8080/api/posts/by-views';
-        } else if (activeSort === 'likes') {
-            url = 'http://localhost:8080/api/posts/by-likes';
-        } else if (activeCategory.value !== null) { // header 추가 조건 확인
-            params.header = activeCategory.value;
+        if (activeCategory.value) {
+            // 특정 카테고리 선택 시
             url = 'http://localhost:8080/api/posts/by-header';
+            params.header = activeCategory.value;
+            if (activeSort !== 'default') {
+                params.sort = activeSort; // 정렬 상태 유지
+            }
         } else {
-            url = 'http://localhost:8080/api/posts';
+            // 전체 게시물 보기 시
+            if (activeSort === 'views') {
+                url = 'http://localhost:8080/api/posts/by-views';
+            } else if (activeSort === 'likes') {
+                url = 'http://localhost:8080/api/posts/by-likes';
+            } else {
+                url = 'http://localhost:8080/api/posts';
+            }
         }
+
+        // API 호출
         fetchPosts(url, params);
     };
+
 
 
 
