@@ -24,7 +24,7 @@ const CreatePost = () => {
     // Fetch user session status
     const fetchSessionUser = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/auth/status', { credentials: 'include' });
+            const response = await fetch('/api/auth/status', { credentials: 'include' });
             const data = await response.json();
 
             if (data.status === 'LoggedIn') {
@@ -55,12 +55,12 @@ const CreatePost = () => {
 
         try {
             setLoading(true);
-            let url = 'http://localhost:8080/api/posts';
+            let url = '/api/posts';
             let method = 'POST';
 
             if (postId) {
                 // Update post if in edit mode
-                url = `http://localhost:8080/api/posts/${postId}`;
+                url = `/api/posts/${postId}`;
                 method = 'PUT';
             }
 

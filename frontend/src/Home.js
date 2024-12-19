@@ -30,7 +30,7 @@ function Home() {
     // 세션에서 userId 가져오기
     const fetchSessionUser = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/auth/status", {
+            const response = await fetch("/api/auth/status", {
                 credentials: "include",
             });
             const data = await response.json();
