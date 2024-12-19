@@ -210,9 +210,6 @@ const Board = () => {
                                         <Typography variant="h6" component="div" noWrap>
                                             {post.title}
                                         </Typography>
-                                        <Typography variant="body2" color="textSecondary" noWrap>
-                                            {post.content}
-                                        </Typography>
                                         <Typography variant="body2" color="textSecondary" marginTop={1}>
                                             조회수: {post.viewCount} | 좋아요: {post.likeCount}
                                         </Typography>
