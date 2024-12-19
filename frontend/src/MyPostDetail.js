@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./MyPostDetail.css";
 import Header from "./Header";
+import SharePopup from "./SharePopup";
 
 const MyPostDetail = () => {
     const { postId } = useParams(); // URL에서 postId 가져오기
@@ -11,6 +12,20 @@ const MyPostDetail = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(false); // 에러 상태
     const containerRef = useRef(null); // 스크롤 컨테이너 참조
+    const [isSharePopupOpen, setIsSharePopupOpen] = useState(false); // 팝업 상태 관리
+    const [selectedPost, setSelectedPost] = useState(null); // 선택된 게시물
+
+    const openSharePopup = (post) => {
+        setSelectedPost(post);
+        setIsSharePopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setSelectedPost(null);
+        setIsSharePopupOpen(false);
+    };
+
+
 
     // 게시글 정보 가져오기
     useEffect(() => {
@@ -73,6 +88,7 @@ const MyPostDetail = () => {
         }
     };
 
+
     // 로딩 중
     if (loading) return <p>Loading...</p>;
 
@@ -89,6 +105,13 @@ const MyPostDetail = () => {
                 <h1>{post.title}</h1>
                 <p>{post.content}</p>
                 <p>작성일: {new Date(post.createdAt).toLocaleDateString()}</p>
+            </div>
+
+            {/* 공유 버튼 추가 */}
+            <div className="share-button-container">
+                <button onClick={() => setIsSharePopupOpen(true)}>
+                    일정 공유 여부 설정
+                </button>
             </div>
 
             {/* Detail Plan 정보 */}
