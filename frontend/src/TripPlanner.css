@@ -118,3 +118,70 @@
         font-size: 14px;
     }
 }
+
+/* 삭제된 일정 섹션 스타일 */
+.deleted-activities {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff4f4;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.1);
+}
+
+.deleted-activities h2 {
+    margin-bottom: 10px;
+    color: #721c24;
+    text-align: center;
+    font-size: 18px;
+}
+
+.deleted-activity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.deleted-activity:hover {
+    background-color: #f1b0b7;
+}
+
+.deleted-activity p {
+    margin: 0;
+    font-size: 14px;
+    color: #721c24;
+}
+
+/* 다시 검색 버튼 스타일 */
+.re-recommend-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.re-recommend-button:disabled {
+    background-color: #e0a800;
+    cursor: not-allowed;
+}
+
+.re-recommend-button:hover:not(:disabled) {
+    background-color: #d39e00;
+}
+
