@@ -54,4 +54,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 """)
     Page<Post> findAllByOrderByLikeCountDesc(Pageable pageable);
 
+    Page<Post> findAllByUser_UserId(Long userId, Pageable pageable);
+
 }

@@ -1,17 +1,32 @@
 package com.howmuch.backend.controller;
 
+import com.howmuch.backend.entity.DTO.PostResponse;
+import com.howmuch.backend.service.PostService;
+import com.howmuch.backend.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/my-plans")
+@RequestMapping("/mypage")
+@RequiredArgsConstructor
 public class MyPageController {
+
+    private final PostService postService;
+    private final UserService userService;
 
     // 내 일정 조회
     @GetMapping
-    public ResponseEntity<?> getMyPlans() {
-        // TODO: 내 일정 조회 로직 추가
-        return ResponseEntity.ok("내 일정 조회");
+    public ResponseEntity<Page<PostResponse>> getMyPosts(
+            OAuth2AuthenticationToken authentication,
+            @RequestParam(defaultValue = "0") int page) {
+
+        String email = authentication.getPrincipal().getAttribute("email");
+        Long sessionUserId = userService.getUserIdByEmail(email);
+        Page<PostResponse> posts = postService.getUserPosts(sessionUserId, page);
+        return ResponseEntity.ok(posts);
     }
 
     // 내 일정 수정

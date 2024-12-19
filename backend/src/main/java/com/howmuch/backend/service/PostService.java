@@ -35,6 +35,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
     private static final int PAGE_SIZE = 20;
+    private static final int MY_PAGE_SIZE = 5;
 
     @Autowired
     public PostService(PostRepository postRepository, UserRepository userRepository, PlanRepository planRepository, PostLikeRepository postLikeRepository) {
@@ -90,6 +91,12 @@ public class PostService {
         return posts.map(this::toPostResponse);
     }
 
+    public Page<PostResponse> getUserPosts(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page, MY_PAGE_SIZE, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findAllByUser_UserId(userId, pageable);
+        return posts.map(this::toPostResponse);
+    }
+
     @Transactional(readOnly = true)
     public PostResponse getPostById(Long postId) {
         Post post = postRepository.findById(postId)
@@ -135,6 +142,7 @@ public class PostService {
         PostResponse response = new PostResponse();
         response.setPostId(post.getPostId());
         response.setUserId(post.getUser().getUserId());
+        response.setHeader(post.getHeader().name());
         response.setTitle(post.getTitle());
         response.setContent(post.getContent());
         response.setNickname(post.getUser().getNickname());
@@ -206,4 +214,6 @@ public class PostService {
     public boolean isPostLikedByUser(Long postId, Long userId) {
         return postLikeRepository.findByPost_PostIdAndUserId(postId, userId).isPresent();
     }
+
+
 }

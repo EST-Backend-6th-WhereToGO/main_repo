@@ -125,4 +125,5 @@ public class PostController {
         boolean isLiked = postService.isPostLikedByUser(postId, userId);
         return ResponseEntity.ok(isLiked);
     }
+
 }
