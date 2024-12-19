@@ -26,7 +26,18 @@
 ---
 
 # 💻 화면 구성
-
+|                                         |                                        |
+|-----------------------------------------|----------------------------------------|
+| **메인 페이지**                              | **회원가입**                               | 
+| <img src="resources/mainpage.jpg">      | <img src="resources/signup.jpg">       |
+| **마이페이지**                               | **게시판**                                |
+| <img src="resources/mypage.jpg">        | <img src="resources/board.jpg">        |
+| **검색창(도시선택)**                           | **로딩창**                                |
+| <img src="resources/cityselection.jpg"> | <img src="resources/loading.jpg">      |
+| **일정결과**                                | **도시검색결과**                             |
+| <img src="resources/tripplan.jpg">      | <img src="resources/searchresult.jpg"> |
+| **게시글**                                 | **게시글 작성**                             | 
+| <img src="resources/blog.jpg">          | <img src="resources/blogwrite.jpg">    |
 
 ---
 
