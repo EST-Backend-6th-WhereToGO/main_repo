@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,4 +59,47 @@ public class CityController {
 			));
 		}
 	}
+
+	@GetMapping("/search")
+	public ResponseEntity<?> getCityByNameWithCategories(@RequestParam String cityName) {
+		List<City> cities = cityRepository.findAllByCityName(cityName);
+
+		if (!cities.isEmpty()) {
+			List<Map<String, Object>> cityData = cities.stream()
+				.map(city -> {
+					Map<String, Object> cityDetails = new HashMap<>();
+					cityDetails.put("cityName", city.getCityName());
+					cityDetails.put("description", city.getDescription());
+					cityDetails.put("photo", city.getPhoto());
+					cityDetails.put("domestic", city.isDomestic());
+					cityDetails.put("flightTime", city.getFlightTime());
+					cityDetails.put("visaInfo", city.getVisaInfo());
+					cityDetails.put("timeDiff", city.getTimeDiff());
+					cityDetails.put("currency", city.getCurrency());
+					cityDetails.put("language", city.getLanguage());
+					cityDetails.put("weather", city.getWeather());
+					cityDetails.put("clothes", city.getClothes());
+					cityDetails.put("period", city.getPeriod());
+					cityDetails.put("expense", city.getExpense());
+
+					Map<String, Object> categoryMap = new HashMap<>();
+					categoryMap.put("categoryName", city.getCategory() != null ? city.getCategory().getCategoryName() : "Unknown Category");
+					categoryMap.put("cityDetails", cityDetails);
+
+					return categoryMap;
+				})
+				.toList();
+
+			return ResponseEntity.ok(Map.of(
+				"found", true,
+				"categories", cityData
+			));
+		} else {
+			return ResponseEntity.ok(Map.of(
+				"found", false,
+				"message", "City not found in the database."
+			));
+		}
+	}
+
 }

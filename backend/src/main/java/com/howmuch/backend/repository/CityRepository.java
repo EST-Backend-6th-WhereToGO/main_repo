@@ -21,4 +21,7 @@ public interface CityRepository extends JpaRepository<City, Long> {
 
     @Query("SELECT c FROM City c WHERE c.category.categoryId = :categoryId")
     List<City> findCitiesByCategoryId(@Param("categoryId") Long categoryId);
+
+	List<City> findAllByCityName(String cityName);
+
 }
