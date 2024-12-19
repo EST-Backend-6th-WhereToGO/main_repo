@@ -131,7 +131,6 @@
 | 로그인 | POST | /api/login |  |
 | 로그아웃 | GET | /api/logout |  |
 | 닉네임 중복확인 | GET | /api/check/nickname |  |
-| 회원탈퇴 | PUT? DELETE? | /api/withdrawal |  |
 
 ### 🏪 커뮤니티 API
 
