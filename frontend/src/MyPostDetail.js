@@ -16,7 +16,7 @@ const MyPostDetail = () => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
     const [userId, setUserId] = useState(null);
-
+    const navigate = useNavigate();
     const fetchSessionUser = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:8080/api/auth/status', {
@@ -260,9 +260,11 @@ const MyPostDetail = () => {
                 )}
             </div>
 
-            <button onClick={handleEdit} className="edit-button">
-                수정
-            </button>
+            {post.userId === userId && (
+                <button onClick={handleEdit} className="edit-button">
+                    수정
+                </button>
+            )}
 
         </div>
     );
