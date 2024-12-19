@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Grid, Button, CircularProgress, Box, Typography } from '@mui/material';
 import './CitySelectionPage.css';
 
 function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
@@ -24,7 +25,6 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
                 return response.json();
             })
             .then((data) => {
-                console.log('Fetched cities:', data); // cityId와 cityName 확인
                 setCities(data); // 데이터를 상태에 저장
                 setLoading(false);
             })
@@ -34,13 +34,9 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
             });
     }, [categoryId]);
 
-
     const handleCitySelection = (city) => {
-        console.log('Selected city:', city); // 도시 객체 전체 출력
-        console.log('City ID:', city.cityId, 'City Name:', city.cityName); // 명시적으로 출력
         setSelectedCity(city); // 도시 객체 선택
     };
-
 
     const handleConfirm = () => {
         if (selectedCity) {
@@ -66,39 +62,51 @@ function CitySelectionPage({ categoryId, onClose, onCitySelect }) {
         return cities.slice(start, end);
     };
 
-    if (loading) return <p>로딩 중...</p>;
+    if (loading) return <CircularProgress />; // Material UI의 로딩 컴포넌트
     if (error) return <p>에러 발생: {error}</p>;
 
     return (
-        <div className="city-selection-container">
-            <h1>도시 선택</h1>
+        <Box className="city-selection-container" sx={{ padding: 3 }}>
+            <Typography variant="h4" align="center" gutterBottom>
+                도시 선택
+            </Typography>
 
-            <div className="pagination-buttons">
-                <button onClick={handlePrevPage} disabled={currentPage === 0}>
+            {/* Pagination Buttons */}
+            <Box display="flex" justifyContent="center" marginBottom={2}>
+                <Button onClick={handlePrevPage} disabled={currentPage === 0}>
                     이전
-                </button>
-                <button onClick={handleNextPage} disabled={currentPage === totalPages - 1 || totalPages === 0}>
+                </Button>
+                <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1 || totalPages === 0}>
                     다음
-                </button>
-            </div>
+                </Button>
+            </Box>
 
-            <div className="grid-container">
-                {getPaginatedCities().map((city, index) => (
-                    <div
-                        key={index}
-                        className={`grid-item ${selectedCity?.cityId === city.cityId ? 'selected' : ''}`}
-                        onClick={() => handleCitySelection(city)} // 도시 객체 선택
-                    >
-                        {city.cityName}
-                    </div>
+            {/* 3x3 Grid of cities */}
+            <Grid container spacing={2} justifyContent="center">
+                {getPaginatedCities().map((city) => (
+                    <Grid item xs={4} key={city.cityId}>
+                        <Button
+                            variant="outlined"
+                            fullWidth
+                            className={selectedCity?.cityId === city.cityId ? 'selected' : ''} // selected class
+                            onClick={() => handleCitySelection(city)}
+                        >
+                            {city.cityName}
+                        </Button>
+                    </Grid>
                 ))}
-            </div>
+            </Grid>
 
-            <div className="button-group">
-                <button onClick={handleConfirm}>확인</button>
-                <button onClick={onClose}>닫기</button>
-            </div>
-        </div>
+            {/* Action Buttons */}
+            <Box display="flex" justifyContent="center" gap={2} marginTop={3}>
+                <Button variant="contained" color="primary" onClick={handleConfirm}>
+                    확인
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={onClose}>
+                    닫기
+                </Button>
+            </Box>
+        </Box>
     );
 }
 

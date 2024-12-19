@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import YouTubeEmbed from "./YouTubeEmbed";
+import { Container, Box, Typography, Card, CardContent, Select, MenuItem, FormControl, InputLabel, Button, CircularProgress } from "@mui/material";
+import Header from "./Header";
+import "./ResultPage.css";
 
 function ResultPage() {
     const [categories, setCategories] = useState([]);
@@ -50,79 +53,102 @@ function ResultPage() {
     };
 
     return (
-        <div>
-            <h1>검색 결과: "{query}"</h1>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+            <Header />
+            <Typography variant="h4" align="center" gutterBottom>
+                검색 결과: "{query}"
+            </Typography>
 
             {categories.length > 0 ? (
-                <div>
-                    <label htmlFor="categorySelect">카테고리 선택: </label>
-                    <select id="categorySelect" onChange={handleCategoryChange}>
-                        {categories.map((category, index) => (
-                            <option key={index} value={category.categoryName}>
-                                {category.categoryName}
-                            </option>
-                        ))}
-                    </select>
+                <Box mb={4} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <FormControl fullWidth variant="outlined" sx={{ maxWidth: 400 }}>
+                        <InputLabel>카테고리 선택</InputLabel>
+                        <Select value={selectedCategory?.categoryName || ''} onChange={handleCategoryChange} label="카테고리 선택">
+                            {categories.map((category, index) => (
+                                <MenuItem key={index} value={category.categoryName}>
+                                    {category.categoryName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                     {selectedCategory && (
-                        <div>
-                            <h2>{selectedCategory.cityDetails.cityName}</h2>
-                            <img
-                                src={selectedCategory.cityDetails.photo}
-                                alt={selectedCategory.cityDetails.cityName}
-                                style={{ width: "300px" }}
-                            />
-                            <p>{selectedCategory.cityDetails.description}</p>
-                            {selectedCategory.cityDetails.domestic ? (
-                                <>
-                                    {selectedCategory.cityDetails.flightTime && <p>비행시간: {selectedCategory.cityDetails.flightTime}시간</p>}
-                                    {selectedCategory.cityDetails.visaInfo && <p>비자 정보: {selectedCategory.cityDetails.visaInfo}</p>}
-                                    {selectedCategory.cityDetails.timeDiff && <p>시차: {selectedCategory.cityDetails.timeDiff}</p>}
-                                </>
-                            ) : null}
-                            <p>화폐: {selectedCategory.cityDetails.currency}</p>
-                            <p>언어: {selectedCategory.cityDetails.language}</p>
-                            <p>추천 날씨: {selectedCategory.cityDetails.weather}</p>
-                            <p>추천 옷차림: {selectedCategory.cityDetails.clothes}</p>
-                            <p>추천 여행 기간: {selectedCategory.cityDetails.period}</p>
-                            <p>예상 비용: {selectedCategory.cityDetails.expense}</p>
-                        </div>
+                        <Card sx={{ maxWidth: 800, marginTop: 4, mx: "auto" }}>
+                            <CardContent>
+                                <Typography variant="h5" align="center">{selectedCategory.cityDetails.cityName}</Typography>
+                                <Box mt={2} display="flex" justifyContent="center">
+                                    <img
+                                        src={selectedCategory.cityDetails.photo}
+                                        alt={selectedCategory.cityDetails.cityName}
+                                        className="category-img"
+                                    />
+                                </Box>
+                                <Typography variant="body1" mt={2}>
+                                    {selectedCategory.cityDetails.description}
+                                </Typography>
+                                {selectedCategory.cityDetails.domestic && (
+                                    <>
+                                        {selectedCategory.cityDetails.flightTime && <Typography variant="body2" color="textSecondary">비행시간: {selectedCategory.cityDetails.flightTime}시간</Typography>}
+                                        {selectedCategory.cityDetails.visaInfo && <Typography variant="body2" color="textSecondary">비자 정보: {selectedCategory.cityDetails.visaInfo}</Typography>}
+                                        {selectedCategory.cityDetails.timeDiff && <Typography variant="body2" color="textSecondary">시차: {selectedCategory.cityDetails.timeDiff}</Typography>}
+                                    </>
+                                )}
+                                <Typography variant="body2" color="textSecondary">화폐: {selectedCategory.cityDetails.currency}</Typography>
+                                <Typography variant="body2" color="textSecondary">언어: {selectedCategory.cityDetails.language}</Typography>
+                                <Typography variant="body2" color="textSecondary">추천 날씨: {selectedCategory.cityDetails.weather}</Typography>
+                                <Typography variant="body2" color="textSecondary">추천 옷차림: {selectedCategory.cityDetails.clothes}</Typography>
+                                <Typography variant="body2" color="textSecondary">추천 여행 기간: {selectedCategory.cityDetails.period}</Typography>
+                                <Typography variant="body2" color="textSecondary">예상 비용: {selectedCategory.cityDetails.expense}</Typography>
+                            </CardContent>
+                        </Card>
                     )}
-                </div>
+                </Box>
             ) : wikipediaData ? (
-                <div>
-                    <h2>{wikipediaData.title}</h2>
-                    {wikipediaData.thumbnail && (
-                        <img src={wikipediaData.thumbnail} alt={wikipediaData.title} style={{ width: "200px" }} />
-                    )}
-                    <p>{wikipediaData.extract}</p>
-                </div>
+                <Box mb={4} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Card sx={{ maxWidth: 800, mx: "auto" }}>
+                        <CardContent>
+                            <Typography variant="h5" align="center">{wikipediaData.title}</Typography>
+                            {wikipediaData.thumbnail && (
+                                <Box mt={2} mb={2}>
+                                    <img src={wikipediaData.thumbnail} alt={wikipediaData.title} className="wikipedia-img" />
+                                </Box>
+                            )}
+                            <Typography variant="body1">{wikipediaData.extract}</Typography>
+                        </CardContent>
+                    </Card>
+                </Box>
             ) : (
-                <p>Loading...</p>
+                <Box display="flex" justifyContent="center" mt={4}>
+                    <CircularProgress />
+                </Box>
             )}
 
-            <div>
-                <h1>블로그 추천</h1>
+            <Box mb={4} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Typography variant="h5" align="center" gutterBottom>
+                    블로그 추천
+                </Typography>
                 {blogData.length > 0 ? (
-                    <ul>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
                         {blogData.map((blog, index) => (
                             <li key={index}>
-                                <a href={blog.link} target="_blank" rel="noopener noreferrer">
+                                <Button component="a" href={blog.link} target="_blank" rel="noopener noreferrer" fullWidth variant="outlined" sx={{ mb: 1 }}>
                                     {blog.title}
-                                </a>
+                                </Button>
                             </li>
                         ))}
                     </ul>
                 ) : (
-                    <p>블로그 데이터를 불러오는 중...</p>
+                    <Typography variant="body1" align="center">블로그 데이터를 불러오는 중...</Typography>
                 )}
-            </div>
+            </Box>
 
-            <div>
-                <h1>유튜브 영상</h1>
-                {youtubeVideoId ? <YouTubeEmbed videoId={youtubeVideoId} /> : <p>유튜브 영상을 불러오는 중...</p>}
-            </div>
-        </div>
+            <Box mb={4} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Typography variant="h5" align="center" gutterBottom>
+                    유튜브 영상
+                </Typography>
+                {youtubeVideoId ? <YouTubeEmbed videoId={youtubeVideoId} /> : <Typography variant="body1" align="center">유튜브 영상을 불러오는 중...</Typography>}
+            </Box>
+        </Container>
     );
 }
 
