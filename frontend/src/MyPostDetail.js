@@ -5,6 +5,7 @@ import axios from "axios";
 import "./MyPostDetail.css";
 import Header from "./Header";
 import {Box, Button, TextField, Typography} from "@mui/material";
+import { ThumbUp, ThumbDown, Edit, Delete } from '@mui/icons-material';
 
 const MyPostDetail = () => {
     const { postId } = useParams(); // URL에서 postId 가져오기
@@ -31,6 +32,9 @@ const MyPostDetail = () => {
     const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
+    const [liked, setLiked] = useState(false); // 좋아요 상태
+    const [likeCount, setLikeCount] = useState(0);
+
     const fetchSessionUser = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:8080/api/auth/status', {
@@ -159,6 +163,47 @@ const MyPostDetail = () => {
         fetchComments();
     }, [postId]);
 
+    useEffect(() => {
+        const fetchPostData = async () => {
+            try {
+                const [postRes, commentsRes] = await Promise.all([
+                    fetch(`http://localhost:8080/api/posts/${postId}`).then((res) => res.json()),
+                    fetch(`http://localhost:8080/api/post/${postId}/comments`, { credentials: 'include' }).then((res) => res.json()),
+                ]);
+                setPost(postRes);
+                setLikeCount(postRes.likeCount);
+                setComments(commentsRes);
+                if (userId) {
+                    const likeStatusRes = await fetch(
+                        `http://localhost:8080/api/posts/${postId}/like/status?userId=${userId}`,
+                        { credentials: 'include' }
+                    ).then((res) => res.json());
+                    setLiked(likeStatusRes);
+                }
+            } catch (error) {
+                console.error('Error fetching post data:', error);
+            }
+        };
+        if (userId) {
+            fetchPostData();
+        }
+    }, [postId, userId]);
+
+    // 좋아요 버튼 클릭 처리
+    const handleLikeClick = () => {
+        if (!userId) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        const method = liked ? 'DELETE' : 'POST';
+        fetch(`http://localhost:8080/api/posts/${postId}/like?userId=${userId}`, { method, credentials: 'include' })
+            .then(() => {
+                setLiked((prev) => !prev);
+                setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+            })
+            .catch((error) => console.error(error));
+    };
+
     const handleEdit = () => {
         if (!post || !post.startDate || !post.endDate || !post.city) {
             console.error("Incomplete post data. Please ensure all required fields are available:", post);
@@ -253,6 +298,16 @@ const MyPostDetail = () => {
                         </div>
                     ))}
                 </div>
+            </div>
+            <div>
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleLikeClick}
+                    startIcon={liked ? <ThumbDown /> : <ThumbUp />}
+                >
+                    {liked ? "좋아요 취소" : "좋아요"} ({likeCount})
+                </Button>
             </div>
 
             <div className="comments-section">
